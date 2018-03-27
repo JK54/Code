@@ -44,15 +44,15 @@ class BinTree
 		void SetMark(T x){endm = x;}
 		//recursive traverse
 		//bool type variable "ingen" control the output in genlist format or not
-		void TraversePreOder(BinTreeNode<T> *ro,bool ingen);
-		void TraverseInOder(BinTreeNode<T> *ro);
-		void TraversePostOder(BinTreeNode<T> *ro);
+		void TraversePreOrder(BinTreeNode<T> *ro,bool ingen);
+		void TraverseInOrder(BinTreeNode<T> *ro);
+		void TraversePostOrder(BinTreeNode<T> *ro);
 		//no-recursive traverse
-		void TraversePreOder_NR1(BinTreeNode<T> *roo);
-		void TraversePreOder_NR2(BinTreeNode<T> *roo);
-		void TraversePreOder_NR3(BinTreeNode<T> *roo);
-		void TraverseInOder_NR(BinTreeNode<T> *roo);
-		void TraversePostOder_NR(BinTreeNode<T> *roo);
+		void TraversePreOrder_NR1(BinTreeNode<T> *roo);
+		void TraversePreOrder_NR2(BinTreeNode<T> *roo);
+		void TraversePreOrder_NR3(BinTreeNode<T> *roo);
+		void TraverseInOrder_NR(BinTreeNode<T> *roo);
+		void TraversePostOrder_NR(BinTreeNode<T> *roo);
 		void TraverseLevelOrder(BinTreeNode<T> *roo);
 	
 		//use traverse to complete
@@ -160,7 +160,7 @@ BinTreeNode<T>* CreateTreeByInPostOrder(T *ino,T *posto,int n)
 }
 
 template<typename T>
-void BinTree<T>::TraversePreOder(BinTreeNode<T> *ro,bool ingen)
+void BinTree<T>::TraversePreOrder(BinTreeNode<T> *ro,bool ingen)
 {
 	if(ingen == false)
 	{
@@ -171,8 +171,8 @@ void BinTree<T>::TraversePreOder(BinTreeNode<T> *ro,bool ingen)
 		else
 		{
 			std::cout<<ro->data<<" ";
-			TraversePreOder(ro->lchild,ingen);
-			TraversePreOder(ro->rchild,ingen);
+			TraversePreOrder(ro->lchild,ingen);
+			TraversePreOrder(ro->rchild,ingen);
 			return;
 		}
 	}
@@ -185,8 +185,8 @@ void BinTree<T>::TraversePreOder(BinTreeNode<T> *ro,bool ingen)
 		else
 		{
 			std::cout<<ro->data<<" ( ";
-			TraversePreOder(ro->lchild,ingen);
-			TraversePreOder(ro->rchild,ingen);
+			TraversePreOrder(ro->lchild,ingen);
+			TraversePreOrder(ro->rchild,ingen);
 			std::cout<<" ) ";
 			return;
 		}
@@ -195,7 +195,7 @@ void BinTree<T>::TraversePreOder(BinTreeNode<T> *ro,bool ingen)
 }
 
 template<typename T>
-void BinTree<T>::TraverseInOder(BinTreeNode<T> *ro)
+void BinTree<T>::TraverseInOrder(BinTreeNode<T> *ro)
 {
 	if(ro == nullptr)
 	{
@@ -203,15 +203,15 @@ void BinTree<T>::TraverseInOder(BinTreeNode<T> *ro)
 	}
 	else
 	{
-		TraverseInOder(ro->lchild);
+		TraverseInOrder(ro->lchild);
 		std::cout<<ro->data<<" ";
-		TraverseInOder(ro->rchild);
+		TraverseInOrder(ro->rchild);
 		return;
 	}
 }
 
 template<typename T>
-void BinTree<T>::TraversePostOder(BinTreeNode<T> *ro)
+void BinTree<T>::TraversePostOrder(BinTreeNode<T> *ro)
 {
 	if(ro == nullptr)
 	{
@@ -219,8 +219,8 @@ void BinTree<T>::TraversePostOder(BinTreeNode<T> *ro)
 	}
 	else
 	{
-		TraversePostOder(ro->lchild);
-		TraversePostOder(ro->rchild);
+		TraversePostOrder(ro->lchild);
+		TraversePostOrder(ro->rchild);
 		std::cout<<ro->data<<" ";
 		return;
 	}
@@ -230,7 +230,7 @@ void BinTree<T>::TraversePostOder(BinTreeNode<T> *ro)
 //set xmark as flag of null lchild.if lchild is not nullptr,then output it,else pop the brother rchild.
 //It's very similar to NR2,but it need a extra parameters to store the last pop operation is successed or not.It take one more bit memory space,and NR2 take more time.When it come to a extra large tree,NR1 could have better performance.
 template<typename T>
-void BinTree<T>::TraversePreOder_NR1(BinTreeNode<T> *roo)
+void BinTree<T>::TraversePreOrder_NR1(BinTreeNode<T> *roo)
 {
 	Stack<BinTreeNode<T>*> s;
 	bool xmark = true;
@@ -248,7 +248,7 @@ void BinTree<T>::TraversePreOder_NR1(BinTreeNode<T> *roo)
 }
 
 template<typename T>
-void BinTree<T>::TraversePreOder_NR2(BinTreeNode<T> *roo)
+void BinTree<T>::TraversePreOrder_NR2(BinTreeNode<T> *roo)
 {
     Stack<BinTreeNode<T>*> s;
     BinTreeNode<T> *trav = roo;
@@ -268,7 +268,7 @@ void BinTree<T>::TraversePreOder_NR2(BinTreeNode<T> *roo)
 
 //diferent between NR2 and NR3:the count of push and pop operation of NR2 is more less than NR3,but NR2 need to do the extra step of if-operation each time the loop to make sure that when it come to the last node the loop could break,or it will never end.But I thought the performance of NR2 is still better than NR3.
 template<typename T>
-void BinTree<T>::TraversePreOder_NR3(BinTreeNode<T> *roo)
+void BinTree<T>::TraversePreOrder_NR3(BinTreeNode<T> *roo)
 {
     Stack<BinTreeNode<T>*> s;
     BinTreeNode<T> *trav = roo;
@@ -289,7 +289,7 @@ void BinTree<T>::TraversePreOder_NR3(BinTreeNode<T> *roo)
 }
 
 template<typename T>
-void BinTree<T>::TraverseInOder_NR(BinTreeNode<T> *roo)
+void BinTree<T>::TraverseInOrder_NR(BinTreeNode<T> *roo)
 {
 	Stack<BinTreeNode<T>*> s;
 	BinTreeNode<T> *trav = roo;
@@ -310,9 +310,36 @@ void BinTree<T>::TraverseInOder_NR(BinTreeNode<T> *roo)
 }
 
 template<typename T>
-void BinTree<T>::TraversePostOder_NR(BinTreeNode<T> *roo)
+void BinTree<T>::TraversePostOrder_NR(BinTreeNode<T> *roo)
 {
-	
+	if(roo == nullptr)
+		return;
+	Stack<BinTreeNode<T>*> s;
+	BinTreeNode<T> *trav = roo;
+	BinTreeNode<T> *pre = nullptr;
+	while(trav != nullptr)
+	{
+		s.Push(trav);
+		trav = trav->lchild;
+	}
+	while(s.Pop(trav))
+	{
+		if(trav->rchild == nullptr || trav->rchild == pre)
+		{
+			std::cout<<trav->data<<" ";
+			pre = trav;
+		}
+		else
+		{
+			s.Push(trav);
+			trav = trav->rchild;
+			while(trav != nullptr)
+			    {
+			        s.Push(trav);
+			        trav = trav->lchild;
+			    }
+		}
+	}
 }
 template<typename T>
 void BinTree<T>::TraverseLevelOrder(BinTreeNode<T> *roo)
