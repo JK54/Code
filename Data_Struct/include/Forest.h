@@ -21,21 +21,23 @@ template<typename T>
 class Tree
 {
 	public:
-		Tree(){current = root = new TreeNode<T>;}
+		Tree(){root = new TreeNode<T>;}
 		~Tree(){if(!IsEmpty())Destory();}
 		
-		void SetFlag(T x,T y){isnextbrother = x;endm = y;}
+		void CreateTree(TreeNode<T> *roo,std::istream &is);
+		void SetFlag(const T &x,const T &y){isnextbrother = x;endm = y;}
 		TreeNode<T>* Root(){return root;}
-		TreeNode<T>* Parent(TreeNode<T> *p);
-		TreeNode<T>* NextBrother(TreeNode<T> *p);
-		void CreateTree(std::istream &is);
+		// bool Parent();
+		// bool FindParent(TreeNode<T> *roo,TreeNode<T> *p);
+		TreeNode<T>* NextBrother(TreeNode<T> *p){if(p->nextbrother != nullptr) return p->nextbrother;else return nullptr;}
+		// Tree<T>* NextT(){return nextt;}
 		void Destory(){destroy(root);}//will be called by Forest class function.
 		bool IsEmpty(){if(root != nullptr)return true;else return false;}
 		bool Insert(T x);
-		void Traverse(TreeNode<T> *roo);
+		void Traverse_RF(TreeNode<T> *roo);
 
 	private:
-		TreeNode<T> *root,*current;
+		TreeNode<T> *root;
 		static T isnextbrother;
 		static T endm;
 		void destroy(TreeNode<T> *roo);
@@ -45,9 +47,19 @@ template<typename T>
 class Forest
 {
 	public:
+		Forest();
+		~Forest();
+
+		Tree<T>* Head(){return head_list->head;}
+		Tree<T>* Tail(){return head_list->tail;}
+		void CreateForest(std::istream &is);
 		bool RemoveTree(Tree<T> *);
+		BinTreeNode<T> *Tran2Bin();
+		Tree<T> *Build4Bin(BinTreeNode<T> *roo);
+		void DFS();
+		void BFS();
 	private:
-		LinkedList<Tree<T>*> *root,*tail;
+		LinkedList<Tree<T>*> head_list;
 };
 
 template<typename T>
@@ -55,48 +67,51 @@ T Tree<T>::isnextbrother;
 template<typename T>
 T Tree<T>::endm;
 
-
 template<typename T>
 void Tree<T>::destroy(TreeNode<T> *roo)
 {
-	
+	if(roo == nullptr)
+		return;
+	else
+	{
+		destroy(roo->nextbrother);
+		destroy(roo->firstchild);
+		delete roo;
+	}
 }
 
 template<typename T>
-void Tree<T>::CreateTree(std::istream &is)
+void Tree<T>::CreateTree(TreeNode<T> *roo,std::istream &is)
 {
-	if(root == nullptr){std::cout<<"invalid initial node"<<std::endl;return;}
+	if(roo == nullptr){std::cout<<"invalid initial node"<<std::endl;return;}
 	else
 	{
 		T vle;
-		TreeNode<T> *tmp;
+		is>>vle;
+		TreeNode<T> *tmp = new TreeNode<T>(vle);
+		roo->firstchild = tmp;
 		Stack<TreeNode<T>*>s;
-		while(is>>vle)
+		while(tmp != roo && is>>vle)
 		{
-			if(current == root)
-			{
-				current->firstchild = new TreeNode<T>(vle);
-				current = current->firstchild;
-			}
-			if(vle == isnextbrother)
+			if(vle == Tree<T>::isnextbrother)
 			{
 				is>>vle;
-				current->nextbrother = new TreeNode<T>(vle);
-				current = current->nextbrother;
+				tmp->nextbrother = new TreeNode<T>(vle);
+				tmp = tmp->nextbrother;
 			}
-			else if(vle == endm)
-				s.Pop(current);
+			else if(vle == Tree<T>::endm)
+				s.Pop(tmp);
 			else
 			{
-				current->firstchild = new TreeNode<T>(vle);
-				s.Push(current);
-				current = current->firstchild;
+				tmp->firstchild = new TreeNode<T>(vle);
+				s.Push(tmp);
+				tmp = tmp->firstchild;
 			}
 		}
 	}
 }
 template<typename T>
-void Tree<T>::Traverse(TreeNode<T> *roo)
+void Tree<T>::Traverse_RF(TreeNode<T> *roo)
 {
 	if(roo == nullptr)
 	{
@@ -109,25 +124,103 @@ void Tree<T>::Traverse(TreeNode<T> *roo)
 		if(p->firstchild != nullptr)
 		{
 			std::cout<<" ( ";
-			Traverse(p->firstchild);
+			Traverse_RF(p->firstchild);
 			std::cout<<" ) ";
 		}
 		p = p->nextbrother;
 	}
 }
+/*
+ * 
+ * template<typename T>
+ * bool Tree<T>::FindParent(TreeNode<T> *roo,TreeNode<T> *p)
+ * {
+ *     TreeNode<T> *ro = roo->firstchild;
+ *     bool succ;
+ *     while( ro != nullptr && ro != p)
+ *     {
+ *         if((succ = FindParent(ro,p)) == true)
+ *             return succ;
+ *         ro = ro->nextbrother;
+ *     }
+ *     if(ro != nullptr && ro == p)
+ *     {
+ *         current = roo;
+ *         return true;
+ *     }
+ *     else
+ *     {
+ *         current = nullptr;
+ *         return false;
+ *     }
+ * }
+ * template<typename T>
+ * bool Tree<T>::Parent()
+ * {
+ *     TreeNode<T> *p = current;
+ *     if(current == nullptr || current == root)
+ *     {
+ *         current = nullptr;
+ *         return false;
+ *     }
+ *     return FindParent(root,p);
+ * }
+ */
 
 template<typename T>
-TreeNode<T>* Tree<T>::Parent(TreeNode<T> *p)
+Forest<T>::Forest()
 {
-	if(p == nullptr || p == root)
-	{
-		std::cout<<"p is nullptr or p is root node"<<std::endl;
-		exit(1);
-	}
+	head_list->head = head_list->tail = new Tree<T>;
+}
+
+template<typename T>
+bool Forest<T>::RemoveTree(Tree<T> *p)
+{
+	if(p == nullptr)
+		return false;
 	else
 	{
-		Queue<TreeNode<T>*> TNqueue;
-		TreeNode<T> *trav = root->firstchild;
+		p->Destory();
+		return true;
+	}
+}
+
+template<typename T>
+Forest<T>::~Forest()
+{
+	while(head_list->head != nullptr)
+	{
+		Tree<T> *tmp = Head()->next;
+		RemoveTree(head_list->head);
+		Head() = tmp;
+	}
+
+}
+
+template<typename T>
+void Forest<T>::CreateForest(std::istream &is)
+{
+	while(is)	
+	{
+		head_list->tail->CreateTree(tail->Root(),is);
+		if(is)
+		{
+			Tree<T> *tmp =  new Tree<T>;
+			head_list->tail->next = tmp;
+			head_list->
+		}
+	}
+}
+
+template<typename T>
+void Forest<T>::BFS()
+{
+	Tree<T> *p = root;
+	while(p != nullptr)
+	{
+		p->Traverse_RF(p->Root());
+		std::cout<<std::endl;
+		p = p->nextt;
 	}
 }
 #endif
