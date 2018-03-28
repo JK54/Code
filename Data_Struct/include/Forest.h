@@ -70,6 +70,7 @@ void Tree<T>::CreateTree(std::istream &is)
 	{
 		T vle;
 		TreeNode<T> *tmp;
+		Stack<TreeNode<T>*>s;
 		while(is>>vle)
 		{
 			if(current == root)
@@ -77,26 +78,19 @@ void Tree<T>::CreateTree(std::istream &is)
 				current->firstchild = new TreeNode<T>(vle);
 				current = current->firstchild;
 			}
+			if(vle == isnextbrother)
+			{
+				is>>vle;
+				current->nextbrother = new TreeNode<T>(vle);
+				current = current->nextbrother;
+			}
+			else if(vle == endm)
+				s.Pop(current);
 			else
 			{
-				if(vle == isnextbrother && vle != endm)
-				{
-					is>>vle;
-					current->nextbrother = new TreeNode<T>(vle);
-					current = current->nextbrother;
-				}
-				else if(vle != isnextbrother && vle != endm)
-				{
-					current->firstchild = new TreeNode<T>(vle);
-					tmp = current;
-					current = current->firstchild;
-					CreateTree(is);
-					current = tmp;
-				}
-				else
-				{
-					return;
-				}
+				current->firstchild = new TreeNode<T>(vle);
+				s.Push(current);
+				current = current->firstchild;
 			}
 		}
 	}
@@ -112,10 +106,10 @@ void Tree<T>::Traverse(TreeNode<T> *roo)
 	while(p != nullptr)
 	{
 		std::cout<<p->data<<" ";
-		if(roo->firstchild != nullptr)
+		if(p->firstchild != nullptr)
 		{
 			std::cout<<" ( ";
-			Traverse(roo->firstchild);
+			Traverse(p->firstchild);
 			std::cout<<" ) ";
 		}
 		p = p->nextbrother;
