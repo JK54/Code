@@ -1,5 +1,5 @@
 #include "sys_comm.h"
-#define Default_Size 5
+#define Default_Size 500
 class Matrix_Element
 {
 	public:
@@ -19,7 +19,8 @@ class Sparse_Matrix
 		void Traverse();
 		void Traverse_Matrix();
 		void Build_Matrix(std::istream &is);
-		void Sort();
+		void Sort_X();
+		void Sort_Y();
 		int X()
 		{
 			return x_size;
@@ -62,7 +63,23 @@ void Swap(Matrix_Element *l,Matrix_Element *r)
 	r->y = y0;
 	r->data =data0;
 }
-void Sparse_Matrix::Sort()
+void Sparse_Matrix::Sort_X()
+{
+	if(head == nullptr)
+		return;
+	for(Matrix_Element *p = head->next;p->next != nullptr;p = p->next)
+	{
+		for(Matrix_Element *q = p;q->next != nullptr; q = q->next)
+		{
+			if(q->x > q->next->x)
+				Swap(q,q->next);
+			else if(q->x == q->next->x)
+				if(q->y > q->next->y)
+					Swap(q,q->next);
+		}
+	}
+}
+void Sparse_Matrix::Sort_Y()
 {
 	if(head == nullptr)
 		return;
@@ -89,11 +106,11 @@ void Sparse_Matrix::Traverse()
 		std::cout<<p->x<<" "<<p->y<<" "<<p->data<<std::endl;	
 		p = p->next;
 	}
+	std::cout<<std::endl;
 }
 
 void Sparse_Matrix::Traverse_Matrix()
 {
-	Sort();
 	Matrix_Element *p = head->next;
 	std::vector<std::vector<int>> A(x_size,std::vector<int>(y_size,0));
 	// A.resize(x_size,y_size);
@@ -128,14 +145,16 @@ void Sparse_Matrix::Transpose()
 void  Sparse_Matrix::Mutiply(Sparse_Matrix &x,Sparse_Matrix &result)
 {
 	assert(y_size == x.x_size);
-	for(Matrix_Element *p = head->next; p != nullptr; p = p->next)
+	Sort_Y();
+	x.Sort_X();
+	for (Matrix_Element *p = head->next; p != nullptr; p = p->next)
 	{
 		for(Matrix_Element *q = x.head->next; q != nullptr; q = q->next)
 		{
 			if(p->x == q->y)
 			{
 				Matrix_Element *trav = result.head->next;
-				while(trav != nullptr && trav->x != q->x && trav->y != p->y)
+				while(trav != nullptr && (trav->x != q->x || trav->y != p->y))
 					trav = trav->next;
 				if(trav == nullptr)
 				{
