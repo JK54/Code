@@ -20,6 +20,7 @@ struct TreeNode
 template<typename T>
 class Tree
 {
+	friend	void Traverse_RF(TreeNode<T> *roo);
 	public:
 		Tree(){root = new TreeNode<T>;}
 		~Tree(){if(!IsEmpty())Destory();}
@@ -34,10 +35,9 @@ class Tree
 		void Destory(){destroy(root);}//will be called by Forest class function.
 		bool IsEmpty(){if(root != nullptr)return true;else return false;}
 		bool Insert(T x);
-		void Traverse_RF(TreeNode<T> *roo);
 
-	private:
 		TreeNode<T> *root;
+		Tree<T> *next;
 		static T isnextbrother;
 		static T endm;
 		void destroy(TreeNode<T> *roo);
@@ -47,19 +47,15 @@ template<typename T>
 class Forest
 {
 	public:
-		Forest();
-		~Forest();
+	  void CreateForest(std::istream &is);
+	  //bool RemoveTree(Tree<T> *);
+	  BinTreeNode<T> *Tran2Bin();
+	  Tree<T> *Build4Bin(BinTreeNode<T> *roo);
+	  void DFS();
+	  void BFS();
 
-		Tree<T>* Head(){return head_list->head;}
-		Tree<T>* Tail(){return head_list->tail;}
-		void CreateForest(std::istream &is);
-		bool RemoveTree(Tree<T> *);
-		BinTreeNode<T> *Tran2Bin();
-		Tree<T> *Build4Bin(BinTreeNode<T> *roo);
-		void DFS();
-		void BFS();
-	private:
-		LinkedList<Tree<T>*> head_list;
+	  std::vector<TreeNode<T> *> head_link;
+
 };
 
 template<typename T>
@@ -111,7 +107,7 @@ void Tree<T>::CreateTree(TreeNode<T> *roo,std::istream &is)
 	}
 }
 template<typename T>
-void Tree<T>::Traverse_RF(TreeNode<T> *roo)
+void Traverse_RF(TreeNode<T> *roo)
 {
 	if(roo == nullptr)
 	{
@@ -167,60 +163,39 @@ void Tree<T>::Traverse_RF(TreeNode<T> *roo)
  * }
  */
 
-template<typename T>
-Forest<T>::Forest()
-{
-	head_list->head = head_list->tail = new Tree<T>;
-}
 
-template<typename T>
-bool Forest<T>::RemoveTree(Tree<T> *p)
-{
-	if(p == nullptr)
-		return false;
-	else
-	{
-		p->Destory();
-		return true;
-	}
-}
-
-template<typename T>
-Forest<T>::~Forest()
-{
-	while(head_list->head != nullptr)
-	{
-		Tree<T> *tmp = Head()->next;
-		RemoveTree(head_list->head);
-		Head() = tmp;
-	}
-
-}
+// template<typename T>
+// bool Forest<T>::RemoveTree(Tree<T> *p)
+// {
+// 	if(p == nullptr)
+// 		return false;
+// 	else
+// 	{
+// 		p->Destory();
+// 		return true;
+// 	}
+// }
 
 template<typename T>
 void Forest<T>::CreateForest(std::istream &is)
 {
-	while(is)	
+	while (is)
 	{
-		head_list->tail->CreateTree(tail->Root(),is);
-		if(is)
-		{
-			Tree<T> *tmp =  new Tree<T>;
-			head_list->tail->next = tmp;
-			head_list->
-		}
+		TreeNode<T> *roo;
+		CreateTree(roo, is);
+		head_link.push_back(roo);
 	}
 }
 
 template<typename T>
 void Forest<T>::BFS()
 {
-	Tree<T> *p = root;
-	while(p != nullptr)
+	TreeNode<T> *p = *head_link.begin();
+	while (p != nullptr)
 	{
-		p->Traverse_RF(p->Root());
+		Traverse_RF(p);
 		std::cout<<std::endl;
-		p = p->nextt;
+		p++;
 	}
 }
 #endif

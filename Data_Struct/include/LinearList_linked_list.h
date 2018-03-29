@@ -26,7 +26,8 @@ class LinkedList
 		~LinkedList();
 		LinkedList(const LinkedList<T> &p);
 		LinkedList<T>& operator=(const LinkedList<T> &p);
-		
+		T* Head(){return head;}
+		T* Tail(){return tail;}
 		size_t length();
 		void traverse();
 		bool isempty();
@@ -36,7 +37,6 @@ class LinkedList
 		bool pop_back(T &x);
 		bool pop_forward(T &x);
 		
-	private:
 		LNode<T>* head;
 		LNode<T>* tail;
 		size_t leng;
@@ -66,15 +66,18 @@ LinkedList<T>::~LinkedList()
 {
 	if(*--use == 0)
 	{
-		LNode<T> *tmp = head->next;
-		delete head;
-		head = tmp;
+		while(head != nullptr)
+		{
+			LNode<T> *tmp = head->next;
+			delete head;
+			head = tmp;
+		}
 	}
 }
 template<typename T>
 bool LinkedList<T>::isempty()
 {
-	if(head == nullptr)
+	if(head->next == nullptr)
 	{
 		std::cout<<"empty list"	<<std::endl;
 		return true;
@@ -132,7 +135,7 @@ bool LinkedList<T>::Insert(size_t i, T x)
 template<typename T>
 bool LinkedList<T>::push_back(T x)
 {
-	if(!isempty())
+	if(head != nullptr)
 	{
 		LNode<T> *t = new LNode<T>(x);
 		t->data = x;//tail->next == t->next == nullptr,不需要重新复制尾指针

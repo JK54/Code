@@ -2,11 +2,15 @@
 
 using namespace std;
 
+int* ff(int *a)
+{
+	return a;
+}
 int main()
 {
-	ifstream is("11.txt");
-	char a;
-	for(int i = 0;i<5;++i)
-	cout<<is.tellg()<<endl;
-	getchar();
+	int a = 5,c = 6;
+	int *b = &a;
+	int *d = &c;
+	ff(b) = d;
+	cout<<*b<<endl;
 }

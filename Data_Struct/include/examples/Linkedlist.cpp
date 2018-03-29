@@ -13,4 +13,5 @@ int main()
 		p.pop_forward(x);
 		cout<<x<<endl;
 	}
+	system("pause");
 }

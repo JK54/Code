@@ -6,7 +6,6 @@ int main()
 {
 	ifstream is("./forest.txt");
 	Forest<int> fff;
-	fff.Head()->SetFlag(32767,0);
 	/*
 	 * Tree<int> aaa;
 	 * aaa.SetFlag(32767,0);
