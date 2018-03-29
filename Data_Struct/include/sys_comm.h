@@ -4,12 +4,14 @@
 #include <cmath>
 #include <cctype>
 #include <cstring>
+#include <cassert>
 
 //io header
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+
 //sequence container header
 #include <string>
 #include <vector>
@@ -35,6 +37,5 @@
 #include <new>
 
 #include <typeinfo> //typeid
-#include <cassert>
 
 #endif

@@ -26,6 +26,8 @@ class Queue
 		size_t Size(){return size;}
 		bool Dequeue(T &p);
 		bool Enqueue(T &x);
+		void Traverse();
+		bool Enqueue_Priority(T &x);
 		bool IsEmpty(){if(first->next == nullptr)return true;else return false;}
 	private:
 		QueueNode<T> *first;
@@ -85,6 +87,42 @@ bool Queue<T>::Enqueue(T &x)
 		return true;
 	}
 }
+template<typename T>
+bool Queue<T>::Enqueue_Priority(T &x)
+{
+	if(first == nullptr)
+	{
+		std::cout<<"no Queue"<<std::endl;
+		return false;
+	}
+	else
+	{
+		QueueNode<T> *tmp = new QueueNode<T>(x);
+		QueueNode<T> *f = first->next;
+		QueueNode<T> *fpre = first;
+		while(f != nullptr)
+		{
+			if(f->data < x)
+			{
+				fpre = f;	
+				f = f->next;
+			}
+			else if(f->data == x)
+				return false;
+			else
+				break;
+		}
+		if(f == nullptr)
+			fpre->next = tmp;
+		else
+		{
+			fpre->next = tmp;
+			tmp->next = f;
+		}
+		++size;
+		return true;
+	}
+}
 
 template<typename T>
 bool Queue<T>::Dequeue(T &p)
@@ -102,4 +140,16 @@ bool Queue<T>::Dequeue(T &p)
 	return true;
 }
 
+template<typename T>
+void Queue<T>::Traverse()
+{
+	if(first->next == nullptr)
+	{
+		std::cout<<"Queue is empty.."<<std::endl;
+		return;
+	}
+	for(QueueNode<T> *tmp = first->next;tmp != nullptr; tmp = tmp->next)
+		std::cout<<tmp->data<<" ";
+	std::cout<<std::endl;
+}
 #endif
