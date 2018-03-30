@@ -6,7 +6,6 @@
 template<typename T>
 class QueueNode
 {
-	friend bool HeapNode<T>::operator<(const HeapNode<T> *p);
 	public:
 		T data;
 		QueueNode<T> *next;

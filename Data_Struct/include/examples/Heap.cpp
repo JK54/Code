@@ -1,5 +1,5 @@
 #include "../Heap.h"
-
+#include "../MinHeap.h"
 using namespace std;
 
 int main()
@@ -10,7 +10,7 @@ int main()
 	int i;
 	while(is1>>i)
 		q.Enqueue_Priority(i);
-	Heap<int> hp(q);
+	MinHeap<int> hp(q);
 	hp.TraverseLevelOrder();
 	while(is2>>i)
 		hp.Insert(i);

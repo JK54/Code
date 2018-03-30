@@ -14,9 +14,8 @@ struct HeapNode
 	HeapNode<T> *lchild;
 	HeapNode<T> *rchild;
 	HeapNode(T x = 0):data(x),lchild(nullptr),rchild(nullptr){}
-	bool operator<(const HeapNode<T> &p){return data < p.data;}
-	bool operator<(const HeapNode<T> *p){std::cout<<"sdasd"<<std::endl;return data < p->data;}
-	void Swap(HeapNode<T> *p){T tmp = p->data;p->data = data;data = tmp;}
+	bool operator<(const HeapNode<T> &p){if(data<p.data)return true;else return false;}
+	bool operator<(const HeapNode<T> *p){if(data<p->data)return true;else return false;}
 };
 
 template<typename T>
@@ -32,9 +31,9 @@ class Heap
 		bool Remove(T &x);//x as the the parameter to accept top of heap and delete top.
 		void TraversePostOrder();
 		void TraverseLevelOrder();
-		virtual void siftDown() = 0;
-		virtual void siftUp() = 0;
-	protected:
+		// virtual void siftDown() = 0;
+		// virtual void siftUp() = 0;
+	private:
 		HeapNode<T> *head;
 		Queue<HeapNode<T>*> *lastpos;
 };
