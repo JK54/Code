@@ -14,8 +14,10 @@ struct HeapNode
 	HeapNode<T> *lchild;
 	HeapNode<T> *rchild;
 	HeapNode(T x = 0):data(x),lchild(nullptr),rchild(nullptr){}
-	bool operator<(const HeapNode<T> &p){return data < p.data;}
-	bool operator<(const HeapNode<T> *p){std::cout<<"sdasd"<<std::endl;return data < p->data;}
+	bool operator<(const HeapNode<T> &p){std::cout<<"less1"<<std::endl;return data < p.data;}
+	bool operator<(const HeapNode<T> *p){std::cout<<"less"<<std::endl;return data < p->data;}
+	bool operator==(const HeapNode<T> *p){std::cout<<"equal"<<std::endl;return data == p->data;}
+	bool operator!=(const HeapNode<T> *p){std::cout<<"not equal"<<std::endl;return data != p->data;}
 	void Swap(HeapNode<T> *p){T tmp = p->data;p->data = data;data = tmp;}
 };
 
