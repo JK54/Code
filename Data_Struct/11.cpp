@@ -2,15 +2,16 @@
 
 using namespace std;
 
-int* ff(int *a)
+class aa
 {
-	return a;
-}
+	public:
+		int a;
+		bool operator>(const aa &p){	return a>p.a;	}
+};
 int main()
 {
-	int a = 5,c = 6;
-	int *b = &a;
-	int *d = &c;
-	ff(b) = d;
-	cout<<*b<<endl;
+	aa a,b;
+	a.a = 1;
+	b.a = 2;
+	cout<<a.operator>(b)<<endl;
 }

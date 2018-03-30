@@ -94,6 +94,7 @@ void BinTree<T>::destroy(BinTreeNode<T> *root)
 		destroy(root->lchild);
 		destroy(root->rchild);
 		delete root;
+		root = nullptr;
 	}
 }
 
