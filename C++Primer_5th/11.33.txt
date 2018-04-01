@@ -1,0 +1,11 @@
+pic	picture
+k ok?
+y yes
+n no
+r are
+u you
+z zealot
+18r later
+thx	thanks
+ty thank you
+
