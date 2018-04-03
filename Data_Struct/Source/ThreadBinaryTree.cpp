@@ -1,4 +1,4 @@
-#include "ThreadBinaryTree.h"
+#include "../Include/ThreadBinaryTree.h"
 
 template<typename T>
 ThreadNode<T>::ThreadNode(const BinTreeNode<T> *Bn)

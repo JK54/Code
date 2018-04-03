@@ -1,4 +1,4 @@
-#include "Sparse_Matrix.h"
+#include "../Include/Sparse_Matrix.h"
 
 void Sparse_Matrix::Build_Matrix(std::istream &is)
 {

@@ -1,4 +1,4 @@
-#include "Stack.h"
+#include "../Include/Stack.h"
 
 template<typename T>
 Stack<T>::Stack()

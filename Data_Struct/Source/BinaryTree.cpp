@@ -1,4 +1,4 @@
-#include "BinaryTree.h"
+#include "../Include/BinaryTree.h"
 
 template<typename T>
 T BinTree<T>::endm;

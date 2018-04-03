@@ -1,4 +1,4 @@
-#include "GenList.h"
+#include "../Include/GenList.h"
 
 template<typename T>
 GenList<T>::GenList()

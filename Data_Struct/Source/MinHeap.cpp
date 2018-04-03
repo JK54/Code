@@ -1,4 +1,4 @@
-#include "MinHeap.h"
+#include "../Include/MinHeap.h"
 
 template<typename T>
 MinHeap<T>::MinHeap(const Queue<T> &p)

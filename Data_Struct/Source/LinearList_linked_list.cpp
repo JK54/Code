@@ -1,4 +1,4 @@
-#include "LinearList_linked_list.h"
+#include "../Include/LinearList_linked_list.h"
 
 template<typename T>
 LinkedList<T>::LinkedList()

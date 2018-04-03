@@ -1,4 +1,4 @@
-#include "LinearList_array.h"
+#include "../Include/LinearList_array.h"
 
 template<typename T>
 void LinearList_array<T>::setdata(int i,T &x)
