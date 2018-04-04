@@ -12,7 +12,7 @@ class ChainNode
 		T data;
 		int keyno;
 		ChainNode<T> *next;
-		ChainNode(T value = 0):data(value),keyno(++key),next(nullptr){}
+		ChainNode(T value = 0):data(value),keyno(key),next(nullptr){key += 7;}
 	private:
 		static int key;
 };
@@ -94,5 +94,30 @@ void HashTable<T>::Traverse()
 		}
 		std::cout<<std::endl;
 	}
+}
+
+template<typename T>
+bool HashTable<T>::Remove(int key,T dat)
+{
+	int j = key % div;
+	ChainNode<T> *tmp = sz[j];
+	ChainNode<T> *pretmp = nullptr;
+	while(tmp != nullptr && tmp->data != dat)
+	{
+		pretmp = tmp;
+		tmp = tmp->next;
+	}
+	if(tmp != nullptr)
+	{
+		if(pretmp == nullptr)
+			sz[j] = tmp->next;
+		else
+			pretmp->next = tmp->next;
+		delete tmp;
+		tmp = nullptr;
+		return true;
+	}
+	else
+		return false;
 }
 #endif
