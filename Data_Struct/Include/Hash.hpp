@@ -4,6 +4,7 @@
 #include "sys_comm.h"
 
 #define DEFAULT_DIV 11
+#define DEFAULT_KEYINC 7
 #define DEFAULT_SIZE 12
 template<typename T>
 class ChainNode
@@ -12,7 +13,7 @@ class ChainNode
 		T data;
 		int keyno;
 		ChainNode<T> *next;
-		ChainNode(T value = 0):data(value),keyno(key),next(nullptr){key += 7;}
+		ChainNode(T value = 0):data(value),keyno(key),next(nullptr){key += DEFAULT_KEYINC;}
 	private:
 		static int key;
 };
