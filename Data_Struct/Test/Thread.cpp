@@ -1,5 +1,4 @@
-#include "../ThreadBinaryTree.h"
-#include "../BinaryTree.h"
+#include "../Include/ThreadBinaryTree.hpp"
 using namespace std;
 
 int main()

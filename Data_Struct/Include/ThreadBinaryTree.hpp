@@ -41,7 +41,7 @@ class ThreadTree
 		ThreadNode<T>* Prior(ThreadNode<T> *current);
 	private:
 		ThreadNode<T> *root;
-		
+
 		ThreadNode<T>* buildthreadfrombin(ThreadNode<T> *ro,BinTreeNode<T> *roo);
 		void destroy(ThreadNode<T> *roo);
 		void visit(ThreadNode<T> *p){std::cout<<p->data<<" ";}
@@ -50,7 +50,7 @@ class ThreadTree
 };
 
 
-template<typename T>
+	template<typename T>
 ThreadNode<T>::ThreadNode(const BinTreeNode<T> *Bn)
 {
 	data = Bn->data;
@@ -70,7 +70,7 @@ ThreadNode<T>::ThreadNode(const BinTreeNode<T> *Bn)
 	}
 }
 
-template<typename T>
+	template<typename T>
 void ThreadTree<T>::destroy(ThreadNode<T> *roo)
 {
 	if(roo == nullptr)
@@ -88,7 +88,7 @@ void ThreadTree<T>::destroy(ThreadNode<T> *roo)
 	}
 }
 
-template<typename T>
+	template<typename T>
 ThreadNode<T>* ThreadTree<T>::First(ThreadNode<T> *current)
 {
 	ThreadNode<T> *p = current;
@@ -97,17 +97,17 @@ ThreadNode<T>* ThreadTree<T>::First(ThreadNode<T> *current)
 	return p;
 }
 
-template<typename T>
+	template<typename T>
 ThreadNode<T>* ThreadTree<T>::Next(ThreadNode<T> *current)
 {
 	ThreadNode<T> *p = current->rchild;
-	if(current->rtag == 0) 
+	if(current->rtag == 0)
 		return First(p);
-	else 
+	else
 		return p;
 }
 
-template<typename T>
+	template<typename T>
 ThreadNode<T>* ThreadTree<T>::Last(ThreadNode<T> *current)
 {
 	ThreadNode<T> *p = current;
@@ -116,7 +116,7 @@ ThreadNode<T>* ThreadTree<T>::Last(ThreadNode<T> *current)
 	return p;
 }
 
-template<typename T>
+	template<typename T>
 ThreadNode<T>* ThreadTree<T>::Prior(ThreadNode<T> *current)
 {
 	ThreadNode<T> *p = current->lchild;
@@ -126,11 +126,11 @@ ThreadNode<T>* ThreadTree<T>::Prior(ThreadNode<T> *current)
 		return p;
 }
 
-template<typename T>
+	template<typename T>
 ThreadNode<T>* ThreadTree<T>::buildthreadfrombin(ThreadNode<T> *ro,BinTreeNode<T> *roo)
 {
 	if(roo == nullptr)
-		return nullptr;	
+		return nullptr;
 	else
 	{
 		ro = new ThreadNode<T>(roo);
@@ -140,7 +140,7 @@ ThreadNode<T>* ThreadTree<T>::buildthreadfrombin(ThreadNode<T> *ro,BinTreeNode<T
 	}
 }
 
-template<typename T>
+	template<typename T>
 void ThreadTree<T>::CreateInThread(ThreadNode<T> *current,ThreadNode<T> *&pre)
 {
 	if(current == nullptr)
@@ -160,7 +160,7 @@ void ThreadTree<T>::CreateInThread(ThreadNode<T> *current,ThreadNode<T> *&pre)
 	CreateInThread(current->rchild,pre);
 }
 
-template<typename T>
+	template<typename T>
 void ThreadTree<T>::CreateInThread(BinTreeNode<T> *ro)
 {
 	ThreadNode<T> *pre = nullptr;
@@ -173,7 +173,7 @@ void ThreadTree<T>::CreateInThread(BinTreeNode<T> *ro)
 	}
 }
 
-template<typename T>
+	template<typename T>
 void ThreadTree<T>::TraversePreOrder(ThreadNode<T> *current)
 {
 	if(current == nullptr)
@@ -184,7 +184,7 @@ void ThreadTree<T>::TraversePreOrder(ThreadNode<T> *current)
 		while(p != nullptr)
 		{
 			visit(p);
-			if( p->ltag == 0)	
+			if( p->ltag == 0)
 				p = p->lchild;
 			else if(p->rtag == 0)
 				p = p->rchild;
@@ -200,7 +200,7 @@ void ThreadTree<T>::TraversePreOrder(ThreadNode<T> *current)
 	}
 }
 
-template<typename T>
+	template<typename T>
 void ThreadTree<T>::TraverseInOrder(ThreadNode<T> *roo)
 {
 	if(roo == nullptr)
@@ -212,7 +212,7 @@ void ThreadTree<T>::TraverseInOrder(ThreadNode<T> *roo)
 	}
 }
 
-template<typename T>
+	template<typename T>
 ThreadNode<T>* ThreadTree<T>::parent(ThreadNode<T> *current)
 {
 	if(current == root)
@@ -242,7 +242,7 @@ ThreadNode<T>* ThreadTree<T>::parent(ThreadNode<T> *current)
 
 }
 
-template<typename T>
+	template<typename T>
 void ThreadTree<T>::TraversePostOrder(ThreadNode<T> *current)
 {
 	if(current == nullptr)
@@ -267,10 +267,10 @@ void ThreadTree<T>::TraversePostOrder(ThreadNode<T> *current)
 			{
 				p = q->rchild;
 				while(p->ltag == 0 || p->rtag == 0)
-			        if(p->ltag == 0)
-			            p = p->lchild;
-			        else if( p->rtag == 0)
-			            p = p->rchild;
+					if(p->ltag == 0)
+						p = p->lchild;
+					else if( p->rtag == 0)
+						p = p->rchild;
 			}
 			visit(p);
 		}

@@ -11,8 +11,8 @@ class QueueNode
 {
 	friend class Queue<T>;
 	public:
-	QueueNode<T> *Next(){if(next != nullptr) return next;}
-	T Data(){if(this != nullptr)return data;}
+	QueueNode<T> *Next(){if(next != nullptr) return next;else return nullptr;}
+	T Data(){return data;}
 	private:
 	T data;
 	QueueNode<T> *next;

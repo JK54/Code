@@ -15,6 +15,7 @@ int main()
 	std::cout<<endl;
 	aaa.TraverseInOrder(b);
 	std::cout<<endl;
+	std::cout<<aaa.Height(bbb.Root())<<endl;
 	aaa.TraversePostOrder(b);
 	std::cout<<endl;
 	int preo[] = {1,2,4,8,5,3,6,7};

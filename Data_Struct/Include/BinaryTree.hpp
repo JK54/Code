@@ -12,6 +12,12 @@ template<typename T>
 class BinTree;
 
 template<typename T>
+class ThreadNode;
+
+template<typename T>
+class ThreadTree;
+
+template<typename T>
 BinTreeNode<T>* CreateTreeByInPostOrder(T*,T*,int);
 
 template<typename T>
@@ -19,10 +25,13 @@ BinTreeNode<T>* CreateTreeByPreInOrder(T*,T*,int);
 
 template<typename T>
 std::set<BinTreeNode<T>*> CreateTreeByInPostOrder_Duplicated(T*,T*,int);
+
 template<typename T>
 class BinTreeNode
 {
 	friend class BinTree<T>;
+	friend class ThreadNode<T>;
+	friend class ThreadTree<T>;
 	friend BinTreeNode<T>* CreateTreeByPreInOrder<T>(T *preo,T *ino,int n);
 	friend BinTreeNode<T>* CreateTreeByInPostOrder<T>(T *ino,T *posto,int n);
 	T data;
@@ -72,7 +81,7 @@ class BinTree
 	void TraverseLevelOrder(BinTreeNode<T> *roo);
 
 	//use traverse to complete
-	size_t Height();
+	size_t Height(BinTreeNode<T> *roo);
 	size_t Size();
 	BinTreeNode<T>* Copy(BinTreeNode<T> *orign);
 	bool Equal(BinTreeNode<T> *l,BinTreeNode<T> *r);
@@ -164,7 +173,7 @@ BinTreeNode<T>* CreateTreeByPreInOrder(T *preo,T *ino,int n)
 	return t;
 }
 
-template<typename T>
+	template<typename T>
 BinTreeNode<T>* CreateTreeByInPostOrder(T *ino,T *posto,int n)
 {
 	if(n == 0)
@@ -382,38 +391,16 @@ void BinTree<T>::TraverseLevelOrder(BinTreeNode<T> *roo)
 	}
 }
 
-	template<typename T>
-size_t BinTree<T>::Height()
+template<typename T>
+size_t BinTree<T>::Height(BinTreeNode<T> *roo)
 {
-	if(root == nullptr)
+	if(roo == nullptr)
 		return 0;
 	else
 	{
-		Stack<BinTreeNode<T>*> s;
-		BinTreeNode<T> *trav = root;
-		size_t height = 1;
-		size_t tmpheight;
-		Stack<size_t> tmp;
-		bool xmark = true;
-		while(trav != nullptr && xmark)
-		{
-			if(trav->rchild != nullptr)
-			{
-				s.Push(trav->rchild);
-				tmpheight = height + 1;
-				tmp.Push(tmpheight);
-			}
-			if(trav->lchild != nullptr)
-			{
-				trav = trav->lchild;
-				height++;
-			}
-			else
-			{
-				xmark = s.Pop(trav);
-
-			}
-		}
+		size_t i = Height(roo->lchild);
+		size_t j = Height(roo->rchild);
+		size_t height = i > j ? i + 1 : j + 1;
 		return height;
 	}
 }
