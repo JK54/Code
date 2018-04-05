@@ -1,4 +1,4 @@
-#include "../GenList.h"
+#include "../Include/GenList.hpp"
 using namespace std;
 int main()
 {

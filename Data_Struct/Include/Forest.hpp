@@ -8,8 +8,16 @@
 #include "LinearList_linked_list.hpp"
 
 template<typename T>
-struct TreeNode
+class Tree;
+
+template<typename T>
+class Forest;
+
+template<typename T>
+class TreeNode
 {
+	friend class Tree<T>;
+
 		T Data(){return data;}
 		T data;
 		TreeNode<T> *firstchild,*nextbrother;
@@ -20,7 +28,8 @@ struct TreeNode
 template<typename T>
 class Tree
 {
-	friend	void Traverse_RF(TreeNode<T> *roo);
+	friend class Forest<T>;
+	friend	void Traverse_RootFirst(TreeNode<T> *roo);
 	public:
 		Tree(){root = new TreeNode<T>;}
 		~Tree(){if(!IsEmpty())Destory();}
@@ -35,7 +44,7 @@ class Tree
 		void Destory(){destroy(root);}//will be called by Forest class function.
 		bool IsEmpty(){if(root != nullptr)return true;else return false;}
 		bool Insert(T x);
-
+	private:
 		TreeNode<T> *root;
 		Tree<T> *next;
 		static T isnextbrother;
@@ -109,7 +118,7 @@ void Tree<T>::CreateTree(TreeNode<T> *roo,std::istream &is)
 	}
 }
 template<typename T>
-void Traverse_RF(TreeNode<T> *roo)
+void Traverse_RootFirst(TreeNode<T> *roo)
 {
 	if(roo == nullptr)
 	{
@@ -122,7 +131,7 @@ void Traverse_RF(TreeNode<T> *roo)
 		if(p->firstchild != nullptr)
 		{
 			std::cout<<" ( ";
-			Traverse_RF(p->firstchild);
+			Traverse_RootFirst(p->firstchild);
 			std::cout<<" ) ";
 		}
 		p = p->nextbrother;
@@ -195,7 +204,7 @@ void Forest<T>::BFS()
 	TreeNode<T> *p = *head_link.begin();
 	while (p != nullptr)
 	{
-		Traverse_RF(p);
+		Traverse_RootFirst(p);
 		std::cout<<std::endl;
 		p++;
 	}

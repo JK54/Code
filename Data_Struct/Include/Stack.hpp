@@ -4,15 +4,17 @@
 #include "sys_comm.h"
 
 template<typename T>
+class Stack;
+
+template<typename T>
 class StackNode
 {
-	public:
-		T data;
-		StackNode<T> *next;
-
-		StackNode():next(nullptr){}
-		StackNode(T x):data(x),next(nullptr){}
-		StackNode(StackNode<T> &p){data = p.data;next = p.next;}
+	friend class Stack<T>;
+	T data;
+	StackNode<T> *next;
+	StackNode():next(nullptr){}
+	StackNode(T x):data(x),next(nullptr){}
+	StackNode(StackNode<T> &p){data = p.data;next = p.next;}
 };
 
 template<typename T>

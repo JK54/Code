@@ -4,52 +4,70 @@
 #include "sys_comm.h"
 
 template<typename T>
+class GenListNode;
+
+template<typename T>
 class GenList;
+template<typename T>
+void Createlist(GenListNode<T>*,std::istream &);
+template<typename T>
+void Remove(GenListNode<T>*,T);
+template<typename T>
+bool Equal(GenListNode<T>*,GenListNode<T>*);
+template<typename T>
+GenListNode<T> *Next(const GenListNode<T>&);
+template<typename T>
+void Traverse(GenListNode<T> *ls);
 
 template<typename T>
 class GenListNode
 {
-	public:
-		GenListNode():utype(0),tlink(nullptr){info.ref = 0;info.value = 0;info.hlink = nullptr;}
-		GenListNode(const GenListNode<T> &p){utype = p.utype;tlink = p.tlink;info = p.info;}
-		GenListNode<T>& operator=(const GenListNode<T> &p){utype = p.utype;tlink = p.tlink;info = p.info;}
-		
-		size_t utype;//utype = 0,头节点;1,数据节点;2,存放指向子表的指针
-		GenListNode<T> *tlink;
-		struct
-		{
-			int ref;
-			T value;
-			GenListNode<T> *hlink;
-		}info;
-		
+	friend class GenList<T>;
+	friend void Createlist<T>(GenListNode<T> *ls,std::istream &is);
+	friend void Remove<T>(GenListNode<T> *ls,T x);
+	friend bool Equal<T>(GenListNode<T> *l,GenListNode<T> *r);
+	friend GenListNode<T> *Next(const GenListNode<T> &elem);
+	friend void Traverse<T>(GenListNode<T> *ls);
+GenListNode():utype(0),tlink(nullptr){info.ref = 0;info.value = 0;info.hlink = nullptr;}
+	GenListNode(const GenListNode<T> &p){utype = p.utype;tlink = p.tlink;info = p.info;}
+	GenListNode<T>& operator=(const GenListNode<T> &p){utype = p.utype;tlink = p.tlink;info = p.info;}
+
+	size_t utype;//utype = 0,头节点;1,数据节点;2,存放指向子表的指针
+	GenListNode<T> *tlink;
+	struct
+	{
+		int ref;
+		T value;
+		GenListNode<T> *hlink;
+	}info;
+
 };
 
 template<typename T>
 class GenList
 {
-	friend void Createlist(GenListNode<T> *ls,std::istream &is);
-	friend void Remove(GenListNode<T> *ls,T x);
-	friend bool Equal(GenListNode<T> *l,GenListNode<T> *r);
-	friend GenListNode<T> *Next(const GenListNode<T> &elem);
-	friend void Traverse(GenListNode<T> *ls);
+	friend void Createlist<T>(GenListNode<T> *ls,std::istream &is);
+	friend void Remove<T>(GenListNode<T> *ls,T x);
+	friend bool Equal<T>(GenListNode<T> *l,GenListNode<T> *r);
+	friend GenListNode<T> *Next<T>(const GenListNode<T> &elem);
+	friend void Traverse<T>(GenListNode<T> *ls);
 	public:
-		GenList();
-		~GenList();
-		GenListNode<T> *First();
-		bool Copy(const GenList<T> &s);//复制广义表
-		size_t Length();
-		size_t Depth();
+	GenList();
+	~GenList();
+	GenListNode<T> *First();
+	bool Copy(const GenList<T> &s);//复制广义表
+	size_t Length();
+	size_t Depth();
 	private:
-		GenListNode<T> *first;
-		GenListNode<T>* Copy(GenListNode<T> &ls);
-	 	void Remove(GenListNode<T> *ls);//被析构函数调用
-		size_t length(GenListNode<T> *ls);
-		size_t depth(GenListNode<T> *ls);
+	GenListNode<T> *first;
+	GenListNode<T>* Copy(GenListNode<T> &ls);
+	void Remove(GenListNode<T> *ls);//被析构函数调用
+	size_t length(GenListNode<T> *ls);
+	size_t depth(GenListNode<T> *ls);
 };
 
 
-template<typename T>
+	template<typename T>
 GenList<T>::GenList()
 {
 	first = new GenListNode<T>();
@@ -57,7 +75,7 @@ GenList<T>::GenList()
 		std::cout<<"init failed!"<<std::endl;
 }
 
-template<typename T>
+	template<typename T>
 void Remove(GenListNode<T> *ls,T x)
 {
 	if(ls->tlink != nullptr)
@@ -79,11 +97,11 @@ void Remove(GenListNode<T> *ls,T x)
 	}
 }
 
-template<typename T>
+	template<typename T>
 void GenList<T>::Remove(GenListNode<T> *ls)
 {
 	ls->info.ref--;
-	if(ls->info.ref <= 0)	
+	if(ls->info.ref <= 0)
 	{
 		GenListNode<T> *p;
 		while(ls->tlink != nullptr)
@@ -102,13 +120,13 @@ void GenList<T>::Remove(GenListNode<T> *ls)
 	}
 }
 
-template<typename T>
+	template<typename T>
 GenList<T>::~GenList()
 {
 	Remove(first);
 }
 
-template<typename T>
+	template<typename T>
 bool Equal(GenListNode<T> *l,GenListNode<T> *r)
 {
 	bool recur;
@@ -130,7 +148,7 @@ bool Equal(GenListNode<T> *l,GenListNode<T> *r)
 	return false;
 }
 
-template<typename T>
+	template<typename T>
 GenListNode<T> *Next(const GenListNode<T> &elem)
 {
 	if(elem->tlink == nullptr)
@@ -139,7 +157,7 @@ GenListNode<T> *Next(const GenListNode<T> &elem)
 		return elem->tlink;
 }
 
-template<typename T>
+	template<typename T>
 GenListNode<T>* GenList<T>::First()
 {
 	if(first == nullptr)
@@ -148,7 +166,7 @@ GenListNode<T>* GenList<T>::First()
 		return first;
 }
 
-template<typename T>
+	template<typename T>
 GenListNode<T>* GenList<T>::Copy( GenListNode<T> &ls)
 {
 	GenListNode<T> *p = nullptr;
@@ -173,7 +191,7 @@ GenListNode<T>* GenList<T>::Copy( GenListNode<T> &ls)
 	return p;
 }
 
-template<typename T>
+	template<typename T>
 bool GenList<T>::Copy(const GenList<T> &s)
 {
 	first = Copy(s.first);
@@ -185,7 +203,7 @@ bool GenList<T>::Copy(const GenList<T> &s)
 		return false;
 	}
 }
-template<typename T>
+	template<typename T>
 void Createlist(GenListNode<T> *ls,std::istream &is)
 {
 	size_t utype;
@@ -225,7 +243,7 @@ void Createlist(GenListNode<T> *ls,std::istream &is)
 	}
 }
 
-template<typename T>
+	template<typename T>
 void Traverse(GenListNode<T> *ls)
 {
 	if(ls->tlink == nullptr)
@@ -249,7 +267,7 @@ void Traverse(GenListNode<T> *ls)
 	}
 }
 
-template<typename T>
+	template<typename T>
 size_t GenList<T>::depth(GenListNode<T> *ls)
 {
 	size_t m = 0,n;
@@ -273,7 +291,7 @@ size_t GenList<T>::depth(GenListNode<T> *ls)
 
 }
 
-template<typename T>
+	template<typename T>
 size_t GenList<T>::Depth()
 {
 	return depth(first);
@@ -309,7 +327,7 @@ size_t GenList<T>::length(GenListNode<T> *ls)
 	return m;
 }
 
-template<typename T>
+	template<typename T>
 size_t GenList<T>::Length()
 {
 	return length(first);

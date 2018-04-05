@@ -4,21 +4,26 @@
 #include "sys_comm.h"
 
 template<typename T>
+class Queue;
+
+template<typename T>
 class QueueNode
 {
+	friend class Queue<T>;
 	public:
-		T data;
-		QueueNode<T> *next;
-
-		QueueNode():next(nullptr){}
-		QueueNode(T x):data(x),next(nullptr){}
-		QueueNode(QueueNode<T> &p){data = p.data;next = p.next;}
+	QueueNode<T> *Next(){if(next != nullptr) return next;}
+	T Data(){if(this != nullptr)return data;}
+	private:
+	T data;
+	QueueNode<T> *next;
+	QueueNode():next(nullptr){}
+	QueueNode(T x):data(x),next(nullptr){}
+	QueueNode(QueueNode<T> &p){data = p.data;next = p.next;}
 };
 
 template<typename T>
 class Queue
 {
-	friend bool Enqueue_Priority(Queue<T> &queue,T &x);
 	public:
 		Queue();
 		Queue(T x);
@@ -27,10 +32,14 @@ class Queue
 		size_t Size(){return size;}
 		bool Dequeue(T &p);
 		bool Enqueue(T &x);
+		QueueNode<T> *First(){return first->next;}
 		void Traverse();
 		bool IsEmpty(){if(first->next == nullptr)return true;else return false;}
 		bool Copy(Queue<T> &p);
-		
+		bool Enqueue_Priority(T &x);
+		bool Enqueue_Priority_PM(T &x);
+	
+	private:
 		QueueNode<T> *first;
 		QueueNode<T> *last;
 		size_t size;
@@ -88,9 +97,9 @@ bool Queue<T>::Enqueue(T &x)
 	}
 }
 template<typename T>
-bool Enqueue_Priority(Queue<T> &queue,T &x)
+bool Queue<T>::Enqueue_Priority(T &x)
 {
-	if(queue.first == nullptr)
+	if(first == nullptr)
 	{
 		std::cout<<"no Queue"<<std::endl;
 		return false;
@@ -98,8 +107,45 @@ bool Enqueue_Priority(Queue<T> &queue,T &x)
 	else
 	{
 		QueueNode<T> *tmp = new QueueNode<T>(x);
-		QueueNode<T> *f = queue.first->next;
-		QueueNode<T> *fpre = queue.first;
+		QueueNode<T> *f = first->next;
+		QueueNode<T> *fpre = first;
+			while(f != nullptr)
+			{
+				if(f->data < x)
+				{
+					fpre = f;	
+					f = f->next;
+				}
+				else if(f->data == x)
+					return false;
+				else
+					break;
+			}
+		if(f == nullptr)
+			fpre->next = tmp;
+		else
+		{
+			fpre->next = tmp;
+			tmp->next = f;
+		}
+		++size;
+		return true;
+	}
+}
+
+template<typename T>
+bool Queue<T>::Enqueue_Priority_PM(T &x)
+{
+	if(first == nullptr)
+	{
+		std::cout<<"no Queue"<<std::endl;
+		return false;
+	}
+	else
+	{
+		QueueNode<T> *tmp = new QueueNode<T>(x);
+		QueueNode<T> *f = first->next;
+		QueueNode<T> *fpre = first;
 		if(std::string(typeid(x).name(),0,10) == "P8HeapNode")
 		{	
 			while(f != nullptr)
@@ -138,11 +184,10 @@ bool Enqueue_Priority(Queue<T> &queue,T &x)
 			fpre->next = tmp;
 			tmp->next = f;
 		}
-		++queue.size;
+		++size;
 		return true;
 	}
 }
-
 template<typename T>
 bool Queue<T>::Dequeue(T &p)
 {

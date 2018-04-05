@@ -9,7 +9,7 @@ int main()
 	bbb.SetMark(0);
 	BinTreeNode<int> *b = bbb.Root();
 	ifstream is("binarytree.txt");
-	CreateTreePreOrder(b,is);
+	bbb.CreateTreePreOrder(b,is);
 	BinTree<int> aaa;
 	aaa.TraversePreOrder(b,1);
 	std::cout<<endl;

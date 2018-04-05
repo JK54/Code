@@ -1,4 +1,4 @@
-#include "../MinHeap.h"
+#include "../Include/MinHeap.hpp"
 using namespace std;
 
 int main()
@@ -8,12 +8,13 @@ int main()
 	Queue<int> q;
 	int i;
 	while(is1>>i)
-		Enqueue_Priority(q,i);
+		q.Enqueue(i);
 	MinHeap<int> hp(q);
 	hp.TraverseLevelOrder();
 	while(is2>>i)
 		hp.Insert(i);
 	hp.TraverseLevelOrder();
 	hp.TraversePostOrder();
-	getchar();
+	hp.siftDown();
+	hp.TraverseLevelOrder();
 }

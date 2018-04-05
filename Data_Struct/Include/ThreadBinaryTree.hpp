@@ -14,13 +14,12 @@ template <typename T>
 class ThreadNode
 {
 	friend class ThreadTree<T>;
-	private:
-		T data;
-		int ltag,rtag;
-		ThreadNode<T> *lchild,*rchild;
-		ThreadNode():ltag(0),rtag(0),lchild(nullptr),rchild(nullptr){}
-		ThreadNode(T item):data(item),ltag(0),rtag(0),lchild(nullptr),rchild(nullptr){}
-		ThreadNode(const BinTreeNode<T> *Bn);
+	T data;
+	int ltag,rtag;
+	ThreadNode<T> *lchild,*rchild;
+	ThreadNode():ltag(0),rtag(0),lchild(nullptr),rchild(nullptr){}
+	ThreadNode(T item):data(item),ltag(0),rtag(0),lchild(nullptr),rchild(nullptr){}
+	ThreadNode(const BinTreeNode<T> *Bn);
 };
 
 template<typename T>

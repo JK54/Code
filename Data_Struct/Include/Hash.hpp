@@ -6,16 +6,19 @@
 #define DEFAULT_DIV 11
 #define DEFAULT_KEYINC 7
 #define DEFAULT_SIZE 12
+
+template<typename T>
+class HashTable;
+
 template<typename T>
 class ChainNode
 {
-	public:
-		T data;
-		int keyno;
-		ChainNode<T> *next;
-		ChainNode(T value = 0):data(value),keyno(key),next(nullptr){key += DEFAULT_KEYINC;}
-	private:
-		static int key;
+	friend class HashTable<T>;
+	T data;
+	int keyno;
+	ChainNode<T> *next;
+	ChainNode(T value = 0):data(value),keyno(key),next(nullptr){key += DEFAULT_KEYINC;}
+	static int key;
 };
 
 template<typename T>

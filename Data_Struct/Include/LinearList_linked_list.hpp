@@ -8,13 +8,11 @@ class LinkedList;
 template<typename T>
 class LNode
 {
-	public:
-		friend class LinkedList<T>;
-		LNode():data(0),next(nullptr){}
-		LNode(T x):data(x),next(nullptr){}
-		
-		T data;
-		LNode<T> *next;
+	friend class LinkedList<T>;
+	LNode():data(0),next(nullptr){}
+	LNode(T x):data(x),next(nullptr){}
+	T data;
+	LNode<T> *next;
 };
 
 template<typename T>
