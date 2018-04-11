@@ -11,12 +11,13 @@ int main()
 	ifstream is("binarytree.txt");
 	bbb.CreateTreePreOrder(b,is);
 	BinTree<int> aaa;
-	aaa.TraversePreOrder(b,1);
+	aaa.TraversePreOrder(b,0);
 	std::cout<<endl;
 	aaa.TraverseInOrder(b);
 	std::cout<<endl;
-	std::cout<<aaa.Height(bbb.Root())<<endl;
 	aaa.TraversePostOrder(b);
+	std::cout<<endl;
+	aaa.TraverseLevelOrder(b);
 	std::cout<<endl;
 	int preo[] = {1,2,4,8,5,3,6,7};
 	int ino[] = {8,4,2,5,1,6,3,7};

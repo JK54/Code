@@ -29,11 +29,9 @@ std::set<BinTreeNode<T>*> CreateTreeByInPostOrder_Duplicated(T*,T*,int);
 template<typename T>
 class BinTreeNode
 {
-	friend class BinTree<T>;
-	friend class ThreadNode<T>;
-	friend class ThreadTree<T>;
-	friend BinTreeNode<T>* CreateTreeByPreInOrder<T>(T *preo,T *ino,int n);
-	friend BinTreeNode<T>* CreateTreeByInPostOrder<T>(T *ino,T *posto,int n);
+	// friend BinTreeNode<T>* CreateTreeByPreInOrder<T>(T *preo,T *ino,int n);
+	// friend BinTreeNode<T>* CreateTreeByInPostOrder<T>(T *ino,T *posto,int n);
+	public:
 	T data;
 	BinTreeNode<T> *lchild;
 	BinTreeNode<T> *rchild;
@@ -53,10 +51,9 @@ class BinTree
 	friend std::set<BinTreeNode<T>*> CreateTreeByInPostOrder_Duplicated<T>(T *ino,T *posto,int n);//no definition.
 	public:
 	static T endm;
-
 	BinTree();
 	BinTree(T x);
-	~BinTree();
+	virtual ~BinTree();
 	BinTree(const BinTree<T> &s);
 
 	bool operator==(const BinTree<T> &s);
@@ -86,7 +83,7 @@ class BinTree
 	BinTreeNode<T>* Copy(BinTreeNode<T> *orign);
 	bool Equal(BinTreeNode<T> *l,BinTreeNode<T> *r);
 
-	private:
+	protected:
 	BinTreeNode<T> *root;
 	size_t *use;//the binary tree use count,control the distructor.
 	void destroy(BinTreeNode<T> *ro);
@@ -373,7 +370,7 @@ void BinTree<T>::TraverseLevelOrder(BinTreeNode<T> *roo)
 {
 	Queue<BinTreeNode<T>*> q;
 	BinTreeNode<T> *trav;
-	if(root == nullptr)
+	if(roo == nullptr)
 	{
 		std::cerr<<"empty tree,can not traverse"<<std::endl;
 		throw;
