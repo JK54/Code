@@ -11,14 +11,14 @@ class QueueNode
 {
 	friend class Queue<T>;
 	public:
+	QueueNode():next(nullptr){}
+	QueueNode(T x):data(x),next(nullptr){}
+	QueueNode(QueueNode<T> &p){data = p.data;next = p.next;}
 	QueueNode<T> *Next(){if(next != nullptr) return next;else return nullptr;}
 	T Data(){return data;}
 	private:
 	T data;
 	QueueNode<T> *next;
-	QueueNode():next(nullptr){}
-	QueueNode(T x):data(x),next(nullptr){}
-	QueueNode(QueueNode<T> &p){data = p.data;next = p.next;}
 };
 
 template<typename T>
@@ -28,7 +28,7 @@ class Queue
 		Queue();
 		Queue(T x);
 		~Queue();
-		
+
 		size_t Size(){return size;}
 		bool Dequeue(T &p);
 		bool Enqueue(T &x);
@@ -38,7 +38,7 @@ class Queue
 		bool Copy(Queue<T> &p);
 		bool Enqueue_Priority(T &x);
 		bool Enqueue_Priority_PM(T &x);
-	
+
 	private:
 		QueueNode<T> *first;
 		QueueNode<T> *last;
@@ -46,7 +46,7 @@ class Queue
 };
 
 
-template<typename T>
+	template<typename T>
 Queue<T>::Queue()
 {
 	first = last = new QueueNode<T>;
@@ -54,17 +54,17 @@ Queue<T>::Queue()
 	assert(first);
 }
 
-template<typename T>
+	template<typename T>
 Queue<T>::Queue(T x)
 {
-	first = new QueueNode<T>(x);
-	last = new QueueNode<T>;
+	first = new QueueNode<T>;
+	last = new QueueNode<T>(x);
 	first->next = last;
 	size = 1;
 	assert(first);
 }
 
-template<typename T>
+	template<typename T>
 Queue<T>::~Queue()
 {
 	QueueNode<T> *tmp;
@@ -78,7 +78,7 @@ Queue<T>::~Queue()
 	// std::cout<<"Queue destroyed.."<<std::endl;
 }
 
-template<typename T>
+	template<typename T>
 bool Queue<T>::Enqueue(T &x)
 {
 	if(first == nullptr)
@@ -96,7 +96,7 @@ bool Queue<T>::Enqueue(T &x)
 		return true;
 	}
 }
-template<typename T>
+	template<typename T>
 bool Queue<T>::Enqueue_Priority(T &x)
 {
 	if(first == nullptr)
@@ -109,18 +109,18 @@ bool Queue<T>::Enqueue_Priority(T &x)
 		QueueNode<T> *tmp = new QueueNode<T>(x);
 		QueueNode<T> *f = first->next;
 		QueueNode<T> *fpre = first;
-			while(f != nullptr)
+		while(f != nullptr)
+		{
+			if(f->data < x)
 			{
-				if(f->data < x)
-				{
-					fpre = f;	
-					f = f->next;
-				}
-				else if(f->data == x)
-					return false;
-				else
-					break;
+				fpre = f;
+				f = f->next;
 			}
+			else if(f->data == x)
+				return false;
+			else
+				break;
+		}
 		if(f == nullptr)
 			fpre->next = tmp;
 		else
@@ -133,7 +133,7 @@ bool Queue<T>::Enqueue_Priority(T &x)
 	}
 }
 
-template<typename T>
+	template<typename T>
 bool Queue<T>::Enqueue_Priority_PM(T &x)
 {
 	if(first == nullptr)
@@ -147,12 +147,12 @@ bool Queue<T>::Enqueue_Priority_PM(T &x)
 		QueueNode<T> *f = first->next;
 		QueueNode<T> *fpre = first;
 		if(std::string(typeid(x).name(),0,10) == "P8HeapNode")
-		{	
+		{
 			while(f != nullptr)
 			{
 				if(f->data->operator<(x))
 				{
-					fpre = f;	
+					fpre = f;
 					f = f->next;
 				}
 				else if(f->data->operator==(x))
@@ -167,7 +167,7 @@ bool Queue<T>::Enqueue_Priority_PM(T &x)
 			{
 				if(f->data < x)
 				{
-					fpre = f;	
+					fpre = f;
 					f = f->next;
 				}
 				else if(f->data == x)
@@ -175,7 +175,7 @@ bool Queue<T>::Enqueue_Priority_PM(T &x)
 				else
 					break;
 			}
-	
+
 		}
 		if(f == nullptr)
 			fpre->next = tmp;
@@ -188,20 +188,22 @@ bool Queue<T>::Enqueue_Priority_PM(T &x)
 		return true;
 	}
 }
-template<typename T>
+	template<typename T>
 bool Queue<T>::Dequeue(T &p)
 {
 	if(first->next == nullptr)
 		return false;
 	p = first->next->data;
-	QueueNode<T> *tmp = first->next->next;		
+	QueueNode<T> *tmp = first->next->next;
+	if(first->next == last)//when the queue have only 1 element,the last pointer must change to first.
+		last = first;
 	delete first->next;
 	first->next = tmp;
 	--size;
 	return true;
 }
 
-template<typename T>
+	template<typename T>
 void Queue<T>::Traverse()
 {
 	if(first->next == nullptr)
@@ -214,7 +216,7 @@ void Queue<T>::Traverse()
 	std::cout<<std::endl;
 }
 
-template<typename T>
+	template<typename T>
 bool Queue<T>::Copy(Queue<T> &p)
 {
 	if(!p.IsEmpty())
@@ -236,7 +238,7 @@ bool Queue<T>::Copy(Queue<T> &p)
 		}
 		return true;
 	}
-	else 
+	else
 		return false;
 }
 #endif

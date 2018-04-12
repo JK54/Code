@@ -29,14 +29,13 @@ std::set<BinTreeNode<T>*> CreateTreeByInPostOrder_Duplicated(T*,T*,int);
 template<typename T>
 class BinTreeNode
 {
-	// friend BinTreeNode<T>* CreateTreeByPreInOrder<T>(T *preo,T *ino,int n);
-	// friend BinTreeNode<T>* CreateTreeByInPostOrder<T>(T *ino,T *posto,int n);
 	public:
 	T data;
 	BinTreeNode<T> *lchild;
 	BinTreeNode<T> *rchild;
 	BinTreeNode():lchild(nullptr),rchild(nullptr){}
 	BinTreeNode(T x):data(x),lchild(nullptr),rchild(nullptr){}
+	bool isleaf(BinTreeNode<T> *p){if(p->lchild == nullptr && p->rchild == nullptr) return true;else return false;}
 };
 
 template<typename T>
@@ -129,6 +128,7 @@ BinTree<T>::~BinTree()
 		// std::cout<<"no longer used,destroy it"<<std::endl;
 		destroy(root);
 		delete use;
+		std::cout<<"BinTree destroyed.."<<std::endl;
 	}
 }
 
@@ -210,6 +210,7 @@ void BinTree<T>::TraversePreOrder(BinTreeNode<T> *ro,bool ingen)
 		{
 			std::cout<<ro->data<<" ( ";
 			TraversePreOrder(ro->lchild,ingen);
+			std::cout<<",";
 			TraversePreOrder(ro->rchild,ingen);
 			std::cout<<" ) ";
 			return;
