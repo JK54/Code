@@ -15,7 +15,7 @@ class BSTree:public BinTree<T>
 		virtual ~BSTree() = default;
 
 		virtual void CreateBST(std::istream &is);
-		
+
 		virtual bool Insert(const T &vle);
 		virtual bool Search(const T &vle);
 		bool Remove_NR(const T &vle);
@@ -45,27 +45,28 @@ class AVLTree:public BSTree<T>//almost useless heritage.
 		AVLTree(T x):root(new AVLTreeNode<T>(x)){}
 		~AVLTree() = default;
 
+		//the following member functions are copies of binarytree or binarysearchtree(only differ in action object type).Although AVLTree is the son of BST,but they operate in different node type,BinTreeNode and AVLTreeNode,I have thought of making AVLTreeNode the son of BinTreeNode,but it causes an unexpected problem:u can not point to base class with derived class type pointer.
 		AVLTreeNode<T>* Root(){return root;}
 		bool Remove(const T &vle,AVLTreeNode<T> *&roo);
 		virtual bool Insert(const T &vle) override;
 		virtual bool Search(const T &vle) override;
-
 		void TraversePreOrder(AVLTreeNode<T> *ro,bool ingen);
 		void TraverseLevelOrder(AVLTreeNode<T> *roo);
+		//
 	private:
 		AVLTreeNode<T> *root;
 
-		void Balance();
+		void balance();
 		void rotatel(AVLTreeNode<T> *roo);
 		void rotater(AVLTreeNode<T> *roo);
 		void rotatelr(AVLTreeNode<T> *roo);
 		void rotaterl(AVLTreeNode<T> *roo);
-		size_t Height(AVLTreeNode<T> *roo);
+		size_t height(AVLTreeNode<T> *roo);
 };
 
 //--------------------------------------BSTree------------------------------------------
 
-template<typename T>
+	template<typename T>
 void BSTree<T>::CreateBST(std::istream &is)
 {
 	T data;
@@ -243,7 +244,7 @@ bool BSTree<T>::Remove(const T &vle,BinTreeNode<T> *&roo)
 }
 
 //-----------------------------AVLTree---------------------------------------------------
-template<typename T>
+	template<typename T>
 bool AVLTree<T>::Insert(const T &vle)
 {
 	AVLTreeNode<T> *tmp = new AVLTreeNode<T>(vle);
@@ -277,7 +278,7 @@ bool AVLTree<T>::Insert(const T &vle)
 	return true;
 }
 
-template<typename T>
+	template<typename T>
 bool AVLTree<T>::Search(const T &vle)
 {
 	if(root == nullptr)
@@ -366,7 +367,7 @@ void AVLTree<T>::TraversePreOrder(AVLTreeNode<T> *ro,bool ingen)
 
 	}
 }
-template<typename T>
+	template<typename T>
 void AVLTree<T>::TraverseLevelOrder(AVLTreeNode<T> *roo)
 {
 	Queue<AVLTreeNode<T>*> q;
@@ -389,8 +390,8 @@ void AVLTree<T>::TraverseLevelOrder(AVLTreeNode<T> *roo)
 	}
 }
 
-template<typename T>
-size_t AVLTree<T>::Height(AVLTreeNode<T> *roo)
+	template<typename T>
+size_t AVLTree<T>::height(AVLTreeNode<T> *roo)
 {
 	if(roo == nullptr)
 		return 0;
@@ -402,5 +403,10 @@ size_t AVLTree<T>::Height(AVLTreeNode<T> *roo)
 		return height;
 	}
 }
-
+//-----------------------------exclusive members of AVLTree-------------------
+	template<typename T>
+void AVLTree<T>::rotatel(AVLTreeNode<T> *roo)
+{
+	
+}
 #endif
