@@ -42,7 +42,6 @@ class Tree
 {
 	friend class Forest<T>;
 	friend void Traverse_RootFirst(TreeNode<T> *roo);
-	friend void Traverse_RootLast(TreeNode<T> *roo);
 	public:
 		Tree():root(new TreeNode<T>){}
 		Tree(T vle):root(new TreeNode<T>(vle)){}
@@ -51,7 +50,7 @@ class Tree
 		void CreateTree(TreeNode<T> *roo,std::istream &is);
 		bool Search(TreeNode<T> *roo,const T &x);
 		bool Insert(const T &vle);
-		void SetFlag(const T &x,const T &y){isnextbrother = x;endm = y;}
+		static void SetFlag(const T &x,const T &y){isnextbrother = x;endm = y;}
 		TreeNode<T>* Root(){return root;}
 		TreeNode<T>* NextBrother(TreeNode<T> *p){if(p->nextbrother != nullptr) return p->nextbrother;else return nullptr;}
 		void Destory(){destroy(root);}//will be called by Forest class function.
@@ -70,15 +69,13 @@ class Forest
 {
 	public:
 	  void CreateForest(std::istream &is);
-	  //bool RemoveTree(Tree<T> *);
 	  BinTreeNode<T> *Tran2Bin();
 	  Tree<T> *Build4Bin(BinTreeNode<T> *roo);
 	  void DFS();
 	  void BFS();
 
 	private:
-
-
+	  Queue<TreeNode<T>*> qroot;
 };
 
 
@@ -111,8 +108,10 @@ void Tree<T>::CreateTree(TreeNode<T> *roo,std::istream &is)
 		TreeNode<T> *tmp = new TreeNode<T>(vle);
 		roo->firstchild = tmp;
 		Stack<TreeNode<T>*>s;
-		while(tmp != roo && is>>vle)
+		s.Push(tmp);
+		while(!s.IsEmpty())
 		{
+			is>>vle;
 			if(vle == Tree<T>::isnextbrother)
 			{
 				is>>vle;
@@ -189,35 +188,29 @@ void Traverse_RootFirst(TreeNode<T> *roo)
 	}
 }
 
-template<typename T>
-void Traverse_RootLast(TreeNode<T> *roo)
-{
-	Stack<TreeNode<T>*>s;
-	TreeNode<T> *tmp = roo;
-	TreeNode<T> *pre = nullptr;
-	while(tmp != nullptr || !s.IsEmpty())
-	{
-		while(tmp->firstchild != nullptr && pre != tmp->firstchild)
-		{
-			s.Push(tmp);
-			tmp = tmp->firstchild;
-		}
-		std::cout<<tmp->data<<" ";
-		while(tmp->nextbrother != nullptr && (tmp->firstchild == nullptr || tmp->firstchild == pre))
-		{
-			tmp = tmp->nextbrother;
-			std::cout<<tmp->data<<std::endl;
-		}
-		pre = tmp;
-	}
-}
+
 template<typename T>
 void Forest<T>::CreateForest(std::istream &is)
 {
+	Tree<T>::SetFlag(32767,0);
+	while(is)
+	{
+		Tree<T> *p = new Tree<T>(0);
+		qroot.Enqueue(p->root);
+		p->CreateTree(p->root,is);
+	}
 }
 
 template<typename T>
 void Forest<T>::BFS()
 {
+	Queue<TreeNode<T>*> tmpq;
+	TreeNode<T> *roo;
+	tmpq.Copy(qroot);
+	while(tmpq.Dequeue(roo))
+	{
+		Traverse_RootFirst(roo);
+		std::cout<<std::endl;
+	}
 }
 #endif
