@@ -14,7 +14,7 @@ int main()
 	bbb.Copy(aaa);
 	aaa.Traverse();	
 	bbb.Traverse();
-	cout<<aaa.IsEmpty()<<endl;
-	cout<<aaa.Size()<<endl;
-	getchar();
+	cout<<"DIDID"<<endl;
+	aaa.Clear();
+	aaa.Traverse();
 }

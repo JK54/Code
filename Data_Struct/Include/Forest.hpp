@@ -47,6 +47,7 @@ class Tree
 	friend class Forest<T>;
 	friend void Traverse_RootFirst(TreeNode<T> *roo);
 	friend BinTreeNode<T>* Tran2Bint(TreeNode<T> *roo);
+	friend TreeNode<T>* Tran4Bint(BinTreeNode<T> *roo);
 	public:
 	Tree():root(new TreeNode<T>){}
 	Tree(T vle):root(new TreeNode<T>(vle)){}
@@ -80,7 +81,7 @@ class Forest
 		void CreateForest(std::istream &is);
 		BinTreeNode<T>* Tran2Bin();
 		BinTreeNode<T> *Root() { return root; }
-		Tree<T>* Build4Bin(BinTreeNode<T> *roo);
+		void Build4Bin(BinTreeNode<T> *roo);
 		void DFS();
 		void BFS();
 		bool RemoveTree(const T &vle);
@@ -237,13 +238,13 @@ BinTreeNode<T>* Tran2Bint(TreeNode<T> *roo)
 }
 
 	template<typename T>
-TreeNode<T>* Tree<T>::Tran4Bin(BinTreeNode<T> *roo)
+TreeNode<T>* Tran4Bint(BinTreeNode<T> *roo)
 {
 	if(roo == nullptr)
 		return nullptr;
 	TreeNode<T> *tmp = new TreeNode<T>(roo->data);
-	tmp->firstchild = Tran4Bin(roo->lchild);
-	tmp->nextbrother = Tran4Bin(roo->rchild);
+	tmp->firstchild = Tran4Bint(roo->lchild);
+	tmp->nextbrother = Tran4Bint(roo->rchild);
 	return tmp;
 }
 
@@ -395,4 +396,24 @@ BinTreeNode<T>* Forest<T>::Tran2Bin()
 	return roo;
 }
 
+template<typename T>
+void Forest<T>::Build4Bin(BinTreeNode<T> *roo)
+{
+	if(roo == nullptr)
+		return;
+	Queue<BinTreeNode<T>*> broot;
+	BinTreeNode<T>*tmpb = roo;
+	while(tmpb != nullptr)
+	{
+		broot.Enqueue(tmpb);
+		tmpb = tmpb->rchild;
+	}
+	while(!broot.IsEmpty())
+	{
+		broot.Dequeue(tmpb);
+		tmpb->rchild = nullptr;
+		TreeNode<T> *tmp = Tran4Bint(tmpb);
+		qroot.Enqueue(tmp);
+	}
+}
 #endif

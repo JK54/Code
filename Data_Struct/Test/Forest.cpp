@@ -16,11 +16,15 @@ int main()
 	BinTree<int> bbb(Tran2Bint(aaa.Root()));
 	bbb.TraversePreOrder(bbb.Root(),1);
 	cout<<endl;
-	Tree<int> ccc(aaa.Tran4Bin(bbb.Root()));
+	Tree<int> ccc(Tran4Bint(bbb.Root()));
 	Traverse_RootFirst(ccc.Root());
 	cout<<endl;
 	cout<<endl;
+//convert to bintree
 	BinTreeNode<int> *tmp = fff.Tran2Bin();
 	BinTree<int> ddd(tmp);
 	ddd.TraversePreOrder(ddd.Root(),1);
+	cout<<endl;
+	fff.Build4Bin(ddd.Root());
+	fff.DFS();
 }

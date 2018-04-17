@@ -33,6 +33,7 @@ class Queue
 		bool Dequeue(T &p);
 		bool Enqueue(T &x);
 		T First(){return first->next->data;}
+		void Clear(){T x;while(!IsEmpty())Dequeue(x);}
 		void Traverse();
 		bool IsEmpty(){if(first->next == nullptr)return true;else return false;}
 		bool Copy(Queue<T> &p);
