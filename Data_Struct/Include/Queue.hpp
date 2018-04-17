@@ -32,7 +32,7 @@ class Queue
 		size_t Size(){return size;}
 		bool Dequeue(T &p);
 		bool Enqueue(T &x);
-		QueueNode<T> *First(){return first->next;}
+		T First(){return first->next->data;}
 		void Traverse();
 		bool IsEmpty(){if(first->next == nullptr)return true;else return false;}
 		bool Copy(Queue<T> &p);
@@ -242,3 +242,4 @@ bool Queue<T>::Copy(Queue<T> &p)
 		return false;
 }
 #endif
+

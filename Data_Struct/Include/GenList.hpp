@@ -28,7 +28,7 @@ class GenListNode
 	friend bool Equal<T>(GenListNode<T> *l,GenListNode<T> *r);
 	friend GenListNode<T> *Next(const GenListNode<T> &elem);
 	friend void Traverse<T>(GenListNode<T> *ls);
-GenListNode():utype(0),tlink(nullptr){info.ref = 0;info.value = 0;info.hlink = nullptr;}
+	GenListNode():utype(0),tlink(nullptr){info.ref = 0;info.value = 0;info.hlink = nullptr;}
 	GenListNode(const GenListNode<T> &p){utype = p.utype;tlink = p.tlink;info = p.info;}
 	GenListNode<T>& operator=(const GenListNode<T> &p){utype = p.utype;tlink = p.tlink;info = p.info;}
 

@@ -12,6 +12,9 @@ template<typename T>
 class BinTree;
 
 template<typename T>
+class Forest;
+
+template<typename T>
 class ThreadNode;
 
 template<typename T>
@@ -26,16 +29,21 @@ BinTreeNode<T>* CreateTreeByPreInOrder(T*,T*,int);
 template<typename T>
 std::set<BinTreeNode<T>*> CreateTreeByInPostOrder_Duplicated(T*,T*,int);
 
+//because of many classes use the BinTreeNode class,there will be a lot of work if the members are private.
 template<typename T>
 class BinTreeNode
 {
 	public:
-	T data;
-	BinTreeNode<T> *lchild;
-	BinTreeNode<T> *rchild;
-	BinTreeNode():lchild(nullptr),rchild(nullptr){}
-	BinTreeNode(T x):data(x),lchild(nullptr),rchild(nullptr){}
-	bool isleaf(BinTreeNode<T> *p){if(p->lchild == nullptr && p->rchild == nullptr) return true;else return false;}
+		BinTreeNode():lchild(nullptr),rchild(nullptr){}
+		BinTreeNode(T x):data(x),lchild(nullptr),rchild(nullptr){}
+		BinTreeNode(BinTreeNode<T> *roo):data(roo->data),lchild(roo->lchild),rchild(roo->rchild){}
+		BinTreeNode(BinTreeNode<T> &roo):data(roo.data),lchild(roo.lchild),rchild(roo.rchild){}
+		bool isleaf(BinTreeNode<T> *p){if(p->lchild == nullptr && p->rchild == nullptr) return true;else return false;}
+		BinTreeNode<T>& operator=(const BinTreeNode<T> &p){*this = new BinTreeNode<T>;data = p.data;lchild = p.lchild;rchild = p.rchild;}
+
+		T data;
+		BinTreeNode<T> *lchild;
+		BinTreeNode<T> *rchild;
 };
 
 template<typename T>
@@ -48,10 +56,12 @@ class BinTree
 	friend BinTreeNode<T>* CreateTreeByPreInOrder<T>(T *preo,T *ino,int n);
 	friend BinTreeNode<T>* CreateTreeByInPostOrder<T>(T *ino,T *posto,int n);
 	friend std::set<BinTreeNode<T>*> CreateTreeByInPostOrder_Duplicated<T>(T *ino,T *posto,int n);//no definition.
+	friend class Forest<T>;
 	public:
 	static T endm;
 	BinTree();
 	BinTree(T x);
+	BinTree(BinTreeNode<T> *roo);
 	virtual ~BinTree();
 	BinTree(const BinTree<T> &s);
 
@@ -84,7 +94,6 @@ class BinTree
 
 	protected:
 	BinTreeNode<T> *root;
-	size_t *use;//the binary tree use count,control the distructor.
 	void destroy(BinTreeNode<T> *ro);
 };
 
@@ -96,16 +105,19 @@ T BinTree<T>::endm;
 BinTree<T>::BinTree()
 {
 	root = new BinTreeNode<T>;
-	use = new size_t(1);
 }
 
 	template<typename T>
 BinTree<T>::BinTree(T x)
 {
 	root = new BinTreeNode<T>(x);
-	use = new size_t(1);
 }
 
+template<typename T>
+BinTree<T>::BinTree(BinTreeNode<T> *roo)
+{
+	root = roo;
+}
 	template<typename T>
 void BinTree<T>::destroy(BinTreeNode<T> *root)
 {
@@ -123,13 +135,7 @@ void BinTree<T>::destroy(BinTreeNode<T> *root)
 	template<typename T>
 BinTree<T>::~BinTree()
 {
-	if(--*use == 0)
-	{
-		// std::cout<<"no longer used,destroy it"<<std::endl;
-		destroy(root);
-		delete use;
-		std::cout<<"BinTree destroyed.."<<std::endl;
-	}
+	destroy(root);
 }
 
 	template<typename T>
