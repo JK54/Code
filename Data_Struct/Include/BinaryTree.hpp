@@ -380,7 +380,7 @@ void BinTree<T>::TraverseLevelOrder(BinTreeNode<T> *roo)
 	if(roo == nullptr)
 	{
 		std::cerr<<"empty tree,can not traverse"<<std::endl;
-		throw;
+		exit(1);
 	}
 	else
 		q.Enqueue(roo);
