@@ -4,7 +4,7 @@
 #include "sys_comm.h"
 
 #define DEFAULT_DIV 11
-#define DEFAULT_KEYINC 7
+#define DEFAULT_KEYINC 1
 #define DEFAULT_SIZE 12
 
 template<typename T>
@@ -66,7 +66,7 @@ void HashTable<T>::Insert(T data)
 {
 	ChainNode<T> *p = new ChainNode<T>(data);
 	ChainNode<T> *tmp = sz[p->keyno % div];
-	ChainNode<T> *pretmp = tmp;
+	ChainNode<T> *pretmp = nullptr;
 	while(tmp != nullptr)
 	{
 		pretmp = tmp;
