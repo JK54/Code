@@ -27,6 +27,7 @@ class Stack
 
 		bool Pop(T &p);
 		bool Push(T &x);
+		bool Top(T &p);
 		bool IsEmpty(){if(top == base)return true;else return false;}
 		T Max();
 		T Min();
@@ -87,6 +88,16 @@ bool Stack<T>::Pop(T &p)
 	StackNode<T> *tmp = top->next;
 	delete top;
 	top = tmp;
+	return true;
+}
+
+template<typename T>
+bool Stack<T>::Top(T &p)
+{
+	if(IsEmpty())
+		return false;
+	p = top->data;
+	StackNode<T> *tmp = top->next;
 	return true;
 }
 

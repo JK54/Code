@@ -5,7 +5,6 @@
 #include "BinaryTree.hpp"
 #include "Stack.hpp"
 #include "Queue.hpp"
-#include "LinearList_linked_list.hpp"
 
 template<typename T>
 class TreeNode;
@@ -128,6 +127,7 @@ void Tree<T>::destroy(TreeNode<T> *roo)
 		destroy(roo->nextbrother);
 		destroy(roo->firstchild);
 		delete roo;
+		roo = nullptr;
 	}
 }
 

@@ -147,7 +147,7 @@ bool Queue<T>::Enqueue_Priority_PM(T &x)
 		QueueNode<T> *tmp = new QueueNode<T>(x);
 		QueueNode<T> *f = first->next;
 		QueueNode<T> *fpre = first;
-		if(std::string(typeid(x).name(),0,10) == "P8HeapNode")
+		if(std::string(typeid(x).name(),0,1) == "P")
 		{
 			while(f != nullptr)
 			{

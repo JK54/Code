@@ -54,6 +54,7 @@ HashTable<T>::~HashTable()
 		{
 			tmp = tmp->next;
 			delete trav;
+			trav = nullptr;
 			trav = tmp;
 		}
 	}

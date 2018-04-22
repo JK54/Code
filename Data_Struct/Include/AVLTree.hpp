@@ -1,418 +1,395 @@
-#ifndef _BST_H
-#define _BST_H
+//It is impossible to heritage from BSTree,because you can not avoid one fatal question:you can not point to base class object with a derived class pointer.For example,if AVLTree heritaged from BinTreeNode,consider the statement: AVLTreeNode = AVLTreeNode::BinTreeNode::child.it can't be avoided.while,you can also said,i can using AVLTreeNode = AVLTreeNode::child,but it is bullshit,which only uselessly occupys memory space,and costs much time to consider how to use base class and derived part carefully,and still can not solve the problem,the derived private member "bf" of AVLTreeNode will be split when using base part.
 
-#include "BinaryTree.hpp"
+#ifndef _AVLTree_H
+#define _AVLTree_H
+
+#include "sys_comm.h"
+#include "Stack.hpp"
+#include "Queue.hpp"
 
 template<typename T>
 class AVLTree;
 
 template<typename T>
-class BSTree:public BinTree<T>
-{
-	public:
-		BSTree():BinTree<T>(){}
-		BSTree(T x):BinTree<T>(x){}
-		virtual ~BSTree() = default;
-
-		void CreateBST(std::istream &is);
-
-		bool Insert(const T &vle);
-		bool Search(const T &vle);
-		bool Remove_NR(const T &vle);
-		bool Remove(const T &vle,BinTreeNode<T> *&roo);
-};
-
-template<typename T>
-class AVLTreeNode : public BinTreeNode<T>
+class AVLTreeNode
 {
 	friend class AVLTree<T>;
 	public:
-	/* AVLTreeNode():lchild(nullptr),rchild(nullptr),bf(0){} */
-	/* AVLTreeNode(T x):data(x),lchild(nullptr),rchild(nullptr),bf(0){} */
-	AVLTreeNode():BinTreeNode<T>(),bf(0){}
-	AVLTreeNode(T x):BinTreeNode<T>(x),bf(0){}
+	AVLTreeNode():lchild(nullptr),rchild(nullptr),bf(0){}
+	AVLTreeNode(T x):data(x),lchild(nullptr),rchild(nullptr),bf(0){}
 
+	T Data(){return data;}
 	private:
-	/* T data; */
-	// AVLTreeNode<T> *lchild;
-	/* AVLTreeNode<T> *rchild; */
-	int bf;//balance factor,bf = Height(rchild) - Height(lchild).it only has values of -1,0,1
+	T data;
+	int bf;//Abbreviation for "balance factor",bf = Height(rchild) - Height(lchild).it only has values of -1,0,1	
+	AVLTreeNode<T> *lchild;
+	AVLTreeNode<T> *rchild;
+
 };
 
 template<typename T>
-class AVLTree:public BSTree<T>//almost useless heritage.
+class AVLTree
 {
 	public:
-		AVLTree():root(new AVLTreeNode<T>()){}
+		AVLTree():root(nullptr){}
 		AVLTree(T x):root(new AVLTreeNode<T>(x)){}
-		~AVLTree() = default;
+		~AVLTree();
 
 		AVLTreeNode<T>* Root(){return root;}
-		
-		//the following member functions are copies of binarytree or binarysearchtree(only differ in parameter type).Although AVLTree is the son of BST,but they operate in different node type,BinTreeNode and AVLTreeNode,I have thought of making AVLTreeNode the son of BinTreeNode,but it causes an unexpected problem:u can not point to base class with derived class type pointer.ps:the base class have pointer point to the same class of itself,when derived class 
-		// bool Remove(const T &vle,AVLTreeNode<T> *&roo);
-		// virtual bool Insert(const T &vle) override;
-		// virtual bool Search(const T &vle) override;
-		// void TraversePreOrder(AVLTreeNode<T> *ro,bool ingen);
-		// void TraverseLevelOrder(AVLTreeNode<T> *roo);
-		//-----------------------------------------------------------------------
-		
-		
-		
-	private:
+		void CreateTree(std::istream &is);
+		AVLTreeNode<T>* Search(const T &vle) const;
+		bool Insert(const T &vle);
+		bool Remove(const T &vle);//need re-read it to make sure completely understanding.
+		void Traverse(AVLTreeNode<T> *roo);
+		void TraverseLevelOrder(AVLTreeNode<T> *roo);
+	  private:
 		AVLTreeNode<T> *root;
-
-		void balance();
-		void rotatel(AVLTreeNode<T> *roo);
-		void rotater(AVLTreeNode<T> *roo);
-		void rotatelr(AVLTreeNode<T> *roo);
-		void rotaterl(AVLTreeNode<T> *roo);
-		// size_t height(AVLTreeNode<T> *roo);
+		
+		void rotatel(AVLTreeNode<T> *&roo);//RR
+		void rotater(AVLTreeNode<T> *&roo);//LL
+		void rotatelr(AVLTreeNode<T> *&roo);//LR
+		void rotaterl(AVLTreeNode<T> *&roo);//RL
+		void destroy(AVLTreeNode<T> *roo);
+		size_t height(AVLTreeNode<T> *roo);
 };
 
-//--------------------------------------BSTree------------------------------------------
 
-	template<typename T>
-void BSTree<T>::CreateBST(std::istream &is)
+template<typename T>
+void AVLTree<T>::destroy(AVLTreeNode<T> *roo)
 {
-	T data;
-	while(is>>data)
-		Insert(data);
+	if(roo == nullptr)
+		return;
+	destroy(roo->lchild);
+	destroy(roo->rchild);
+	delete roo;
+}
+	
+template<typename T>
+AVLTree<T>::~AVLTree()
+{
+	destroy(root);
+}
+	
+template<typename T>
+size_t AVLTree<T>::height(AVLTreeNode<T> *roo)
+{
+	if(roo == nullptr)
+		return 0;
+	size_t hl = height(roo->lchid);
+	size_t hr = height(roo->rchild);
+	size_t ht = hl > hr? hl + 1 : hr + 1;
+	return ht;
 }
 
-	template<typename T>
-bool BSTree<T>::Insert(const T &vle)
+template<typename T>
+void AVLTree<T>::Traverse(AVLTreeNode<T> *roo)
 {
-	BinTreeNode<T> *tmp = new BinTreeNode<T>(vle);
-	BinTreeNode<T> *roo = BinTree<T>::root;
-	while(roo != nullptr)
-	{
-		if(roo->data > vle)
-		{
-			if(roo->lchild != nullptr)
-				roo = roo->lchild;
-			else
-				break;
-		}
-		else if(roo->data < vle)
-		{
-			if(roo->rchild != nullptr)
-				roo = roo->rchild;
-			else
-				break;
-		}
-		else
-		{
-			std::cerr<<"repeating element.."<<std::endl;
-			return false;
-		}
-	}
-	if(vle > roo->data)
-		roo->rchild = tmp;
-	else
-		roo->lchild = tmp;
-	return true;
-}
-
-	template<typename T>
-bool BSTree<T>::Search(const T &vle)
-{
-	if(BinTree<T>::root == nullptr)
-	{
-		std::cout<<"empty tree..."<<std::endl;
-		return false;
-	}
-	BinTreeNode<T> *tmp = BinTree<T>::root;
-	while(tmp->data != vle)
-	{
-		if(tmp->data > vle && tmp->lchild != nullptr)
-			tmp = tmp->lchild;
-		else if(tmp->data < vle && tmp->rchild != nullptr)
-			tmp = tmp->rchild;
-		else
-			return false;
-	}
-	return true;
-}
-
-	template<typename T>
-bool BSTree<T>::Remove_NR(const T &vle)
-{
-	if(Search(vle) == false)
-		return false;
-	else
-	{
-		BinTreeNode<T> *tmp = BinTree<T>::root;
-		BinTreeNode<T> *pretmp = tmp;
-		int lc;
-		while(tmp->data != vle)//vle is element of bst
-		{
-			pretmp = tmp;
-			if(tmp->data > vle)
-				tmp = tmp->lchild;
-			else if(tmp->data < vle)
-				tmp = tmp->rchild;
-			else
-				break;
-		}
-		if(pretmp->lchild == tmp)
-			lc = 0;
-		else if(pretmp->rchild == tmp)
-			lc = 1;
-		else//pretmp == tmp,imply the root is the node waited to removed.Because the root node does not input as the formal parameter.
-			lc = 2;
-		if(tmp->lchild == nullptr || tmp->rchild == nullptr)//it contains the situation:1.BST only have 1 node; 2. 2 node,lchild or rchild.
-		{
-			if(tmp->lchild == nullptr)//lchild == nullptr or both nullptr.
-			{
-				if(lc == 0)
-					pretmp->lchild = tmp->rchild;
-				else if(lc == 1)
-					pretmp->rchild = tmp->rchild;
-				else//pretmp == tmp,it means the root will be deleted,so need to change it.
-					BinTree<T>::root = tmp->rchild;
-			}
-			else
-			{
-				if(lc == 0)
-					pretmp->lchild = tmp->lchild;
-				else if( lc == 1)
-					pretmp->rchild = tmp->lchild;
-				else
-					BinTree<T>::root = tmp->lchild;
-			}
-		}
-		else if(tmp->lchild != nullptr && tmp->rchild != nullptr)
-		{
-
-			BinTreeNode<T> *tp;
-   /*          if(lc == 2)//if the node is the root. */
-				// tp = BinTree<T>::root->rchild;
-			/* else */
-			tp = tmp->rchild;
-			BinTreeNode<T> *rrc = tp;
-			BinTreeNode<T> *pretp = tp;
-			while(tp->lchild != nullptr)//seek for the first node in inorder.
-			{
-				pretp = tp;
-				tp = tp->lchild;
-			}
-			// if(tp->rchild != nullptr)//if the first node have a rchild.
-				pretp->lchild = tp->rchild;
-		   /*  else */
-				/* pretp->lchild = nullptr; */
-			if(lc == 2)
-				BinTree<T>::root = tp;
-			else if( lc == 1)
-				pretmp->rchild = tp;
-			else
-				pretmp->lchild = tp;
-			tp->rchild = rrc;
-			tp->lchild = tmp->lchild;
-			delete tmp;
-			tmp = nullptr;
-		}
-		return true;
-	}
-}
-
-	template<typename T>
-bool BSTree<T>::Remove(const T &vle,BinTreeNode<T> *&roo)
-{
-	BinTreeNode<T> *tmp;
 	if(roo != nullptr)
 	{
-		if(roo->data > vle)
-			Remove(vle,roo->lchild);
-		else if(roo->data < vle)
-			Remove(vle,roo->rchild);
-		else if(roo->lchild != nullptr && roo->rchild != nullptr)
-		{
-			tmp = roo->rchild;
-			while(tmp->lchild != nullptr)
-				tmp = tmp->lchild;
-			roo->data = tmp->data;
-			Remove(roo->data,roo->rchild);
-		}
-		else
-		{
-			tmp = roo;
-			if(roo->lchild == nullptr)
-				roo = roo->rchild;
-			else
-				roo = roo->lchild;
-			delete tmp;
-			tmp = nullptr;
-			return true;
-		}
+		Traverse(roo->lchild);
+		std::cout<<roo->data<<" ";
+		Traverse(roo->rchild);
 	}
-	return false;
 }
 
-//-----------------------------AVLTree---------------------------------------------------
-   /*  template<typename T> */
-// bool AVLTree<T>::Insert(const T &vle)
-// {
-	// AVLTreeNode<T> *tmp = new AVLTreeNode<T>(vle);
-	// AVLTreeNode<T> *roo = root;
-	// while(roo != nullptr)
-	// {
-		// if(roo->data > vle)
-		// {
-			// if(roo->lchild != nullptr)
-				// roo = roo->lchild;
-			// else
-				// break;
-		// }
-		// else if(roo->data < vle)
-		// {
-			// if(roo->rchild != nullptr)
-				// roo = roo->rchild;
-			// else
-				// break;
-		// }
-		// else
-		// {
-			// std::cerr<<"repeating element.."<<std::endl;
-			// return false;
-		// }
-	// }
-	// if(vle > roo->data)
-		// roo->rchild = tmp;
-	// else
-		// roo->lchild = tmp;
-	// return true;
-// }
-
-	// template<typename T>
-// bool AVLTree<T>::Search(const T &vle)
-// {
-	// if(root == nullptr)
-	// {
-		// std::cout<<"empty tree..."<<std::endl;
-		// return false;
-	// }
-	// AVLTreeNode<T> *tmp = root;
-	// while(tmp->data != vle)
-	// {
-		// if(tmp->data > vle && tmp->lchild != nullptr)
-			// tmp = tmp->lchild;
-		// else if(tmp->data < vle && tmp->rchild != nullptr)
-			// tmp = tmp->rchild;
-		// else
-			// return false;
-	// }
-	// return true;
-// }
-
-	// template<typename T>
-// bool AVLTree<T>::Remove(const T &vle,AVLTreeNode<T> *&roo)
-// {
-	// AVLTreeNode<T> *tmp;
-	// if(roo != nullptr)
-	// {
-		// if(roo->data > vle)
-			// Remove(vle,roo->lchild);
-		// else if(roo->data < vle)
-			// Remove(vle,roo->rchild);
-		// else if(roo->lchild != nullptr && roo->rchild != nullptr)
-		// {
-			// tmp = roo->rchild;
-			// while(tmp->lchild != nullptr)
-				// tmp = tmp->lchild;
-			// roo->data = tmp->data;
-			// Remove(roo->data,roo->rchild);
-		// }
-		// else
-		// {
-			// tmp = roo;
-			// if(roo->lchild == nullptr)
-				// roo = roo->rchild;
-			// else
-				// roo = roo->lchild;
-			// delete tmp;
-			// tmp = nullptr;
-			// return true;
-		// }
-	// }
-	// return false;
-// }
-
-	// template<typename T>
-// void AVLTree<T>::TraversePreOrder(AVLTreeNode<T> *ro,bool ingen)
-// {
-	// if(ingen == false)
-	// {
-		// if(ro == nullptr)
-		// {
-			// return;
-		// }
-		// else
-		// {
-			// std::cout<<ro->data<<" ";
-			// TraversePreOrder(ro->lchild,ingen);
-			// TraversePreOrder(ro->rchild,ingen);
-			// return;
-		// }
-	// }
-	// else
-	// {
-		// if(ro == nullptr)
-		// {
-			// return;
-		// }
-		// else
-		// {
-			// std::cout<<ro->data<<" ( ";
-			// TraversePreOrder(ro->lchild,ingen);
-			// std::cout<<",";
-			// TraversePreOrder(ro->rchild,ingen);
-			// std::cout<<" ) ";
-			// return;
-		// }
-
-	// }
-/* } */
-   /*  template<typename T> */
-// void AVLTree<T>::TraverseLevelOrder(AVLTreeNode<T> *roo)
-// {
-	// Queue<AVLTreeNode<T>*> q;
-	// AVLTreeNode<T> *trav;
-	// if(roo == nullptr)
-	// {
-		// std::cerr<<"empty tree,can not traverse"<<std::endl;
-		// throw;
-	// }
-	// else
-		// q.Enqueue(roo);
-	// while(!q.IsEmpty())
-	// {
-		// q.Dequeue(trav);
-		// std::cout<<trav->data<<" ";
-		// if(trav->lchild != nullptr)
-			// q.Enqueue(trav->lchild);
-		// if(trav->rchild != nullptr)
-			// q.Enqueue(trav->rchild);
-	// }
-// }
-
-   /*  template<typename T> */
-// size_t AVLTree<T>::height(AVLTreeNode<T> *roo)
-// {
-	// if(roo == nullptr)
-		// return 0;
-	// else
-	// {
-		// size_t i = Height(roo->lchild);
-		// size_t j = Height(roo->rchild);
-		// size_t height = i > j ? i + 1 : j + 1;
-		// return height;
-	// }
-/* } */
-//-----------------------------exclusive members of AVLTree-------------------
-	template<typename T>
-void AVLTree<T>::rotatel(AVLTreeNode<T> *roo)
+template<typename T>
+void AVLTree<T>::TraverseLevelOrder(AVLTreeNode<T> *roo)
 {
-	
+	Queue<AVLTreeNode<T>*> q;
+	AVLTreeNode<T> *trav;
+	if(roo == nullptr)
+	{
+		std::cerr<<"empty tree,can not traverse"<<std::endl;
+		exit(1);
+	}
+	else
+		q.Enqueue(roo);
+	while(!q.IsEmpty())
+	{
+		q.Dequeue(trav);
+		std::cout<<trav->data<<" ";
+		if(trav->lchild != nullptr)
+			q.Enqueue(trav->lchild);
+		if(trav->rchild != nullptr)
+			q.Enqueue(trav->rchild);
+	}
+}
+
+template<typename T>
+void AVLTree<T>::CreateTree(std::istream &is)
+{
+	T vle;
+	while(is>>vle)
+	{
+		Insert_NR(vle);
+	}
+}
+
+template<typename T>
+AVLTreeNode<T>* AVLTree<T>::Search(const T &vle) const
+{
+	if(root == nullptr)
+		return nullptr;
+	AVLTreeNode<T> *trav = root;
+	while(trav != nullptr)
+	{
+		if(trav->data > vle)
+			trav = trav->lchild;
+		else if(trav->data < vle)
+			trav = trav->rchild;
+		else
+			return trav;
+	}
+}
+template<typename T>
+void AVLTree<T>::rotatel(AVLTreeNode<T> *&roo)
+{
+	AVLTreeNode<T> *p = roo;
+	roo = roo->rchild;
+	p->rchild = roo->lchild;
+	roo->lchild = p;
+	roo->bf = p->bf = 0;
+}
+
+template<typename T>
+void AVLTree<T>::rotater(AVLTreeNode<T> *&roo)
+{
+	AVLTreeNode<T> *p = roo;
+	roo = roo->lchild;
+	p->lchild = roo->rchild;
+	roo->rchild = p;
+	roo->bf = p->bf = 0;
+}
+
+template<typename T>
+void AVLTree<T>::rotatelr(AVLTreeNode<T> *&roo)
+{
+	AVLTreeNode<T> *subL = roo->lchild;
+	AVLTreeNode<T> *subR = roo;
+	roo = subL->lchild;
+	subL->rchild = roo->lchild;
+	roo->lchild = subL;
+	if(roo->bf <= 0)
+		subL->bf = 0;
+	else
+		subL->bf = -1;
+	subR->lchild = roo->rchild;
+	roo->rchild = subR;
+	if(roo->bf == -1 )
+		subR->bf = 1;
+	else
+		subR->bf = 0;
+	roo->bf = 0;
+}
+
+template<typename T>
+void AVLTree<T>::rotaterl(AVLTreeNode<T> *&roo)
+{
+	AVLTreeNode<T> *subL = roo;
+	AVLTreeNode<T> *subR = roo->rchild;
+	roo = subR->lchild;
+	subR->lchild = roo->rchild;
+	roo->rchild = subR;
+	if(roo->bf == - 1)
+		subR->bf = 1;
+	else
+		subR->bf = 0;
+	subL->rchild = roo->lchild;
+	roo->lchild = subL;
+	if(roo->bf == -1)
+		subL->bf = 0;
+	else
+		subL->bf = -1;
+	roo->bf = 0;
+}
+
+template<typename T>
+bool AVLTree<T>::Insert(const T &vle)
+{
+	AVLTreeNode<T> *p = root;
+	AVLTreeNode<T> *pr = nullptr;//parent of p.
+	Stack<AVLTreeNode<T> *>s;//record of path of inserting.
+	while(p != nullptr)
+	{
+		if(p->data == vle)//already exit in tree.
+			return false;
+		pr = p;
+		s.Push(p);
+		if(p->data > vle)
+			p = p->lchild;
+		else
+			p = p->rchild;
+	}
+	p = new AVLTreeNode<T>(vle);
+	if(pr == nullptr)
+	{
+		root = p;
+		return true;
+	}
+	if(pr->data > p->data )
+		pr->lchild = p;
+	else
+		pr->rchild = p;
+	while(!s.IsEmpty())
+	{
+		s.Pop(pr);
+		if(pr->lchild == p)
+			pr->bf--;
+		else
+			pr->bf++;
+		if(pr->bf == 0)
+			break;
+		else if(abs(pr->bf) == 1)
+			p = pr;
+		else
+		{
+			if(pr->bf*p->bf == 2 )//if p and pr have same sign
+			{
+				if(p->bf == 1)
+					rotatel(pr);
+				else
+					rotater(pr);
+			}
+			else
+			{
+				if(p->bf == 1)
+					rotatelr(pr);
+				else
+					rotaterl(pr);
+			}
+			break;
+		}
+	}
+	if(s.IsEmpty())
+		root = pr;
+	else//the pointer of parent of pr have changed,need to relink it.Use p to receive the parent.
+	{
+		s.Pop(p);
+		if(p->data > pr->data)
+			p->lchild = pr;
+		else
+			p->rchild = pr;
+	}
+	return true;
+}
+
+template<typename T>
+bool AVLTree<T>::Remove(const T &vle)
+{
+	AVLTreeNode<T> *p = root;
+	AVLTreeNode<T> *pr = nullptr;
+	AVLTreeNode<T> *q,*ppr;
+	int d = 0 ,dd = 0;
+	Stack<AVLTreeNode<T>*>s;
+	while(p != nullptr)
+	{
+		if(p->data == vle)
+			break;
+		pr = p;
+		s.Push(p);
+		if(p->data > vle)
+			p = p->lchild;
+		else
+			p = p->rchild;
+	}
+	if(p == nullptr)	
+		return false;
+	if(p->lchild != nullptr && p->rchild != nullptr)
+	{
+		pr = p;
+		s.Push(pr);
+		q = p->lchild;
+		while(q->rchild != nullptr)
+		{
+			pr = q;
+			s.Push(pr);
+			q = q->rchild;
+		}
+		p->data = q->data;
+		p = q;
+	}
+	if(p->lchild != nullptr)
+		q = p->lchild;
+	else
+		q = p->rchild;
+	if(pr == nullptr)
+		root = q;
+	else
+	{
+		if(pr->lchild == p)
+			pr->lchild = q;
+		else
+			pr->rchild = q;
+		while(!s.IsEmpty())
+		{
+			s.Pop(pr);
+			if(pr->rchild == q)
+				pr->bf--;
+			else
+				pr->bf++;
+			if(!s.IsEmpty())
+			{
+				s.Top(ppr);
+				dd = (ppr->lchild == pr)? -1 : 1;
+			}
+			else
+				dd = 0;
+			if(abs(pr->bf) == 1)
+				break;
+			if(pr->bf != 0)
+			{
+				if(pr->bf < 0)
+				{
+					d = -1;
+					q = pr->lchild;
+				}
+				else
+				{
+					d = 1;
+					q = pr->rchild;
+				}
+				if(q->bf == 0)
+				{
+					if(d == -1)
+					{
+						rotater(pr);
+						pr->bf = 1;
+						pr->lchild->bf = -1;
+					}
+					else
+					{
+						rotatel(pr);
+						pr->bf = -1;
+						pr->rchild->bf = 1;
+					}
+					break;
+				}
+				if(q->bf == d)
+				{
+					if(d == -1)
+						rotater(pr);
+					else
+						rotatel(pr);
+				}
+				else
+				{
+					if(d == -1)
+						rotatelr(pr);
+					else
+						rotaterl(pr);
+				}
+				if(dd == -1)
+					ppr->lchild = pr;
+				else
+					ppr->rchild = pr;
+
+			}
+			q = pr;	
+		}
+		if(s.IsEmpty())	
+			root = pr;
+	}
+	delete p;
+	return true;
 }
 #endif

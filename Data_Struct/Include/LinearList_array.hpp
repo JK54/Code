@@ -1,7 +1,7 @@
 #ifndef _LINEAR_ARR_H
 #define _LINEAR_ARR_H
 
-#include "LinearList.hpp"
+#include "LinearList.h"
 
 template <typename T>
 class LinearList_array : public LinearList<T>
