@@ -25,6 +25,7 @@ class DataList
 {
 	public:
 		DataList(int s = DEFAULT_SIZE):Vector(new Element<T>[s]),maxsize(s),currentsize(0){}
+		~DataList(){delete [] Vector;}
 		Element<T>& operator[](int i){return Vector[i];}
 		void Initial(std::istream &is);
 		void Initial(T a[],int n);
@@ -44,6 +45,7 @@ class DataList
 		//quick sort
 		int Partition(const int left,const int right);
 		int Partition(DataList<T> &L,const int left,const int right);//Another method to select base pivot
+		void Partition(DataList<T> &,const int,const int,int &,int &);//for huge amount of reapting elements.
 		void QuickSort(DataList<T> &L,const int left,const int right);//basical quick sort.
 		void Quick_Insert_Mixed_Sort(DataList<T> &L,const int left,const int right);//mixed sort.
 		
@@ -84,8 +86,12 @@ void DataList<T>::Insert(const T &vle)
 {
 	if(currentsize == maxsize)
 	{
-		std::cout<<"list full..."<<std::endl;
-		return;
+		maxsize *= 2;
+		Element<T> *tmp = new Element<T>[maxsize];
+		for(int i = 0;i<currentsize;++i)
+			tmp[i] = Vector[i];
+		delete [] Vector;
+		Vector = tmp;
 	}
 	Vector[currentsize].key = vle;
 	currentsize++;
@@ -235,27 +241,120 @@ int DataList<T>::Partition(DataList<T> &L,const int left,const int right)
 	int mid = (left	+ right)/2;
 	Element<T> pivot;
 	//rearrange the smallest element to the left,median to the right,largest to the middle
-	int k = left;
-	if(L[mid] <L[k])
-		k = mid;
-	if(L[right] <L[k])
-		k = right;
-	if(k != left)
-		Swap(L[k],L[left]);
-	if(L[mid] < L[right])
-		Swap(L[mid],L[right]);
+	if(left<right)
+	{	
+		int k = left;
+		if(L[mid] <L[k])
+			k = mid;
+		if(L[right] <L[k])
+			k = right;
+		if(k != left)
+			Swap(L[k],L[left]);
+		if(L[mid] < L[right] && mid != right)//in case of using quick sort alone
+			Swap(L[mid],L[right]);
+	}
 	pivot = L[right];
-
+	int i = left,j = right -1;
+	while(1)
+	{
+		while(i < j && L[i] < pivot)
+			i++;
+		while(i < j && L[j] > pivot)
+			j--;
+		if(i < j)
+		{
+			Swap(L[i],L[j]);
+			i++;
+			j--;
+		}
+		else break;
+	}
+	if(L[i] > pivot)//if after last round, L[i] is smaller than pivot,then it's unnecessary to exchange.
+		Swap(L[i],L[right]);
+	return i;
 }
+
+template<typename T>
+void DataList<T>::Partition(DataList<T> &L,int const left,const int right,int &i,int &j)
+{
+	int p,q,k;//scan pointer(index of Vector)
+	// int mid;
+	Element<T> pivot;
+	i = p = left;
+	j = q = right - 1;
+	//my original thought was to rearrange the list directlly,but failed.
+	//p = left;
+	//q = right;
+   /*  mid = (left + right)/2; */
+	// i = j = mid;
+	// pivot = L[mid];
+	// while(1)
+	// {
+		// while(p <= i && L[p] < pivot)
+			// p++;
+		// while(q >= j && L[q] > pivot)
+			// q--;
+		// if(p >= i && q <= j)
+			// break;
+		// if(p >= q)
+			// break;
+		// else
+			// Swap(L[p],L[q]);
+		// if(L[p] == pivot)
+		// {
+			// i--;
+			// Swap(L[p],L[i]);
+		// }
+		// if(L[q] == pivot)
+		// {
+			// j++;
+			// Swap(L[q],L[j]);
+		// }
+		// L.Traverse();
+	/* } */
+	pivot = L[right - 1];
+	while(1)//the elements equal to pivot have swaped to border.
+	{
+		while(i < j && L[i] < pivot)
+			i++;
+		while(i < j && L[j] > pivot)
+			j--;
+		if(i >= j)
+			break;
+		Swap(L[i],L[j]);
+		if(L[i] == pivot)
+			Swap(L[p++],L[i]);
+		if(L[j] == pivot)
+			Swap(L[q++],L[j]);
+	}
+	if(L[i] > pivot)
+	{
+		Swap(L[i],pivot);
+		k = right - 2;
+		i++;
+		j--;
+	}
+	else
+		k = right - 1;
+	for(;k >= q;k--,i++)
+		Swap(L[k],L[i]);
+	for(k = left;k <= p;k++,j--)
+		Swap(L[k],L[j]);
+}
+
 template <typename T>
 void DataList<T>::QuickSort(DataList &L,const int left,const int right)
 {
 	if(left < right)
 	{
 		// int pivotpos = Partition(left,right);
-		int pivotpos = Partition(L,left,right);//use median3.
-		QuickSort(L,left,pivotpos - 1);
-		QuickSort(L,pivotpos + 1,right);
+		// int pivotpos = Partition(L,left,right);//use median3.
+		/* QuickSort(L,left,pivotpos - 1); */
+		/* QuickSort(L,pivotpos + 1,right); */
+		int i = 0,j = 0;
+		Partition(L,left,right,i,j);
+		QuickSort(L,left,j);
+		QuickSort(L,i,right);
 	}
 }
 
@@ -268,9 +367,9 @@ void DataList<T>::Quick_Insert_Mixed_Sort(DataList &L,const int left,const int r
 	}
 	else
 	{
-		int pivotpos = Partition(left,right);
-		QuickSort(L,left,pivotpos - 1);
-		QuickSort(L,pivotpos + 1,right);
+		int pivotpos = Partition(L,left,right);
+		Quick_Insert_Mixed_Sort(L,left,pivotpos - 1);
+		Quick_Insert_Mixed_Sort(L,pivotpos + 1,right);
 	}
 }
 
@@ -281,9 +380,9 @@ void DataList<T>::Quick_Insert_Mixed_Sort_N(DataList &L,const int left,const int
 		return;
 	else
 	{
-		int pivotpos = Partition(left,right);
-		QuickSort(L,left,pivotpos - 1);
-		QuickSort(L,pivotpos + 1,right);
+		int pivotpos = Partition(L,left,right);
+		Quick_Insert_Mixed_Sort_N(L,left,pivotpos - 1);
+		Quick_Insert_Mixed_Sort_N(L,pivotpos + 1,right);
 	}
 }
 
