@@ -48,9 +48,14 @@ class DataList
 		void Partition(DataList<T> &,const int,const int,int &,int &);//for huge amount of reapting elements.
 		void QuickSort(DataList<T> &L,const int left,const int right);//basical quick sort.
 		void Quick_Insert_Mixed_Sort(DataList<T> &L,const int left,const int right);//mixed sort.
-		
 		void Quick_Insert_Mixed_Sort_N(DataList<T> &L,const int left,const int right);//drop insert sort
-		void HybirdSort(DataList<T> &L,const int left,const int right);//efficient insert and quick sort.
+		void HybirdSort(DataList<T> &L,const int left,const int right);//efficient quick sort mixed with insert sort.
+		//select sort
+		void SelectSort();
+		void TournamentSort();//big work1
+		void HeapSort();//big work2
+		//merge sort
+		void MergeSort();
 
 	private:
 		Element<T> *Vector;
@@ -222,7 +227,7 @@ int DataList<T>::Partition(const int left,const int right)
 	Element<T> pivot = Vector[left];
 	for(int i = left + 1;i < right; ++i)
 	{
-		if(Vector[i] < pivot)//pivotpos will be blocked in front of the element which is bigger than it,and exchange the smaller element and the bigger element.when the loop ended,exchanged the first pos and the pivotpos.
+		if(Vector[i] < pivot)//pivotpos will be blocked in front of the element which is bigger than it,and exchange the smaller element and the bigger element.when the loop ended,exchanged the base value pos and the pivotpos.
 		{
 			pivotpos++;
 			if(pivotpos != i)
@@ -238,123 +243,128 @@ int DataList<T>::Partition(const int left,const int right)
 template<typename T>
 int DataList<T>::Partition(DataList<T> &L,const int left,const int right)
 {
-	int mid = (left	+ right)/2;
+	int i = left,j = right - 1;
+	int k = left;
+	int mid = (left	+ right - 1)/2;
 	Element<T> pivot;
 	//rearrange the smallest element to the left,median to the right,largest to the middle
 	if(left<right)
 	{	
-		int k = left;
-		if(L[mid] <L[k])
+		if(L[mid] <L[k])//when comes to 2 elements,mid = left
 			k = mid;
-		if(L[right] <L[k])
-			k = right;
+		if(L[right - 1 ] <L[k])
+			k = right - 1;
 		if(k != left)
 			Swap(L[k],L[left]);
-		if(L[mid] < L[right] && mid != right)//in case of using quick sort alone
-			Swap(L[mid],L[right]);
-	}
-	pivot = L[right];
-	int i = left,j = right -1;
-	while(1)
-	{
-		while(i < j && L[i] < pivot)
-			i++;
-		while(i < j && L[j] > pivot)
-			j--;
-		if(i < j)
+		if(L[mid] < L[right - 1] && mid != left)
+			Swap(L[mid],L[right - 1]);
+		pivot = L[right - 1];
+		while(1)
 		{
-			Swap(L[i],L[j]);
-			i++;
-			j--;
+			while(i < j && L[i] < pivot)
+				i++;
+			while(i < j && L[j] > pivot)
+				j--;
+			if(i < j)
+			{
+				Swap(L[i],L[j]);
+				i++;
+				j--;
+			}
+			else break;
 		}
-		else break;
+		if(L[i] > pivot)//if after last round, L[i] is smaller than pivot,then it's unnecessary to exchange.
+			Swap(L[i],L[right - 1]);
 	}
-	if(L[i] > pivot)//if after last round, L[i] is smaller than pivot,then it's unnecessary to exchange.
-		Swap(L[i],L[right]);
+	L.Traverse();
 	return i;
 }
 
-template<typename T>
-void DataList<T>::Partition(DataList<T> &L,int const left,const int right,int &i,int &j)
-{
-	int p,q,k;//scan pointer(index of Vector)
-	// int mid;
-	Element<T> pivot;
-	i = p = left;
-	j = q = right - 1;
-	//my original thought was to rearrange the list directlly,but failed.
-	//p = left;
-	//q = right;
-   /*  mid = (left + right)/2; */
-	// i = j = mid;
-	// pivot = L[mid];
-	// while(1)
-	// {
-		// while(p <= i && L[p] < pivot)
-			// p++;
-		// while(q >= j && L[q] > pivot)
-			// q--;
-		// if(p >= i && q <= j)
-			// break;
-		// if(p >= q)
-			// break;
-		// else
-			// Swap(L[p],L[q]);
-		// if(L[p] == pivot)
-		// {
-			// i--;
-			// Swap(L[p],L[i]);
-		// }
-		// if(L[q] == pivot)
-		// {
-			// j++;
-			// Swap(L[q],L[j]);
-		// }
-		// L.Traverse();
-	/* } */
-	pivot = L[right - 1];
-	while(1)//the elements equal to pivot have swaped to border.
-	{
-		while(i < j && L[i] < pivot)
-			i++;
-		while(i < j && L[j] > pivot)
-			j--;
-		if(i >= j)
-			break;
-		Swap(L[i],L[j]);
-		if(L[i] == pivot)
-			Swap(L[p++],L[i]);
-		if(L[j] == pivot)
-			Swap(L[q++],L[j]);
-	}
-	if(L[i] > pivot)
-	{
-		Swap(L[i],pivot);
-		k = right - 2;
-		i++;
-		j--;
-	}
-	else
-		k = right - 1;
-	for(;k >= q;k--,i++)
-		Swap(L[k],L[i]);
-	for(k = left;k <= p;k++,j--)
-		Swap(L[k],L[j]);
-}
-
+/*
+ * template<typename T>
+ * void DataList<T>::Partition(DataList<T> &L,int const left,const int right,int &i,int &j)
+ * {
+ *     int p,q,k;//scan pointer(index of Vector)
+ *     // int mid;
+ *     Element<T> pivot;
+ *     i = p = left;
+ *     j = q = right - 1;
+ *     //my original thought was to rearrange the list directlly,but failed.
+ *     //p = left;
+ *     //q = right;
+ *    [>  mid = (left + right)/2; <]
+ *     // i = j = mid;
+ *     // pivot = L[mid];
+ *     // while(1)
+ *     // {
+ *         // while(p <= i && L[p] < pivot)
+ *             // p++;
+ *         // while(q >= j && L[q] > pivot)
+ *             // q--;
+ *         // if(p >= i && q <= j)
+ *             // break;
+ *         // if(p >= q)
+ *             // break;
+ *         // else
+ *             // Swap(L[p],L[q]);
+ *         // if(L[p] == pivot)
+ *         // {
+ *             // i--;
+ *             // Swap(L[p],L[i]);
+ *         // }
+ *         // if(L[q] == pivot)
+ *         // {
+ *             // j++;
+ *             // Swap(L[q],L[j]);
+ *         // }
+ *         // L.Traverse();
+ *     [> } <]
+ *     pivot = L[right - 1];
+ *     while(1)//the elements equal to pivot have swaped to border.
+ *     {
+ *         while(i < j && L[i] < pivot)
+ *             i++;
+ *         while(i < j && L[j] > pivot)
+ *             j--;
+ *         if(i >= j)
+ *             break;
+ *         Swap(L[i],L[j]);
+ *         if(L[i] == pivot)
+ *             Swap(L[p++],L[i]);
+ *         if(L[j] == pivot)
+ *             Swap(L[q++],L[j]);
+ *     }
+ *     if(L[i] > pivot)
+ *     {
+ *         Swap(L[i],pivot);
+ *         k = right - 2;
+ *         i++;
+ *         j--;
+ *     }
+ *     else
+ *         k = right - 1;
+ *     for(;k >= q;k--,i++)
+ *         Swap(L[k],L[i]);
+ *     for(k = left;k <= p;k++,j--)
+ *         Swap(L[k],L[j]);
+ * }
+ * 
+ */
 template <typename T>
 void DataList<T>::QuickSort(DataList &L,const int left,const int right)
 {
 	if(left < right)
 	{
 		// int pivotpos = Partition(left,right);
-		// int pivotpos = Partition(L,left,right);//use median3.
-		/* QuickSort(L,left,pivotpos - 1); */
-		/* QuickSort(L,pivotpos + 1,right); */
-		int i = 0,j = 0;
-		Partition(L,left,right,i,j);
-		QuickSort(L,left,j);
-		QuickSort(L,i,right);
+		int pivotpos = Partition(L,left,right);//use median3.
+		QuickSort(L,left,pivotpos - 1);
+		QuickSort(L,pivotpos + 1,right);
+		/*
+		 * int i = 0,j = 0;
+		 * Partition(L,left,right,i,j);
+		 * QuickSort(L,left,j);
+		 * QuickSort(L,i,right);
+		 */
 	}
 }
 
