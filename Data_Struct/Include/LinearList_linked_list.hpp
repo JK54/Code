@@ -30,15 +30,16 @@ class LinkedList
 		void traverse();
 		bool isempty();
 		bool Insert(size_t i,T x);
-		bool push_back(T x);
+		bool push_back(const T &x);
 		bool push_forward(T x);
 		bool pop_back(T &x);
 		bool pop_forward(T &x);
-		
+		void qsort();
+		void ReverseMerge(LinkedList<T> &);
+	private:		
 		LNode<T>* head;
 		LNode<T>* tail;
 		size_t leng;
-		size_t *use;
 };
 
 template<typename T>
@@ -46,7 +47,6 @@ LinkedList<T>::LinkedList()
 {
 	head = tail = new LNode<T>;
 	leng = 0;
-	use = new size_t(1);
 }
 
 template<typename T>
@@ -56,26 +56,22 @@ LinkedList<T>::LinkedList(T x)
 	tail = new LNode<T>(x);
 	head->next = tail;
 	leng = 1;
-	use = new size_t(1);
 }
 
 template<typename T>
 LinkedList<T>::~LinkedList()
 {
-	if(*--use == 0)
+	while(head != nullptr)
 	{
-		while(head != nullptr)
-		{
-			LNode<T> *tmp = head->next;
-			delete head;
-			head = tmp;
-		}
+		LNode<T> *tmp = head->next;
+		delete head;
+		head = tmp;
 	}
 }
 template<typename T>
 bool LinkedList<T>::isempty()
 {
-	if(head->next == nullptr)
+	if(head == nullptr)
 	{
 		std::cout<<"empty list"	<<std::endl;
 		return true;
@@ -111,12 +107,14 @@ bool LinkedList<T>::Insert(size_t i, T x)
 	{
 		if(i <= leng)
 		{
-			LNode<T> *tmp = head->next;
+			LNode<T> *tmp = head;
 			LNode<T> *w2i = new LNode<T>(x);
-			for(auto j = 1; j < i; ++j)
+			for(auto j = 0; j <= i; ++j)
 				tmp = tmp->next;
 			w2i->next = tmp->next;
 			tmp->next = w2i;
+			if(i == leng)
+				tail = w2i;
 			++leng;
 			return true;
 		}
@@ -131,7 +129,7 @@ bool LinkedList<T>::Insert(size_t i, T x)
 }
 
 template<typename T>
-bool LinkedList<T>::push_back(T x)
+bool LinkedList<T>::push_back(const T &x)
 {
 	if(head != nullptr)
 	{
@@ -186,8 +184,8 @@ bool LinkedList<T>::pop_back(T &x)
 	{
 		x = tail->data;
 		LNode<T> *tmp = head;
-		while(tmp->next != tail)tmp = tmp->next;
-		x = tail->data;
+		while(tmp->next != tail)
+			tmp = tmp->next;
 		delete tail;
 		tail = tmp;
 		tail->next= nullptr;
@@ -198,4 +196,7 @@ bool LinkedList<T>::pop_back(T &x)
 		return false;
 }
 
+template<typename T>
+void qsort()
+{}
 #endif
