@@ -29,11 +29,14 @@ class Stack
 		bool Push(T &x);
 		bool Top(T &p);
 		bool IsEmpty(){if(top == base)return true;else return false;}
+		size_t Size(){return size;}
+		void Traverse();
 		T Max();
 		T Min();
 	private:
 		StackNode<T> *base;
 		StackNode<T> *top;
+		size_t size;
 };
 
 
@@ -41,13 +44,17 @@ template<typename T>
 Stack<T>::Stack()
 {
 	base = top = new StackNode<T>;
+	size = 0;
 	assert(base);
 }
 
 template<typename T>
 Stack<T>::Stack(T x)
 {
-	top = base = new StackNode<T>(x);
+	base = new StackNode<T>;
+	top  = new StackNode<T>(x);
+	top->next = base;
+	size = 1;
 	assert(base);
 }
 
@@ -76,6 +83,7 @@ bool Stack<T>::Push(T &x)
 	StackNode<T> *tmp = new StackNode<T>(x);
 	tmp->next = top;
 	top = tmp;
+	size++;
 	return true;
 }
 
@@ -88,6 +96,7 @@ bool Stack<T>::Pop(T &p)
 	StackNode<T> *tmp = top->next;
 	delete top;
 	top = tmp;
+	size--;
 	return true;
 }
 
@@ -125,5 +134,19 @@ T Stack<T>::Min()
 		max = max < tmp->data?max:tmp->data;
 	}
 	return max;
+}
+
+template<typename T>
+void Stack<T>::Traverse()
+{
+	if(IsEmpty())
+		exit(1);
+	StackNode<T> *tmp = top;
+	while(tmp != base)
+	{
+		std::cout<<tmp->data<<" ";
+		tmp = tmp->next;
+	}
+	std::cout<<std::endl;
 }
 #endif

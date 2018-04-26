@@ -5,13 +5,11 @@ using namespace std;
 int main()
 {
 	Stack<int> s;
-	int j;
+	cout<<s.Size()<<endl;
 	for(int i = 1;i < 6; ++i)
 	{
 		s.Push(i);
-		s.Top(j);
-		cout<<j<<endl;
+		cout<<s.Size()<<endl;
 	}
-	s.Top(j);
-	cout<<j<<endl;
+	s.Traverse();
 }

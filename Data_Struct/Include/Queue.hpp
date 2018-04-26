@@ -2,7 +2,7 @@
 #define _QUEUE_H
 
 #include "sys_comm.h"
-
+#include "Stack.hpp"
 template<typename T>
 class Queue;
 
@@ -15,6 +15,10 @@ class QueueNode
 	QueueNode(T x):data(x),next(nullptr){}
 	QueueNode(QueueNode<T> &p){data = p.data;next = p.next;}
 	QueueNode<T> *Next(){if(next != nullptr) return next;else return nullptr;}
+	bool operator==(const QueueNode<T> *p){return data == p->data;}
+	bool operator!=(const QueueNode<T> *p){return data != p->data;}
+	bool operator==(const QueueNode<T> &p){return data == p.data;}
+	bool operator!=(const QueueNode<T> &p){return data != p.data;}
 	T Data(){return data;}
 	private:
 	T data;
@@ -37,7 +41,11 @@ class Queue
 		void Traverse();
 		bool IsEmpty(){if(first->next == nullptr)return true;else return false;}
 		bool Copy(Queue<T> &p);
+		void Reverse();
+		bool Equal(Queue<T> &Q);
+		//priprity queue
 		bool Enqueue_Priority(T &x);
+		//special object type
 		bool Enqueue_Priority_PM(T &x);
 
 	private:
@@ -189,7 +197,8 @@ bool Queue<T>::Enqueue_Priority_PM(T &x)
 		return true;
 	}
 }
-	template<typename T>
+
+template<typename T>
 bool Queue<T>::Dequeue(T &p)
 {
 	if(first->next == nullptr)
@@ -204,7 +213,7 @@ bool Queue<T>::Dequeue(T &p)
 	return true;
 }
 
-	template<typename T>
+template<typename T>
 void Queue<T>::Traverse()
 {
 	if(first->next == nullptr)
@@ -217,7 +226,7 @@ void Queue<T>::Traverse()
 	std::cout<<std::endl;
 }
 
-	template<typename T>
+template<typename T>
 bool Queue<T>::Copy(Queue<T> &p)
 {
 	if(!p.IsEmpty())
@@ -239,6 +248,43 @@ bool Queue<T>::Copy(Queue<T> &p)
 		}
 		return true;
 	}
+	else
+		return false;
+}
+
+template<typename T>
+void Queue<T>::Reverse()
+{
+	Stack<T> s;
+	T tmp;
+	while(!IsEmpty())
+	{
+		Dequeue(tmp);
+		s.Push(tmp);
+	}
+	while(!s.IsEmpty())
+	{
+		s.Pop(tmp);
+		Enqueue(tmp);
+	}
+}
+
+template<typename T>
+bool Queue<T>::Equal(Queue<T> &Q)
+{
+	Queue<T> p,q;
+	p.Copy(*this);
+	q.Copy(Q);
+	T p1,q1;
+	while(!p.IsEmpty() && !q.IsEmpty())
+	{
+		p.Dequeue(p1);
+		q.Dequeue(q1);
+		if(p1 != q1)
+			return false;
+	}
+	if(p.IsEmpty() && q.IsEmpty())
+		return true;
 	else
 		return false;
 }

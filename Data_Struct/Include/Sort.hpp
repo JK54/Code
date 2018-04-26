@@ -245,38 +245,37 @@ int DataList<T>::Partition(DataList<T> &L,const int left,const int right)
 {
 	int i = left,j = right - 1;
 	int k = left;
-	int mid = (left	+ right - 1)/2;
+	int mid = (left	+ right)/2;
 	Element<T> pivot;
 	//rearrange the smallest element to the left,median to the right,largest to the middle
 	if(left<right)
 	{	
-		if(L[mid] <L[k])//when comes to 2 elements,mid = left
+		if(L[mid - 1] < L[k - 1])//when comes to 2 elements,mid = left
 			k = mid;
-		if(L[right - 1 ] <L[k])
-			k = right - 1;
+		if(L[right - 1] < L[k - 1])
+			k = right;
 		if(k != left)
-			Swap(L[k],L[left]);
-		if(L[mid] < L[right - 1] && mid != left)
-			Swap(L[mid],L[right - 1]);
+			Swap(L[k-1],L[left-1]);
+		if(L[mid-1] < L[right - 1] && mid != left)
+			Swap(L[mid-1],L[right - 1]);
 		pivot = L[right - 1];
 		while(1)
 		{
-			while(i < j && L[i] < pivot)
+			while(i < j && L[i-1] < pivot)
 				i++;
-			while(i < j && L[j] > pivot)
+			while(i < j && L[j-1] > pivot)
 				j--;
 			if(i < j)
 			{
-				Swap(L[i],L[j]);
+				Swap(L[i-1],L[j-1]);
 				i++;
 				j--;
 			}
 			else break;
 		}
-		if(L[i] > pivot)//if after last round, L[i] is smaller than pivot,then it's unnecessary to exchange.
-			Swap(L[i],L[right - 1]);
+		if(L[i-1] > pivot)//if after last round, L[i] is smaller than pivot,then it's unnecessary to exchange.
+			Swap(L[i-1],L[right-1]);
 	}
-	L.Traverse();
 	return i;
 }
 
@@ -402,6 +401,5 @@ void DataList<T>::HybirdSort(DataList<T> &L,const int left,const int right)
 	Quick_Insert_Mixed_Sort_N(L,left,right);
 	InsertSort();
 }
-
 
 #endif

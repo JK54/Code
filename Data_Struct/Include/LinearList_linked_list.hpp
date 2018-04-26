@@ -11,6 +11,16 @@ class LNode
 	friend class LinkedList<T>;
 	LNode():data(0),next(nullptr){}
 	LNode(T x):data(x),next(nullptr){}
+	bool operator<(const LNode<T> &p){return data < p.data;}
+	bool operator<(const LNode<T> *p){return data < p->data;}
+	bool operator>(const LNode<T> &p){return data > p.data;}
+	bool operator>(const LNode<T> *p){return data > p->data;}
+	bool operator==(const LNode<T> &p){return data == p.data;}
+	bool operator==(const LNode<T> *p){return data == p->data;}
+	bool operator<=(const LNode<T> &p){return data <= p.data;}
+	bool operator<=(const LNode<T> *p){return data <= p->data;}
+	bool operator>=(const LNode<T> &p){return data >= p.data;}
+	bool operator>=(const LNode<T> *p){return data >= p->data;}
 	T data;
 	LNode<T> *next;
 };
@@ -24,18 +34,24 @@ class LinkedList
 		~LinkedList();
 		LinkedList(const LinkedList<T> &p);
 		LinkedList<T>& operator=(const LinkedList<T> &p);
-		T* Head(){return head;}
-		T* Tail(){return tail;}
-		size_t length();
-		void traverse();
+		LNode<T>* Head(){return head;}
+		LNode<T>* Tail(){return tail;}
+		size_t Length();
+		void Traverse();
 		bool isempty();
+		LNode<T> *Next(LNode<T> *p){return p->next;}
 		bool Insert(size_t i,T x);
 		bool push_back(const T &x);
-		bool push_forward(T x);
+		bool push_forward(const T &x);
+		bool push_forward(LNode<T> *p);
 		bool pop_back(T &x);
 		bool pop_forward(T &x);
-		void qsort();
 		void ReverseMerge(LinkedList<T> &);
+		void ReversePart(LNode<T> *pr,LNode<T> *p,const int &n);
+		void Reverse();
+		void RemoveRange(const T &min,const T &max);
+		void RemoveRange_U(const T &min,const T &max);
+		void DepartOD(LinkedList<T> &odd,LinkedList<T> &even);
 	private:		
 		LNode<T>* head;
 		LNode<T>* tail;
@@ -81,14 +97,14 @@ bool LinkedList<T>::isempty()
 }
 
 template<typename T>
-size_t LinkedList<T>::length()
+size_t LinkedList<T>::Length()
 {
-	std::cout<<"length is "<<leng<<std::endl;
+	std::cout<<"Length is "<<leng<<std::endl;
 	return leng;
 }
 
 template<typename T>
-void LinkedList<T>::traverse()
+void LinkedList<T>::Traverse()
 {
 	if(!isempty())
 	{
@@ -120,7 +136,7 @@ bool LinkedList<T>::Insert(size_t i, T x)
 		}
 		else
 		{
-			std::cout<<"i is bigger than the length"<<std::endl;
+			std::cout<<"i is bigger than the Length"<<std::endl;
 			return false;
 		}
 	}
@@ -134,7 +150,6 @@ bool LinkedList<T>::push_back(const T &x)
 	if(head != nullptr)
 	{
 		LNode<T> *t = new LNode<T>(x);
-		t->data = x;//tail->next == t->next == nullptr,不需要重新复制尾指针
 		tail->next = t;
 		tail = t;
 		leng++;
@@ -145,7 +160,7 @@ bool LinkedList<T>::push_back(const T &x)
 }
 
 template<typename T>
-bool LinkedList<T>::push_forward(T x)
+bool LinkedList<T>::push_forward(const T &x)
 {
 	if(!isempty())
 	{
@@ -160,6 +175,19 @@ bool LinkedList<T>::push_forward(T x)
 		return false;
 }
 
+template<typename T>
+bool LinkedList<T>::push_forward(LNode<T> *p)
+{
+	if(!isempty())	
+	{
+		p->next = head->next;
+		head->next = p;
+		leng++;
+		return true;
+	}
+	else 
+		return false;
+}
 template<typename T>
 bool LinkedList<T>::pop_forward(T &x)
 {
@@ -197,6 +225,147 @@ bool LinkedList<T>::pop_back(T &x)
 }
 
 template<typename T>
-void qsort()
-{}
+void LinkedList<T>::ReverseMerge(LinkedList<T> &L)
+{
+	LNode<T> *pa,*pb,*q;
+	pa = head->next;
+	pb = L.head->next;
+	head->next = nullptr;
+	delete L.head;
+	L.head = nullptr;
+	while (pa != nullptr && pb != nullptr)
+	{
+		if(pa->operator<=(pb))
+		{
+			q = pa;
+			pa = pa->next;
+		}
+		else
+		{
+			q = pb;
+			pb = pb->next;;
+		}
+		q->next = head->next;
+		head->next = q;
+	}
+	if(pb != nullptr)
+		pa = pb;
+	while(pa != nullptr)
+	{
+		q = pa;
+		pa = pa->next;
+		q->next = head->next;
+		head->next = q;
+	}
+	while(q->next != nullptr)
+		q = q->next;
+	tail = q;
+}
+
+template<typename T>
+void LinkedList<T>::ReversePart(LNode<T> *pr,LNode<T> *p,const int &n)
+{
+	LNode<T> *ppr = pr;
+	LNode<T> *q;
+	int count = 0;
+	while(p != nullptr && count < n)
+	{
+		q = p->next;
+		p->next = pr;
+		pr = p;
+		p = q;
+		count++;
+	}
+	if(p == nullptr)
+	{
+		q = head->next;
+		q->next = nullptr;
+		tail = q;
+		head->next = pr;
+	}
+	else
+	{
+		tail->next = pr;
+		ppr->next = p;
+		while(p->next != ppr)
+			p = p->next;
+		p->next = nullptr;
+		tail = p;
+	}
+}
+
+template<typename T>
+void LinkedList<T>::Reverse()
+{
+	LNode<T> *pr = head->next;
+	LNode<T> *p = pr->next;
+	LNode<T> *q;
+	while(p != nullptr)
+	{
+		q = p->next;
+		p->next = pr;
+		pr = p;
+		p = q;
+	}
+	q = head->next;
+	q->next = nullptr;
+	head->next = tail;
+	tail = q;
+}
+
+template<typename T>
+void LinkedList<T>::RemoveRange(const T &min,const T &max)
+{
+	LNode<T> *pr,*p;
+	pr = head;
+	p = head->next;
+	while(p != nullptr && p->data < min)
+	{
+		pr = p;
+		p = p->next;
+	}
+	//we can delete element during the serach process,unnecessay to do it after locate the finished position.
+	while(p != nullptr && p->data <= max)
+	{
+		pr->next = p->next;
+		delete p;
+		p = pr->next;
+	}
+}
+
+template<typename T>
+void LinkedList<T>::RemoveRange_U(const T &min,const T &max)
+{
+	LNode<T> *pr,*p;
+	pr = head;
+	p = head->next;
+	while(p != nullptr)
+	{
+		if(p->data >= min && p->data <= max)
+		{
+			pr->next = p->next;
+			delete p;
+			p = pr->next;
+		}
+		else
+		{
+			pr = p;
+			p = p->next;
+		}
+	}
+}
+
+template<typename T>
+void LinkedList<T>::DepartOD(LinkedList<T> &odd,LinkedList<T> &even)
+{
+	LNode<T> *p = head->next;
+	while(p != nullptr)
+	{
+		if(p->data %2 == 0)
+			even.push_back(p->data);
+		else
+			odd.push_back(p->data);
+		p = p->next;
+	}
+}
 #endif

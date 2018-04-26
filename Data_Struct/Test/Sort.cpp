@@ -14,8 +14,8 @@ int main()
 	// aaa.InsertSort();
 	// aaa.BinaryInsertSort();
 	// aaa.ShellSort();
-	// aaa.QuickSort(aaa,0,aaa.Length());
+	aaa.QuickSort(aaa,1,aaa.Length());
 	// aaa.Quick_Insert_Mixed_Sort(aaa,0,aaa.Length() - 1);
-	 aaa.HybirdSort(aaa,0,aaa.Length());
+	 // aaa.HybirdSort(aaa,1,aaa.Length());
 	aaa.Traverse();
 }

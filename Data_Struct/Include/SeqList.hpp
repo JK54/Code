@@ -17,12 +17,13 @@ class SeqList
 		void Resize(int n);
 		void Reserve(int n);
 		bool Swap(int i ,int j);
+		void Clear();
 		void Init(std::istream &is);
 		void Init(const T a[],int n);
 		void Traverse();
 		void Reverse();
 		void RemoveMin();
-		void RemovePos(int i);
+		T RemovePos(int i);
 		void Remove(const T &vle);
 		void RemoveRange(const T &s, const T &t);
 		void RemoveRange2(const T &s, const T &t);//ordered
@@ -31,6 +32,7 @@ class SeqList
 		void Merge(SeqList<T> &L);
 		void Min_Max(T &,T&);
 		int  Compare(SeqList<T> &L);
+		T operator[](int i){return List[i - 1];}
 
 	  private:
 		int capacity;
@@ -70,19 +72,24 @@ void SeqList<T>::Resize(int n)
 }
 
 template<typename T>
+void SeqList<T>::Clear()
+{
+	size = 0;
+}
+
+template<typename T>
 void SeqList<T>::Reserve(int n)
 {
 	T *tmp = new T[n];
 	for(int i = 0;i < n;++i)
 		tmp[i] = List[i];
 	if(n > size)
-	{
 		capacity  = n;
-	}
 	else
-	{
 		capacity = size = n;
-	}
+	delete [] List;
+	List = nullptr;
+	List = tmp;
 }
 template<typename T>
 void SeqList<T>::Insert(const T &vle)
@@ -137,7 +144,7 @@ void SeqList<T>::Traverse()
 		exit(1);
 	}
 	for(int i = 0;i < size;++i)
-	std::cout<<List[i]<<" ";
+		std::cout<<List[i]<<" ";
 	std::cout<<std::endl;
 }
 
@@ -171,18 +178,20 @@ void SeqList<T>::RemoveMin()
 }
 
 template<typename T>
-void SeqList<T>::RemovePos(int i)
+T SeqList<T>::RemovePos(int i)
 {
 	if( IsEmpty() || i > size)
 	{
 		std::cout << "invliad pos or empty" << std::endl;
 		exit(1);
 	}
+	T vle = List[i - 1];
 	for (; i < size;i++)
 	{
 		List[i - 1] = List[i];
 	}
 	size--;
+	return vle;
 }
 
 template<typename T>

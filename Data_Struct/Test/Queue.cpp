@@ -15,6 +15,7 @@ int main()
 	aaa.Traverse();	
 	bbb.Traverse();
 	cout<<"DIDID"<<endl;
-	aaa.Clear();
+	std::cout<<aaa.Equal(bbb)<<std::endl;
+	aaa.Reverse();
 	aaa.Traverse();
 }
