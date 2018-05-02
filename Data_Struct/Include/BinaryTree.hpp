@@ -15,12 +15,6 @@ template<typename T>
 class Forest;
 
 template<typename T>
-class ThreadNode;
-
-template<typename T>
-class ThreadTree;
-
-template<typename T>
 BinTreeNode<T>* CreateTreeByInPostOrder(T*,T*,int);
 
 template<typename T>
@@ -38,9 +32,11 @@ class BinTreeNode
 		BinTreeNode(T x):data(x),lchild(nullptr),rchild(nullptr){}
 		BinTreeNode(BinTreeNode<T> *roo):data(roo->data),lchild(roo->lchild),rchild(roo->rchild){}
 		BinTreeNode(BinTreeNode<T> &roo):data(roo.data),lchild(roo.lchild),rchild(roo.rchild){}
-		bool isleaf(BinTreeNode<T> *p){if(p->lchild == nullptr && p->rchild == nullptr) return true;else return false;}
-		BinTreeNode<T>& operator=(const BinTreeNode<T> &p){*this = new BinTreeNode<T>;data = p.data;lchild = p.lchild;rchild = p.rchild;}
-
+		bool isleaf(){if(lchild == nullptr && rchild == nullptr) return true;else return false;}
+		BinTreeNode<T>& operator=(const BinTreeNode<T> &p){*this = new BinTreeNode<T>;data = p.data;lchild = p.lchild;rchild = p.rchild;return *this;}
+		bool operator > (const BinTreeNode<T> *p){return data > p->data;}
+		bool operator==(const BinTreeNode<T> *p){return data == p->data;}
+		bool operator==(const BinTreeNode<T> &p){return data == p.data;}
 		T data;
 		BinTreeNode<T> *lchild;
 		BinTreeNode<T> *rchild;
@@ -52,10 +48,10 @@ class BinTree
 	//reconsider the situation:there are some nodes have the same value.
 	//In some case,replicated elements can build mutiple binarytree.
 	//e.g:inorder:2111211,postorder:2121111,it can be 1( 2 1( 1( 1 2) 1) or 1( 1(2) 1(1(2 1)))
-	//Maybe there is a algorithm to build all cases of trees,remains to be solved.
+	//remains to solve.
+	friend std::set<BinTreeNode<T>*> CreateTreeByInPostOrder_Duplicated<T>(T *ino,T *posto,int n);
 	friend BinTreeNode<T>* CreateTreeByPreInOrder<T>(T *preo,T *ino,int n);
 	friend BinTreeNode<T>* CreateTreeByInPostOrder<T>(T *ino,T *posto,int n);
-	friend std::set<BinTreeNode<T>*> CreateTreeByInPostOrder_Duplicated<T>(T *ino,T *posto,int n);//no definition.
 	friend class Forest<T>;
 	public:
 	static T endm;
@@ -76,6 +72,7 @@ class BinTree
 	//recursive traverse
 	//bool type variable "ingen" control the output in genlist format(1) or not(0)
 	void TraversePreOrder(BinTreeNode<T> *ro,bool ingen);
+	void TraversePreOrder(BinTreeNode<T> *,int );
 	void TraverseInOrder(BinTreeNode<T> *ro);
 	void TraversePostOrder(BinTreeNode<T> *ro);
 	//no-recursive traverse
@@ -88,13 +85,23 @@ class BinTree
 
 	//use traverse to complete
 	size_t Height(BinTreeNode<T> *roo);
+	size_t Depth(BinTreeNode<T> *roo);
 	size_t Size();
-	BinTreeNode<T>* Copy(BinTreeNode<T> *orign);
-	bool Equal(BinTreeNode<T> *l,BinTreeNode<T> *r);
+	void Copy(BinTree<T> &p);
+	bool Equal(BinTree<T> &t);
+	BinTreeNode<T>* Parent1(BinTreeNode<T> *c,BinTreeNode<T> *p);
+	BinTreeNode<T>* Parent2(BinTreeNode<T> *c,BinTreeNode<T> *p);
+	size_t Countn0(BinTreeNode<T> *);
+	size_t Countn1(BinTreeNode<T> *);
+	size_t Countn2(BinTreeNode<T> *);
+	void RemoveLeaf(BinTreeNode<T> *&roo);
+	void Max(BinTreeNode<T> *&,BinTreeNode<T> *,T &);
+	void Reflect(BinTreeNode<T> *&);
 
-	protected:
+	private:
 	BinTreeNode<T> *root;
 	void destroy(BinTreeNode<T> *ro);
+	BinTreeNode<T>* copy(BinTreeNode<T> *orign);
 };
 
 
@@ -222,6 +229,17 @@ void BinTree<T>::TraversePreOrder(BinTreeNode<T> *ro,bool ingen)
 			return;
 		}
 
+	}
+}
+
+template<typename T>
+void BinTree<T>::TraversePreOrder(BinTreeNode<T> *ro,int i)
+{
+	if(ro != nullptr)
+	{
+		std::cout<<ro->data<<" , "<<i<<std::endl;
+		TraversePreOrder(ro->lchild,i + 1);
+		TraversePreOrder(ro->rchild,i + 1);
 	}
 }
 
@@ -409,4 +427,199 @@ size_t BinTree<T>::Height(BinTreeNode<T> *roo)
 	}
 }
 
+template<typename T>
+size_t BinTree<T>::Depth(BinTreeNode<T> *roo)
+{
+	if(roo != nullptr)
+		return 1 + Depth(Parent1(roo,root));
+	else
+		return 0;
+}
+template<typename T>
+size_t BinTree<T>::Size()
+{
+	Stack<BinTreeNode<T>*> s;
+	size_t Size = 0;
+	BinTreeNode<T> *roo = root;
+	while(roo != nullptr || !s.IsEmpty())
+	{
+		if(roo != nullptr)	
+		{
+			Size++;
+			s.Push(roo);
+			roo = roo->lchild;
+		}
+		else
+		{
+			s.Pop(roo);
+			roo = roo->rchild;
+		}
+	}
+	return Size;
+}
+
+template<typename T>
+bool BinTree<T>::Equal(BinTree<T> &t)
+{
+	BinTreeNode<T> *rol,*rot;
+	Stack<BinTreeNode<T>*> sl;
+	Stack<BinTreeNode<T>*> st;
+	rol = root;
+	rot = t.root;
+	while((rol != nullptr && rot != nullptr) || (!sl.IsEmpty() && !st.IsEmpty()))
+	{
+		if(rol != nullptr && rot != nullptr)
+		{
+			if(rol != rot)
+				return false;
+			sl.Push(rol);
+			st.Push(rot);
+			rol = rol->lchild;
+			rot = rot->lchild;
+		}
+		else
+		{
+			sl.Pop(rol);
+			st.Pop(rot);
+			rol = rol->rchild;
+			rot = rot->rchild;
+		}
+	}
+	if(Size() == t.Size())
+		return true;
+	else
+		return false;
+}
+
+template<typename T>
+void BinTree<T>::Copy(BinTree<T> &p)
+{
+	root = copy(p.root);
+}
+template<typename T>
+BinTreeNode<T>* BinTree<T>::copy(BinTreeNode<T> *origin)
+{
+	if(origin == nullptr)
+		return nullptr;
+	BinTreeNode<T> *tmp = new BinTreeNode<T>(origin->data);
+	tmp->lchild = copy(origin->lchild);
+	tmp->rchild = copy(origin->rchild);
+	return tmp;
+}
+
+template<typename T>
+BinTreeNode<T>* BinTree<T>::Parent1(BinTreeNode<T> *c,BinTreeNode<T> *p)
+{
+	BinTreeNode<T> *l,*r;
+	if(c == root || p == nullptr)
+	{
+		if(c == root)
+			std::cout<<"root don't have a parent"<<std::endl;
+		return nullptr;
+	}
+	if(p->lchild == c || p->rchild == c)
+		return p;
+	else
+	{
+		l = Parent1(c,p->lchild);
+		r = Parent1(c,p->rchild);
+	}
+	return l == nullptr ? r : l;
+}
+
+
+template<typename T>
+BinTreeNode<T>* BinTree<T>::Parent2(BinTreeNode<T> *c,BinTreeNode<T> *p)
+{
+	if(c == root)
+	{
+		std::cout<<"root don't have parent.."<<std::endl;
+		return nullptr;
+	}
+	if(p == nullptr)
+		return nullptr;
+	if(p->lchild == c || p->rchild == c)
+		return p;
+	BinTreeNode<T> *q = Parent2(c,p->lchild);
+	if(q != nullptr)
+		return q;
+	else
+		return Parent2(c,p->rchild);
+
+}
+template<typename T>
+size_t BinTree<T>::Countn0(BinTreeNode<T> *trav)
+{
+	if(trav == nullptr)
+		return 0;
+	if(trav->isleaf())
+		return 1;
+	else
+		return  Countn0(trav->lchild) + Countn0(trav->rchild);
+}
+template<typename T>
+size_t BinTree<T>::Countn1(BinTreeNode<T> *trav)
+{
+	if(trav == nullptr)
+		return 0;
+	if((trav->lchild == nullptr && trav->rchild != nullptr) ||(trav->lchild != nullptr && trav->rchild == nullptr))
+	return 1 + Countn1(trav->lchild) + Countn1(trav->rchild);
+	else
+		return  Countn1(trav->lchild) + Countn1(trav->rchild);
+}
+template<typename T>
+size_t BinTree<T>::Countn2(BinTreeNode<T> *trav)
+{
+	if(trav == nullptr)
+		return 0;
+	if(trav->lchild != nullptr && trav->rchild != nullptr)
+	return 1 + Countn2(trav->lchild) + Countn2(trav->rchild);
+	else
+		return  Countn2(trav->lchild) + Countn2(trav->rchild);
+}
+
+template<typename T>
+void BinTree<T>::RemoveLeaf(BinTreeNode<T> *&roo)
+{
+	if(roo == nullptr)
+		return;
+	if(roo->isleaf())
+	{
+		delete roo;
+		roo = nullptr;
+	}
+	else
+	{
+		RemoveLeaf(roo->lchild);
+		RemoveLeaf(roo->rchild);
+	}
+}
+
+template<typename T>
+void BinTree<T>::Max(BinTreeNode<T> *&M,BinTreeNode<T> *p,T &max)
+{
+	if(p != nullptr)
+	{
+		if(p->data > max)
+		{
+			max = p->data;
+			M = p;
+		}
+		Max(M,p->lchild,max);
+		Max(M,p->rchild,max);
+	}
+}
+
+template<typename T>
+void BinTree<T>::Reflect(BinTreeNode<T> *&roo)
+{
+	if(roo == nullptr)
+		return;
+	BinTreeNode<T> *tmp;
+	tmp = roo->lchild;
+	roo->lchild = roo->rchild;
+	roo->rchild = tmp;
+	Reflect(roo->lchild);
+	Reflect(roo->rchild);
+}
 #endif

@@ -50,8 +50,8 @@ class Sparse_Matrix_T
 	private:
 		Trituple<T> *smArray;
 		int maxsize;
-		int Rows,Cols,Terms;
-		int MaxRow,MaxCol;//added for compatible usage.
+		int Rows,Cols,Terms;//nonzero rows,cols,elements.
+		int MaxRow,MaxCol;//the size of matrix,added for compatible usage,major for judging the arithmetic operation is valid or not.
 };
 
 template<typename T>
@@ -107,6 +107,7 @@ bool Sparse_Matrix_T<T>::Insert(const int &x,const int &y,const T &vle)
 	smArray[i].row = x;
 	smArray[i].col = y;
 	smArray[i].value = vle;
+	//below equal to Recount()
 	Terms++;
 	if(smArray[i - 1].row != x)
 		Rows++;
@@ -277,9 +278,14 @@ void Sparse_Matrix_T<T>::Add(const Sparse_Matrix_T<T> &B)
 		{
 			 if(smArray[i].col == B.smArray[j].col)
 			 {
-				 smArray[k].row = smArray[i].row;
-				 smArray[k].col = smArray[i].col;
-				 smArray[k++].value = smArray[i++].value + B.smArray[j++].value;
+				 if(smArray[i].value + B.smArray[j].value != 0)
+				 {
+				 	smArray[k].row = smArray[i].row;
+				 	smArray[k].col = smArray[i].col;
+				 	smArray[k].value = smArray[i].value + B.smArray[j].value;
+					++k;
+				 }
+				 i++,j++;
 			 }
 			 else if(smArray[i].col < B.smArray[j].col)
 			 	smArray[k++] = smArray[i++];
@@ -327,9 +333,22 @@ void Sparse_Matrix_T<T>::Multiply(Sparse_Matrix_T<T> &B,Sparse_Matrix_T<T> &resu
 						break;
 					}
 				if(ad == 0)
+				{
 					result.Insert(tmp.row,tmp.col,tmp.value);
+					result.Terms++;
+				}
 			}
 		}
 	}
+	//Clear the zero element
+	for(k = 0;k < result.Terms;k++)
+	{
+		if(result[k].value == 0)
+		{
+			for(j = k;j < result.Terms - 1;j++)
+				result[j] = result[j + 1];
+		}
+	}
+	result.RecountRCT();
 }
 #endif
