@@ -43,9 +43,9 @@ class Queue
 		bool Copy(Queue<T> &p);
 		void Reverse();
 		bool Equal(Queue<T> &Q);
-		//priprity queue
+		//priority queue
 		bool Enqueue_Priority(T &x);
-		//special object type
+		//priority queue for customize class,and it must refine the arithmetic operator < and ==.
 		bool Enqueue_Priority_PM(T &x);
 
 	private:

@@ -34,6 +34,7 @@ class BinTreeNode
 		BinTreeNode(BinTreeNode<T> &roo):data(roo.data),lchild(roo.lchild),rchild(roo.rchild){}
 		bool isleaf(){if(lchild == nullptr && rchild == nullptr) return true;else return false;}
 		BinTreeNode<T>& operator=(const BinTreeNode<T> &p){*this = new BinTreeNode<T>;data = p.data;lchild = p.lchild;rchild = p.rchild;return *this;}
+		BinTreeNode<T>* operator=(const BinTreeNode<T> *p){*this = new BinTreeNode<T>;data = p->data;lchild = p->lchild;rchild = p->rchild;return this;}
 		bool operator > (const BinTreeNode<T> *p){return data > p->data;}
 		bool operator==(const BinTreeNode<T> *p){return data == p->data;}
 		bool operator==(const BinTreeNode<T> &p){return data == p.data;}
@@ -71,10 +72,12 @@ class BinTree
 	void CreateTreePreOrder(BinTreeNode<T> *&ro,std::istream &is);
 	//recursive traverse
 	//bool type variable "ingen" control the output in genlist format(1) or not(0)
+	void TraversePreOrder(BinTreeNode<T> *);
 	void TraversePreOrder(BinTreeNode<T> *ro,bool ingen);
-	void TraversePreOrder(BinTreeNode<T> *,int );
+	void TraversePreOrder2(BinTreeNode<T> *,int );
 	void TraverseInOrder(BinTreeNode<T> *ro);
 	void TraversePostOrder(BinTreeNode<T> *ro);
+	void TraverseDoubleOrder(BinTreeNode<T> *ro);
 	//no-recursive traverse
 	void TraversePreOrder_NR1(BinTreeNode<T> *roo);
 	void TraversePreOrder_NR2(BinTreeNode<T> *roo);
@@ -88,6 +91,7 @@ class BinTree
 	size_t Depth(BinTreeNode<T> *roo);
 	size_t Size();
 	void Copy(BinTree<T> &p);
+	void Copy(BinTreeNode<T> *p);
 	bool Equal(BinTree<T> &t);
 	BinTreeNode<T>* Parent1(BinTreeNode<T> *c,BinTreeNode<T> *p);
 	BinTreeNode<T>* Parent2(BinTreeNode<T> *c,BinTreeNode<T> *p);
@@ -97,18 +101,28 @@ class BinTree
 	void RemoveLeaf(BinTreeNode<T> *&roo);
 	void Max(BinTreeNode<T> *&,BinTreeNode<T> *,T &);
 	void Reflect(BinTreeNode<T> *&);
+	int PrintAncient(BinTreeNode<T> *p,T x,T path[],int level,int &count);
+	int PrintAncient(BinTreeNode<T> *p,BinTreeNode<T> *q,BinTreeNode<T> *path[],int level,int &count);
+	BinTreeNode<T>* FindPosPreOrder(BinTreeNode<T> *,int &);
+	void FindPath(BinTreeNode<T> *I,BinTreeNode<T> *J,T *path,size_t &len);
+	void LeafCount(BinTreeNode<T> *);
+	void LeafCount(BinTreeNode<T> *,BinTreeNode<T> *leaf[],int lev[],int level,int &num);
+	void Width(BinTreeNode<T> *,int width[],int &max);
+	bool IsCBT();
+	bool IsCBT(BinTreeNode<T> *roo);
+	void TransPre2Post(T pre[],T post[],int s1,int t1,int s2,int t2);
 
 	private:
 	BinTreeNode<T> *root;
 	void destroy(BinTreeNode<T> *ro);
-	BinTreeNode<T>* copy(BinTreeNode<T> *orign);
+	BinTreeNode<T>* copy(BinTreeNode<T> *origin);
 };
 
-
+//declare static parameter.
 template<typename T>
 T BinTree<T>::endm;
-
-	template<typename T>
+//constructor and destructor
+template<typename T>
 BinTree<T>::BinTree()
 {
 	root = new BinTreeNode<T>;
@@ -125,7 +139,8 @@ BinTree<T>::BinTree(BinTreeNode<T> *roo)
 {
 	root = roo;
 }
-	template<typename T>
+
+template<typename T>
 void BinTree<T>::destroy(BinTreeNode<T> *root)
 {
 	if(root == nullptr)
@@ -139,13 +154,14 @@ void BinTree<T>::destroy(BinTreeNode<T> *root)
 	}
 }
 
-	template<typename T>
+template<typename T>
 BinTree<T>::~BinTree()
 {
 	destroy(root);
 }
 
-	template<typename T>
+//create tree
+template<typename T>
 void BinTree<T>::CreateTreePreOrder(BinTreeNode<T> *&ro,std::istream &is)
 {
 	T x;
@@ -196,44 +212,34 @@ BinTreeNode<T>* CreateTreeByInPostOrder(T *ino,T *posto,int n)
 	return p;
 }
 
-	template<typename T>
+//traverse
+template<typename T>
+void BinTree<T>::TraversePreOrder(BinTreeNode<T> *roo)
+{
+	while(roo != nullptr)
+	{
+		std::cout<<roo->data<<" ";
+		TraversePreOrder(roo->lchild);
+		roo = roo->rchild;
+	}
+}
+	
+template<typename T>
 void BinTree<T>::TraversePreOrder(BinTreeNode<T> *ro,bool ingen)
 {
-	if(ingen == false)
-	{
-		if(ro == nullptr)
-		{
-			return;
-		}
-		else
-		{
-			std::cout<<ro->data<<" ";
-			TraversePreOrder(ro->lchild,ingen);
-			TraversePreOrder(ro->rchild,ingen);
-			return;
-		}
-	}
-	else
-	{
-		if(ro == nullptr)
-		{
-			return;
-		}
-		else
-		{
-			std::cout<<ro->data<<" ( ";
-			TraversePreOrder(ro->lchild,ingen);
-			std::cout<<",";
-			TraversePreOrder(ro->rchild,ingen);
-			std::cout<<" ) ";
-			return;
-		}
-
-	}
+	std::cout<<ro->data<<" ";
+	if(ingen == true)
+		std::cout<<"( ";
+	TraversePreOrder(ro->lchild,ingen);
+	if(ingen == true)
+		std::cout<<",";
+	TraversePreOrder(ro->rchild,ingen);
+	if(ingen == true)
+		std::cout<<" ) ";
 }
 
 template<typename T>
-void BinTree<T>::TraversePreOrder(BinTreeNode<T> *ro,int i)
+void BinTree<T>::TraversePreOrder2(BinTreeNode<T> *ro,int i)
 {
 	if(ro != nullptr)
 	{
@@ -246,11 +252,7 @@ void BinTree<T>::TraversePreOrder(BinTreeNode<T> *ro,int i)
 	template<typename T>
 void BinTree<T>::TraverseInOrder(BinTreeNode<T> *ro)
 {
-	if(ro == nullptr)
-	{
-		return;
-	}
-	else
+	if(ro != nullptr)
 	{
 		TraverseInOrder(ro->lchild);
 		std::cout<<ro->data<<" ";
@@ -263,9 +265,7 @@ void BinTree<T>::TraverseInOrder(BinTreeNode<T> *ro)
 void BinTree<T>::TraversePostOrder(BinTreeNode<T> *ro)
 {
 	if(ro == nullptr)
-	{
 		return;
-	}
 	else
 	{
 		TraversePostOrder(ro->lchild);
@@ -275,43 +275,47 @@ void BinTree<T>::TraversePostOrder(BinTreeNode<T> *ro)
 	}
 }
 
-
-//set xmark as flag of null lchild.if lchild is not nullptr,then output it,else pop the brother rchild.
-//It's very similar to NR2,but it need a extra parameters to store the last pop operation is successed or not.It take one more bit memory space,and NR2 take more time.When it come to a extra large tree,NR1 could have better performance.
-	template<typename T>
+template<typename T>
+void BinTree<T>::TraverseDoubleOrder(BinTreeNode<T> *ro)
+{
+	if(ro != nullptr)
+	{
+		std::cout<<ro->data<<" ";
+		TraverseDoubleOrder(ro->lchild);
+		std::cout<<ro->data<<" ";
+		TraverseDoubleOrder(ro->rchild);
+	}
+}
+template<typename T>
 void BinTree<T>::TraversePreOrder_NR1(BinTreeNode<T> *roo)
 {
 	Stack<BinTreeNode<T>*> s;
-	bool xmark = true;
 	BinTreeNode<T> *trav = roo;
-	while(trav != nullptr&& xmark)
+	s.Push(trav);
+	while(s.Pop(trav))
 	{
 		std::cout<<trav->data<<" ";
 		if(trav->rchild != nullptr)
 			s.Push(trav->rchild);
 		if(trav->lchild != nullptr)
-			trav = trav->lchild;
-		else
-			xmark = s.Pop(trav);
+			s.Push(trav->lchild);
 	}
 }
 
-	template<typename T>
+template<typename T>
 void BinTree<T>::TraversePreOrder_NR2(BinTreeNode<T> *roo)
 {
 	Stack<BinTreeNode<T>*> s;
 	BinTreeNode<T> *trav = roo;
-	while(trav != nullptr || !s.IsEmpty())
+	s.Push(trav);
+	while(!s.IsEmpty())
 	{
+		s.Pop(trav);
 		std::cout<<trav->data<<" ";
-		if((trav->lchild == nullptr && trav->rchild == nullptr)&& s.IsEmpty())
-			break;
 		if(trav->rchild != nullptr)
 			s.Push(trav->rchild);
 		if(trav->lchild != nullptr)
-			trav = trav->lchild;
-		else
-			s.Pop(trav);
+			s.Push(trav->lchild);
 	}
 }
 
@@ -466,7 +470,9 @@ bool BinTree<T>::Equal(BinTree<T> &t)
 	Stack<BinTreeNode<T>*> st;
 	rol = root;
 	rot = t.root;
-	while((rol != nullptr && rot != nullptr) || (!sl.IsEmpty() && !st.IsEmpty()))
+	sl.Push(rol);
+	st.Push(rot);
+	while(!sl.IsEmpty() && !st.IsEmpty())
 	{
 		if(rol != nullptr && rot != nullptr)
 		{
@@ -496,6 +502,13 @@ void BinTree<T>::Copy(BinTree<T> &p)
 {
 	root = copy(p.root);
 }
+
+template<typename T>
+void BinTree<T>::Copy(BinTreeNode<T> *p)
+{
+	root = copy(p);
+}
+
 template<typename T>
 BinTreeNode<T>* BinTree<T>::copy(BinTreeNode<T> *origin)
 {
@@ -512,11 +525,7 @@ BinTreeNode<T>* BinTree<T>::Parent1(BinTreeNode<T> *c,BinTreeNode<T> *p)
 {
 	BinTreeNode<T> *l,*r;
 	if(c == root || p == nullptr)
-	{
-		if(c == root)
-			std::cout<<"root don't have a parent"<<std::endl;
 		return nullptr;
-	}
 	if(p->lchild == c || p->rchild == c)
 		return p;
 	else
@@ -527,15 +536,11 @@ BinTreeNode<T>* BinTree<T>::Parent1(BinTreeNode<T> *c,BinTreeNode<T> *p)
 	return l == nullptr ? r : l;
 }
 
-
 template<typename T>
 BinTreeNode<T>* BinTree<T>::Parent2(BinTreeNode<T> *c,BinTreeNode<T> *p)
 {
 	if(c == root)
-	{
-		std::cout<<"root don't have parent.."<<std::endl;
 		return nullptr;
-	}
 	if(p == nullptr)
 		return nullptr;
 	if(p->lchild == c || p->rchild == c)
@@ -621,5 +626,240 @@ void BinTree<T>::Reflect(BinTreeNode<T> *&roo)
 	roo->rchild = tmp;
 	Reflect(roo->lchild);
 	Reflect(roo->rchild);
+}
+
+//level init as 1 when called.
+template<typename T>
+int BinTree<T>::PrintAncient(BinTreeNode<T> *p,T x,T *path,int level,int &count)
+{
+	if(p != nullptr)
+	{
+		path[level - 1] = p->data;
+		if(p->data == x)
+		{
+			count = level;
+			return 1;
+		}
+		if(PrintAncient(p->lchild,x,path,level + 1,count))
+			return 1;
+		return	PrintAncient(p->rchild,x,path,level+ 1,count);
+	}
+	return 0;
+}
+
+//usable for repeating elements.
+template<typename T>
+int BinTree<T>::PrintAncient(BinTreeNode<T> *p,BinTreeNode<T> *q,BinTreeNode<T> *path[],int level,int &count)
+{
+	if(p != nullptr)
+	{
+		path[level - 1] = p;
+		//here the refined operator won't be called,it must be used as the form:p->operator=(),because p is pointer.
+		if(p == q)
+		{
+			count = level;
+			for(int i = 0 ;i<count;++i)
+				std::cout<<path[i]->data<<" ";
+			std::cout<<std::endl;
+			return 1;
+		}
+		if(PrintAncient(p->lchild,q,path,level + 1,count))
+			return 1;
+		return PrintAncient(p->rchild,q,path,level+ 1,count);
+	}
+	return 0;
+}
+
+template<typename T>
+BinTreeNode<T>* BinTree<T>::FindPosPreOrder(BinTreeNode<T> *roo,int &k)
+{
+	if(roo == nullptr)
+		return nullptr;
+	//define the sequence num of root is 1
+	if(--k == 0)
+	{
+		std::cout<<"the value of position k preorder is "<<roo->data<<std::endl;
+		return roo;
+	}
+	BinTreeNode<T> *tmp1,*tmp2;
+	tmp1 = FindPosPreOrder(roo->lchild,k);
+	tmp2 = FindPosPreOrder(roo->rchild,k);
+	return tmp1 == nullptr? tmp2:tmp1;
+}
+
+template<typename T>
+void BinTree<T>::FindPath(BinTreeNode<T> *I,BinTreeNode<T>* J,T path[],size_t &len)
+{
+
+	BinTreeNode<T> **pathI = new BinTreeNode<T>* [Size()];
+	BinTreeNode<T> **pathJ = new BinTreeNode<T>* [Size()];
+	int i,j,k = 0;
+	int countI = 0,countJ = 0;
+	PrintAncient(root,I,pathI,1,countI);
+	PrintAncient(root,J,pathJ,1,countJ);
+	if(!countI || !countJ)
+	{
+		std::cout<<"invalid node"<<std::endl;
+		exit(1);
+	}
+	//skip common ancestor and link
+	for(i = 0;i < countI && i <countJ;++i)
+		if(pathI[i] != pathJ[i])
+			break;
+	i--;
+	for(j = countI - 1; j > i;j--,k++)
+			path[k] = pathI[j]->data;
+	for(j = i;j < countJ;j++,k++)
+			path[k] = pathJ[j]->data;
+	//len is the path of nodes,the len of path between 2 node is 1 unit.
+	len = k - 1;
+	//print path and len
+	std::cout<<"len of path is "<<len<<std::endl;
+	for(k = 0;k <= len;k++)
+		std::cout<<path[k]<<" ";
+	std::cout<<std::endl;
+	delete [] pathI;
+	delete [] pathJ;
+}
+
+template<typename T>
+void BinTree<T>::LeafCount(BinTreeNode<T> *roo)
+{
+	if(roo == nullptr)
+		exit(1);
+	Queue<BinTreeNode<T>*> q;
+	Queue<BinTreeNode<T>*> leaf;
+	Queue<size_t> depth;
+	size_t tmp;
+	BinTreeNode<T> *p;
+	q.Enqueue(roo);
+	while(!q.IsEmpty())
+	{
+		q.Dequeue(p);
+		//I can not think out a method to count the level with linkedlist queue.so here call Depth() to count the level.the second recursion function is easier to write.
+		if(p->isleaf())
+		{
+			leaf.Enqueue(p);
+			tmp = Depth(p);
+			depth.Enqueue(tmp);
+		}
+		if(p->lchild != nullptr)
+			q.Enqueue(p->lchild);
+		if(p->rchild != nullptr)
+			q.Enqueue(p->rchild);
+	}
+	while(leaf.Dequeue(p))
+		std::cout<<p->data<<" ";
+	std::cout<<std::endl;
+	while(depth.Dequeue(tmp))
+		std::cout<<tmp<<" ";
+	std::cout<<std::endl;
+}
+
+//init value of level is 1,num is 0
+template<typename T>
+void BinTree<T>::LeafCount(BinTreeNode<T> *roo,BinTreeNode<T> **leaf,int *lev,int level,int &num)
+{
+	if(roo == nullptr)
+		return;
+	if(roo->isleaf())
+	{
+		leaf[num] = roo;
+		lev[num] = level;
+		num++;
+	}
+	LeafCount(roo->lchild,leaf,lev,level + 1,num);
+	LeafCount(roo->rchild,leaf,lev,level + 1,num);
+}
+
+template<typename T>
+void BinTree<T>::Width(BinTreeNode<T> *roo,int width[],int &max)
+{
+	if(roo == nullptr)
+	{
+		std::cout<<"null.."<<std::endl;
+		exit(1);
+	}
+	BinTreeNode<T> *trav = roo;
+	int size = Size();
+	BinTreeNode<T> **queue = new BinTreeNode<T>*[size];
+	int front = 0,last = 1,rear = 0;
+	int num = 0,level = 1;
+	rear = (rear + 1)%size;
+	queue[rear] = trav;   
+	while(front != rear)
+	{
+		front = (front + 1) % size;
+		trav = queue[front];
+		num++;
+		if(trav->lchild != nullptr)
+		{
+			rear = (rear + 1) % size;
+			queue[rear] = trav->lchild;
+		}
+		if(trav->rchild != nullptr)
+		{
+			rear = (rear + 1) % size;
+			queue[rear] = trav->rchild;
+		}
+		if(front == last)
+		{
+			last = rear;
+			width[level] = num;
+			num = 0;
+			level++;
+		}
+	}
+	max = width[1];
+	for(int i = 1;i < level;i++)
+		max = max > width[i]? max : width[i];
+	delete [] queue;
+}
+
+template<typename T>
+bool BinTree<T>::IsCBT()
+{
+	int height = Height(root);
+	int size = Size();
+	if(height == static_cast<int>(log10(size)/log10(2)) + 1)
+		return true;
+	else
+		return false;
+}
+
+template<typename T>
+bool BinTree<T>::IsCBT(BinTreeNode<T> *roo)
+{
+	//reason of double Size():rear pointer is twice as fast as front,if using single Size(),rear will catch front in the second round that the cause the loop ended early,because the child of leaf will enqueue even though they are nullptr.
+	int size = Size();
+	int front = 0,rear = 0;
+	BinTreeNode<T> *trav;
+	BinTreeNode<T> **queue = new BinTreeNode<T>*[size];
+	queue[rear++] = roo;
+	while(front != rear)
+	{
+		trav = queue[front];
+		front = (front + 1) % size;
+		if(trav == nullptr)
+			return false;
+		rear = (rear + 1) %size;
+		queue[rear]= trav->lchild;
+		rear = (rear + 1) %size;
+		queue[rear] = trav->rchild;
+	}
+	return true;
+}
+
+template<typename T>
+void BinTree<T>::TransPre2Post(T *pre,T *post,int s1,int t1,int s2,int t2)
+{
+	int n = t1 - s1 + 1;
+	int m = (n - 1)/2;
+	if(n)
+	{
+		post[t2] = pre[s1];
+		TransPre2Post(pre,post,s1 + 1,s1 + m,s2,s2 + m - 1);
+		TransPre2Post(pre,post,t1 - m + 1,t1,t2 - m,t2-1);
+	}
 }
 #endif

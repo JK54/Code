@@ -29,7 +29,7 @@ class CBTree
 		void LinkedBST2ArrCBT(BinTreeNode<T> *,int);
 
 
-	private:
+	protected:
 		T *Data;
 		int maxsize;
 		int size;
@@ -163,3 +163,4 @@ void CBTree<T>::LinkedBST2ArrCBT(BinTreeNode<T> *p,int i)
 	LinkedBST2ArrCBT(p->rchild,2*i + 2);
 }
 #endif
+

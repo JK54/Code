@@ -198,7 +198,7 @@ void Sparse_Matrix_T<T>::Transpose(Sparse_Matrix_T<T> &result)
 	//The code of the textbook,but the result is incorrect.After thinking and debugging,I found that the problem is the initialization and definition of rowSize array.
 	//The Cols of smArray equals to size of rowSize array does not mean the col value of each element equals to the index of rowSize array though it truly have the relations of equality between Cols and size of rowSize.For example,the Cols is 3,while the cols are 1,3,5,only the col "1" can be filled in the rowSize.
 	//For completing the code,a extra array is required to record the mapping between index of rowSize and col,but the moving procession is actually a insert sort,no better than shell sort.
-	//the code is incomplete.
+	//PS:Use MaxRow,MaxCol here,the auxiliary array.
    //-----------------//
    /*  int *rowSize = new int[Cols]; */
 	// int *rowStart = new int [Cols];
