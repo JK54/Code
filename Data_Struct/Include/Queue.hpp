@@ -12,8 +12,9 @@ class QueueNode
 	friend class Queue<T>;
 	public:
 	QueueNode():next(nullptr){}
-	QueueNode(T x):data(x),next(nullptr){}
-	QueueNode(QueueNode<T> &p){data = p.data;next = p.next;}
+	QueueNode(const T &x):data(x),next(nullptr){}
+	QueueNode(const QueueNode<T> &p){data = p.data;next = p.next;}
+	QueueNode(const QueueNode<T> *p){data = p->data;next = p->next;}
 	QueueNode<T> *Next(){if(next != nullptr) return next;else return nullptr;}
 	bool operator==(const QueueNode<T> *p){return data == p->data;}
 	bool operator!=(const QueueNode<T> *p){return data != p->data;}
@@ -31,16 +32,17 @@ class Queue
 	public:
 		Queue();
 		Queue(T x);
+		Queue(const Queue<T> &p);
 		~Queue();
-
+		Queue<T>& operator=(const Queue<T> &p){this->Copy(p);return *this;}
 		size_t Size(){return size;}
 		bool Dequeue(T &p);
-		bool Enqueue(T &x);
+		bool Enqueue(const T &x);
 		T First(){return first->next->data;}
 		void Clear(){T x;while(!IsEmpty())Dequeue(x);}
 		void Traverse();
-		bool IsEmpty(){if(first->next == nullptr)return true;else return false;}
-		bool Copy(Queue<T> &p);
+		bool IsEmpty() const {return size == 0;}
+		bool Copy(const Queue<T> &p);
 		void Reverse();
 		bool Equal(Queue<T> &Q);
 		//priority queue
@@ -73,6 +75,13 @@ Queue<T>::Queue(T x)
 	assert(first);
 }
 
+template<typename T>
+Queue<T>::Queue(const Queue<T> &p)
+{
+	size = 0;
+	first = last = new QueueNode<T>;
+	this->Copy(p);
+}
 	template<typename T>
 Queue<T>::~Queue()
 {
@@ -88,7 +97,7 @@ Queue<T>::~Queue()
 }
 
 	template<typename T>
-bool Queue<T>::Enqueue(T &x)
+bool Queue<T>::Enqueue(const T &x)
 {
 	if(first == nullptr)
 	{
@@ -99,8 +108,8 @@ bool Queue<T>::Enqueue(T &x)
 	{
 		last->next = new QueueNode<T>(x);
 		last = last->next;
-		if(first->next == nullptr)
-			first->next = last;
+		// if(first->next == nullptr)
+			// first->next = last;
 		++size;
 		return true;
 	}
@@ -131,7 +140,10 @@ bool Queue<T>::Enqueue_Priority(T &x)
 				break;
 		}
 		if(f == nullptr)
+		{
 			fpre->next = tmp;
+			last = tmp;
+		}
 		else
 		{
 			fpre->next = tmp;
@@ -187,7 +199,10 @@ bool Queue<T>::Enqueue_Priority_PM(T &x)
 
 		}
 		if(f == nullptr)
+		{
 			fpre->next = tmp;
+			last = tmp;
+		}
 		else
 		{
 			fpre->next = tmp;
@@ -227,29 +242,19 @@ void Queue<T>::Traverse()
 }
 
 template<typename T>
-bool Queue<T>::Copy(Queue<T> &p)
+bool Queue<T>::Copy(const Queue<T> &p)
 {
-	if(!p.IsEmpty())
-	{
-		QueueNode<T> *tmp;
-		while(first->next != nullptr)
-		{
-			tmp = first->next;
-			first->next = tmp->next;
-			delete tmp;
-		}
-		last = first;
-		tmp = p.first->next;
-		while(tmp != nullptr)
-		{
-			last->next = new QueueNode<T>(tmp->data);
-			last = last->next;
-			tmp  = tmp->next;
-		}
-		return true;
-	}
-	else
+	if(p.IsEmpty())
 		return false;
+	QueueNode<T> *tmp;
+	Clear();
+	tmp = p.first->next;
+	while(tmp != nullptr)
+	{
+		Enqueue(tmp->data);
+		tmp  = tmp->next;
+	}
+	return true;
 }
 
 template<typename T>

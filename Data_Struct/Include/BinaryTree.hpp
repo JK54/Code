@@ -67,7 +67,8 @@ class BinTree
 	BinTree<T>& operator=(const BinTree<T> &s);
 
 	//get root node and modify endmark
-	BinTreeNode<T>* Root(){return root;}
+	BinTreeNode<T>*& Root(){return root;}
+	BinTreeNode<T>* uRoot(){return root;}
 	void SetMark(T x){endm = x;}
 	void CreateTreePreOrder(BinTreeNode<T> *&ro,std::istream &is);
 	//recursive traverse
@@ -112,7 +113,7 @@ class BinTree
 	bool IsCBT(BinTreeNode<T> *roo);
 	void TransPre2Post(T pre[],T post[],int s1,int t1,int s2,int t2);
 
-	private:
+	protected:
 	BinTreeNode<T> *root;
 	void destroy(BinTreeNode<T> *ro);
 	BinTreeNode<T>* copy(BinTreeNode<T> *origin);
@@ -227,6 +228,8 @@ void BinTree<T>::TraversePreOrder(BinTreeNode<T> *roo)
 template<typename T>
 void BinTree<T>::TraversePreOrder(BinTreeNode<T> *ro,bool ingen)
 {
+	if(ro == nullptr)
+		return;
 	std::cout<<ro->data<<" ";
 	if(ingen == true)
 		std::cout<<"( ";

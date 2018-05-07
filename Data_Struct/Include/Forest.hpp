@@ -16,20 +16,8 @@ template<typename T>
 class Forest;
 
 template<typename T>
-void Traverse_RootFirst(TreeNode<T> *);
-
-template<typename T>
-void Traverse_RootLast(TreeNode<T> *);
-
-template<typename T>
 class TreeNode
 {
-	/*
-	 * friend class Tree<T>;
-	 * friend class Forest<T>;
-	 * friend void Traverse_RootFirst<T>(TreeNode<T> *);
-	 * friend void Traverse_RootLast<T>(TreeNode<T> *);//undo
-	 */
 	public:
 	T Data(){return data;}
 	TreeNode(T value):data(value),firstchild(nullptr),nextbrother(nullptr){}
@@ -44,13 +32,11 @@ template<typename T>
 class Tree
 {
 	friend class Forest<T>;
-	friend void Traverse_RootFirst(TreeNode<T> *roo);
-	friend BinTreeNode<T>* Tran2Bint(TreeNode<T> *roo);
-	friend TreeNode<T>* Tran4Bint(BinTreeNode<T> *roo);
-	public:
+		public:
 	Tree():root(new TreeNode<T>){}
 	Tree(T vle):root(new TreeNode<T>(vle)){}
 	Tree(TreeNode<T> *roo):root(roo){}
+	Tree(Tree<T> *p);
 	~Tree(){if(!IsEmpty())Destory();}
 
 	static void SetFlag(const T &x,const T &y);
@@ -61,14 +47,16 @@ class Tree
 	void CreateTree(TreeNode<T> *roo,std::istream &is);
 	bool Search(TreeNode<T> *roo,const T &x);
 	bool Insert(const T &vle);
-	// BinTreeNode<T>* Tran2Bin(TreeNode<T> *roo);
-	TreeNode<T>* Tran4Bin(BinTreeNode<T> *roo);//only support the type of root of bintree only has lchild.in other words,tree->bintree->tree
-	protected:
+	void Traverse_RootFirst(TreeNode<T> *roo);
+	BinTreeNode<T>* Tran2Bint(TreeNode<T> *roo);
+	TreeNode<T>* Build4Bint(BinTreeNode<T> *roo);
+	void PrintBranch(TreeNode<T> *roo);
+	private:
 	TreeNode<T> *root;
-	Tree<T> *next;
 	static T isnextbrother;
 	static T endm;//the two static variable control the building of tree,just like genlist.
 	void destroy(TreeNode<T> *roo);
+	TreeNode<T>* copy(TreeNode<T> *);
 };
 
 template<typename T>
@@ -84,26 +72,40 @@ class Forest
 		void DFS();
 		void BFS();
 		bool RemoveTree(const T &vle);
-		TreeNode<T>* SelectTree(const T &vle);
+		Tree<T>* SelectTree(const T &vle);
 	private:
-		Queue<TreeNode<T>*> qroot;//implicit call the contruct function of queue,so don't need to redefinite qroot.
+		Queue<Tree<T>*> qtree;//implicit call the contruct function of queue,so don't need to redefinite qtree.
 		BinTreeNode<T>* root;
 		void destroybintree(BinTreeNode<T> *roo);
 };
 
-//-----------------------------------------definition-----------------------------------------------------------
+//----------------------------definition of tree----------------------------------------------
 template<typename T>
 T Tree<T>::isnextbrother;
 template<typename T>
 T Tree<T>::endm;
 
-	template<typename T>
-void Traverse_RootFirst(TreeNode<T> *roo)
+template<typename T>
+Tree<T>::Tree(Tree<T> *p)
+{
+	root = copy(p->root);
+}
+
+template<typename T>
+TreeNode<T>* Tree<T>::copy(TreeNode<T> *p)
+{
+	if(p == nullptr)
+		return nullptr;
+	TreeNode<T> *tmp = new TreeNode<T>(p);
+	tmp->firstchild = copy(p->firstchild);
+	tmp->nextbrother = copy(p->nextbrother);
+	return tmp;
+}
+template<typename T>
+void Tree<T>::Traverse_RootFirst(TreeNode<T> *roo)
 {
 	if(roo == nullptr)
-	{
 		return;
-	}
 	TreeNode<T> *p = roo;
 	while(p != nullptr)
 	{
@@ -155,11 +157,16 @@ TreeNode<T>* Tree<T>::NextBrother(TreeNode<T> *p)
 	template<typename T>
 void Tree<T>::CreateTree(TreeNode<T> *roo,std::istream &is)
 {
-	if(roo == nullptr){std::cout<<"invalid initial node"<<std::endl;return;}
+	if(roo == nullptr)
+	{
+		std::cout<<"invalid initial node"<<std::endl;
+		return;
+	}
 	else
 	{
 		T vle;
 		is>>vle;
+		//because root don't have a nextbrother object,so deal with root node before the loop.
 		TreeNode<T> *tmp = new TreeNode<T>(vle);
 		roo->firstchild = tmp;
 		Stack<TreeNode<T>*>s;
@@ -173,8 +180,10 @@ void Tree<T>::CreateTree(TreeNode<T> *roo,std::istream &is)
 				tmp->nextbrother = new TreeNode<T>(vle);
 				tmp = tmp->nextbrother;
 			}
+			//the branch ends.
 			else if(vle == Tree<T>::endm)
 				s.Pop(tmp);
+			//insert as first child as default
 			else
 			{
 				tmp->firstchild = new TreeNode<T>(vle);
@@ -192,15 +201,10 @@ bool Tree<T>::Search(TreeNode<T> *roo,const T &vle)
 		return false;
 	if(roo->data == vle)
 		return true;
-	bool foundc = false,foundn = false;
-	if(roo->firstchild != nullptr)
-		foundc = Search(roo->firstchild,vle);
-	if(roo->nextbrother != nullptr)
-		foundn = Search(roo->nextbrother,vle);
-	if(foundc || foundn)
+	if(Search(roo->firstchild,vle))
 		return true;
 	else
-		return false;
+		return Search(roo->nextbrother,vle);
 }
 
 	template<typename T>
@@ -223,7 +227,7 @@ bool Tree<T>::Insert(const T &vle)
 }
 
 template<typename T>
-BinTreeNode<T>* Tran2Bint(TreeNode<T> *roo)
+BinTreeNode<T>* Tree<T>::Tran2Bint(TreeNode<T> *roo)
 {
 	if(roo == nullptr)
 		return nullptr;
@@ -238,26 +242,45 @@ BinTreeNode<T>* Tran2Bint(TreeNode<T> *roo)
 }
 
 	template<typename T>
-TreeNode<T>* Tran4Bint(BinTreeNode<T> *roo)
+TreeNode<T>* Tree<T>::Build4Bint(BinTreeNode<T> *roo)
 {
 	if(roo == nullptr)
 		return nullptr;
 	TreeNode<T> *tmp = new TreeNode<T>(roo->data);
-	tmp->firstchild = Tran4Bint(roo->lchild);
-	tmp->nextbrother = Tran4Bint(roo->rchild);
+	tmp->firstchild = Build4Bint(roo->lchild);
+	tmp->nextbrother = Build4Bint(roo->rchild);
+	root = tmp;
 	return tmp;
 }
 
+template<typename T>
+void Tree<T>::PrintBranch(TreeNode<T> *roo)
+{
+	TreeNode<T> *ro;
+	if(roo == nullptr)
+		return;
+	if(roo->firstchild != nullptr)
+	{
+		std::cout<<"("<<roo->data<<","<<roo->firstchild->data<<") ";
+		PrintBranch(roo->firstchild);
+	}
+	if(roo->nextbrother != nullptr)
+	{
+		std::cout<<"("<<roo->data<<","<<roo->nextbrother->data<<") ";
+		PrintBranch(roo->nextbrother);
+	}
+}
+//-------------------------------forest definition-------------------------
 	template<typename T>
 void Forest<T>::CreateForest(std::istream &is)
 {
-	Tree<T>::SetFlag(32767,0);
 	int i = 0;
+	Tree<T> *p;
 	while(is)
 	{
-		Tree<T> *p = new Tree<T>(i);
-		qroot.Enqueue(p->root);
-		p->CreateTree(p->root,is);
+		p = new Tree<T>(i);
+		qtree.Enqueue(p);
+		p->CreateTree(p->Root(),is);
 		i++;
 	}
 }
@@ -275,59 +298,57 @@ void Forest<T>::destroybintree(BinTreeNode<T> *roo)
 template<typename T>
 Forest<T>::~Forest()
 {
-	while(!qroot.IsEmpty())
+	while(!qtree.IsEmpty())
 	{
-		TreeNode<T> *tmp;
-		qroot.Dequeue(tmp);
-		Tree<T> tmpt(tmp);
-		tmpt.~Tree();
+		Tree<T> *tmp;
+		qtree.Dequeue(tmp);
+		tmp->~Tree();
 	}
-	qroot.~Queue();
+	qtree.~Queue();
 	destroybintree(root);
 }
 	template<typename T>
 bool Forest<T>::RemoveTree(const T &vle)
 {
-	if(qroot.IsEmpty())
+	if(qtree.IsEmpty())
 		return false;
-	TreeNode<T> *roo;
-	qroot.Dequeue(roo);
-	TreeNode<T> *roof = roo;
-	if(roo->data == vle)
+	Tree<T> *tree;
+	qtree.Dequeue(tree);
+	Tree<T> *origintree = tree;
+	if(tree->root->data == vle)
 		return true;
 	else
-		qroot.Enqueue(roo);
-	while(qroot.First() != roof)
+		qtree.Enqueue(tree);
+	while(qtree.First() != origintree)
 	{
-		qroot.Dequeue(roo);
-		if(roo->data == vle)
+		qtree.Dequeue(tree);
+		if(tree->data == vle)
 		{
-			Tree<T> tmp(roo);
-			delete tmp;
-			while(qroot.First() != roof)//keep origin sequence.
+			delete tree;
+			while(qtree.First() != origintree)//keep origin sequence.
 			{
-				qroot.Dequeue(roo);
-				qroot.Enqueue(roo);
+				qtree.Dequeue(tree);
+				qtree.Enqueue(tree);
 			}
 			return true;
 		}
 		else
-			qroot.Enqueue(roo);
+			qtree.Enqueue(tree);
 	}
 	return false;// in case of the forest only contain one tree.
 }
 
 	template<typename T>
-TreeNode<T>* Forest<T>::SelectTree(const T &vle)
+Tree<T>* Forest<T>::SelectTree(const T &vle)
 {
-	if(qroot.IsEmpty())
+	if(qtree.IsEmpty())
 		return nullptr;
-	Queue<TreeNode<T>*> tmpq;
-	TreeNode<T> *tmp;
-	tmpq.Copy(qroot);
+	Queue<Tree<T>*> tmpq;
+	tmpq = qtree;
+	Tree<T> *tmp;
 	while(tmpq.Dequeue(tmp))
 	{
-		if(tmp->data == vle)
+		if(tmp->root->data == vle)
 			return tmp;
 	}
 	return nullptr;
@@ -335,12 +356,12 @@ TreeNode<T>* Forest<T>::SelectTree(const T &vle)
 	template<typename T>
 void Forest<T>::DFS()
 {
-	Queue<TreeNode<T>*> tmpq;
-	TreeNode<T> *roo;
-	tmpq.Copy(qroot);
-	while(tmpq.Dequeue(roo))
+	Queue<Tree<T>*> tmp = qtree;
+	// tmp = qtree;
+	Tree<T> *tree;
+	while(tmp.Dequeue(tree))
 	{
-		Traverse_RootFirst(roo);
+		tree->Traverse_RootFirst(tree->root);
 		std::cout<<std::endl;
 	}
 }
@@ -348,20 +369,31 @@ void Forest<T>::DFS()
 	template<typename T>
 void Forest<T>::BFS()
 {
-	Queue<TreeNode<T>*> tmpq;
+	if(qtree.IsEmpty())
+		exit(1);
+	Tree<T> *tree,*firsttree;
 	TreeNode<T>* tmp;
-	tmpq.Copy(qroot);
-	while(tmpq.Dequeue(tmp))
+	Queue<TreeNode<T>*> qnode;
+	//enqueue the root node of trees.the tree queue can not directly used to traverse.
+	qtree.Dequeue(firsttree);
+	qnode.Enqueue(firsttree->Root());
+	qtree.Enqueue(firsttree);
+	while(qtree.First() != firsttree)
 	{
+		qtree.Dequeue(tree);
+		qnode.Enqueue(tree->Root());
+		qtree.Enqueue(tree);
+	}
+	//begin to traverse.
+	while(!qnode.IsEmpty())
+	{
+		qnode.Dequeue(tmp);
 		while(tmp != nullptr)
 		{
 			std::cout<<tmp->data<<" ";
 			if(tmp->firstchild != nullptr)
-				tmpq.Enqueue(tmp->firstchild);
-			if(tmp->nextbrother != nullptr)
-				tmp = tmp->nextbrother;
-			else
-				break;
+				qnode.Enqueue(tmp->firstchild);
+			tmp = tmp->nextbrother;
 		}
 	}
 	std::cout<<std::endl;
@@ -370,18 +402,18 @@ void Forest<T>::BFS()
 template<typename T>
 BinTreeNode<T>* Forest<T>::Tran2Bin()
 {
-	if(qroot.IsEmpty())
+	if(qtree.IsEmpty())
 		return nullptr;
 	BinTreeNode<T> *tmpb;
 	Queue<BinTreeNode<T>*>broot;
-	Queue<TreeNode<T>*> tmpqroot;//copy qroot
-	tmpqroot.Copy(qroot);
-	TreeNode<T> *tmpt;
-	while(!tmpqroot.IsEmpty())
+	Queue<Tree<T>*> tmpqtree;
+	tmpqtree = qtree;//copy qtree
+	Tree<T> *tmpt;
+	while(!tmpqtree.IsEmpty())
 	{
-		tmpqroot.Dequeue(tmpt);
-		BinTreeNode<T> *tmpb2 = Tran2Bint(tmpt);
-		tmpb = new BinTreeNode<T>(tmpb2);
+		tmpqtree.Dequeue(tmpt);
+		tmpb = tmpt->Tran2Bint(tmpt->root);
+		// tmpb = new BinTreeNode<T>(tmpb2);
 		broot.Enqueue(tmpb);
 	}
 	broot.Dequeue(tmpb);
@@ -392,8 +424,7 @@ BinTreeNode<T>* Forest<T>::Tran2Bin()
 		roo->rchild = tmpb;
 		roo = roo->rchild;
 	}
-	roo = root;
-	return roo;
+	return root;
 }
 
 template<typename T>
@@ -403,6 +434,7 @@ void Forest<T>::Build4Bin(BinTreeNode<T> *roo)
 		return;
 	Queue<BinTreeNode<T>*> broot;
 	BinTreeNode<T>*tmpb = roo;
+	Tree<T> *tree;
 	while(tmpb != nullptr)
 	{
 		broot.Enqueue(tmpb);
@@ -412,8 +444,8 @@ void Forest<T>::Build4Bin(BinTreeNode<T> *roo)
 	{
 		broot.Dequeue(tmpb);
 		tmpb->rchild = nullptr;
-		TreeNode<T> *tmp = Tran4Bint(tmpb);
-		qroot.Enqueue(tmp);
+		tree->Build4Bint(tmpb);
+		qtree.Enqueue(tree);
 	}
 }
 #endif
