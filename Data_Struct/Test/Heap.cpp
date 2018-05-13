@@ -1,9 +1,9 @@
-#include "../Include/MinHeap.hpp"
+#include "../Include/MinHeap_LinkedBST.hpp"
 using namespace std;
 
 int main()
 {
-	ifstream is1("heap1.txt");
+	ifstream is1("./heap1.txt");
 	ifstream is2("heap2.txt");
 	Queue<int> q;
 	int i;

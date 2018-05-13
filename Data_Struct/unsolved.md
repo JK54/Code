@@ -7,7 +7,9 @@ AVLTree:the delete operation of AVLTree.
 
 Sort:three way partition of quicksort.Select sort,merge sort.
 
-Graph,B+Tree,RBTree:basic operation of the structures.
+B+Tree,RBTree:basic operation of the structures.
+
+Graph:IsInLoop(),MST(Rosentiehl,Dijkstra).
 
 /Source
-calculator:handle negative sign
+Calculator:handle negative sign,more generally,unary operator

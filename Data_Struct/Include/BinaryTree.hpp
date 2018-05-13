@@ -142,16 +142,16 @@ BinTree<T>::BinTree(BinTreeNode<T> *roo)
 }
 
 template<typename T>
-void BinTree<T>::destroy(BinTreeNode<T> *root)
+void BinTree<T>::destroy(BinTreeNode<T> *roo)
 {
-	if(root == nullptr)
+	if(roo == nullptr)
 		return;
 	else
 	{
-		destroy(root->lchild);
-		destroy(root->rchild);
-		delete root;
-		root = nullptr;
+		destroy(roo->lchild);
+		destroy(roo->rchild);
+		delete roo;
+		roo = nullptr;
 	}
 }
 

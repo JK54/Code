@@ -1,7 +1,7 @@
 #ifndef _MIN_HEAP_H
 #define _MIN_HEAP_H
 
-#include "Heap_linked_list.hpp"
+#include "Heap_LinkedBST.hpp"
 
 template<typename T>
 class MinHeap : public Heap<T>

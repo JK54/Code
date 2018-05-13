@@ -3,7 +3,6 @@
 
 #include "BinaryTree.hpp"
 
-
 //the node type is BinTreeNode.
 template<typename T>
 class BSTree:public BinTree<T>
@@ -23,6 +22,7 @@ class BSTree:public BinTree<T>
 		bool Search(const T &vle);
 		bool Remove(const T &vle,BinTreeNode<T> *&roo);//only support for the BSTree,not for AVLTree.
 		void RemoveMax();
+		void RemoveLessThanX(BinTreeNode<T> *roo,const T &vle);
 };
 //--------------------------------------BSTree------------------------------------------
 
@@ -236,5 +236,37 @@ bool BSTree<T>::IsSearchSeq(const T a[],int n )
 		return true;
 	else
 		return false;
+}
+
+template<typename T>
+void BSTree<T>::RemoveLessThanX(BinTreeNode<T> *roo,const T &vle)
+{
+	if(roo == nullptr)
+		exit(1);
+	BinTreeNode<T> *ro;
+	BinTreeNode<T> *p = nullptr;
+	Queue<BinTreeNode<T>*> q;
+	while(roo != nullptr)
+	{
+		while(roo != nullptr && roo->data <= vle)
+		{
+			ro = roo;
+			roo = roo->rchild;
+			ro->rchild = nullptr;
+			this->destroy(ro);
+			if(p != nullptr)
+				p->lchild = roo;
+		}
+		while(roo != nullptr && roo->data > vle)
+		{
+			p = roo;
+			q.Enqueue(p);
+			roo = roo->lchild;
+		}
+	}
+	if(!q.IsEmpty())
+		q.Dequeue(this->root);
+	else
+		this->root = nullptr;
 }
 #endif

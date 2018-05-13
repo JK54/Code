@@ -8,21 +8,22 @@ class LinkedList;
 template<typename T>
 class LNode
 {
-	friend class LinkedList<T>;
-	LNode():data(0),next(nullptr){}
-	LNode(T x):data(x),next(nullptr){}
-	bool operator<(const LNode<T> &p){return data < p.data;}
-	bool operator<(const LNode<T> *p){return data < p->data;}
-	bool operator>(const LNode<T> &p){return data > p.data;}
-	bool operator>(const LNode<T> *p){return data > p->data;}
-	bool operator==(const LNode<T> &p){return data == p.data;}
-	bool operator==(const LNode<T> *p){return data == p->data;}
-	bool operator<=(const LNode<T> &p){return data <= p.data;}
-	bool operator<=(const LNode<T> *p){return data <= p->data;}
-	bool operator>=(const LNode<T> &p){return data >= p.data;}
-	bool operator>=(const LNode<T> *p){return data >= p->data;}
-	T data;
-	LNode<T> *next;
+	public:
+		friend class LinkedList<T>;
+		LNode():next(nullptr){}
+		LNode(T x):data(x),next(nullptr){}
+		bool operator<(const LNode<T> &p){return data < p.data;}
+		bool operator<(const LNode<T> *p){return data < p->data;}
+		bool operator>(const LNode<T> &p){return data > p.data;}
+		bool operator>(const LNode<T> *p){return data > p->data;}
+		bool operator==(const LNode<T> &p){return data == p.data;}
+		bool operator==(const LNode<T> *p){return data == p->data;}
+		bool operator<=(const LNode<T> &p){return data <= p.data;}
+		bool operator<=(const LNode<T> *p){return data <= p->data;}
+		bool operator>=(const LNode<T> &p){return data >= p.data;}
+		bool operator>=(const LNode<T> *p){return data >= p->data;}
+		T data;
+		LNode<T> *next;
 };
 
 template<typename T>
@@ -34,7 +35,7 @@ class LinkedList
 		~LinkedList();
 		LinkedList(const LinkedList<T> &p);
 		LinkedList<T>& operator=(const LinkedList<T> &p);
-		LNode<T>* Head(){return head;}
+		LNode<T>* Head(){return head->next;}
 		LNode<T>* Tail(){return tail;}
 		size_t Length();
 		void Traverse();
@@ -46,26 +47,27 @@ class LinkedList
 		bool push_forward(LNode<T> *p);
 		bool pop_back(T &x);
 		bool pop_forward(T &x);
+		bool Delete(T roo,T &re);
 		void ReverseMerge(LinkedList<T> &);
 		void ReversePart(LNode<T> *pr,LNode<T> *p,const int &n);
 		void Reverse();
 		void RemoveRange(const T &min,const T &max);
 		void RemoveRange_U(const T &min,const T &max);
 		void DepartOD(LinkedList<T> &odd,LinkedList<T> &even);
-	private:		
+	private:
 		LNode<T>* head;
 		LNode<T>* tail;
 		size_t leng;
 };
 
-template<typename T>
+	template<typename T>
 LinkedList<T>::LinkedList()
 {
 	head = tail = new LNode<T>;
 	leng = 0;
 }
 
-template<typename T>
+	template<typename T>
 LinkedList<T>::LinkedList(T x)
 {
 	head = new LNode<T>;
@@ -74,7 +76,7 @@ LinkedList<T>::LinkedList(T x)
 	leng = 1;
 }
 
-template<typename T>
+	template<typename T>
 LinkedList<T>::~LinkedList()
 {
 	while(head != nullptr)
@@ -84,10 +86,10 @@ LinkedList<T>::~LinkedList()
 		head = tmp;
 	}
 }
-template<typename T>
+	template<typename T>
 bool LinkedList<T>::isempty()
 {
-	if(head == nullptr)
+	if(head->next == nullptr)
 	{
 		std::cout<<"empty list"	<<std::endl;
 		return true;
@@ -96,14 +98,13 @@ bool LinkedList<T>::isempty()
 		return false;
 }
 
-template<typename T>
+	template<typename T>
 size_t LinkedList<T>::Length()
 {
-	std::cout<<"Length is "<<leng<<std::endl;
 	return leng;
 }
 
-template<typename T>
+	template<typename T>
 void LinkedList<T>::Traverse()
 {
 	if(!isempty())
@@ -116,7 +117,7 @@ void LinkedList<T>::Traverse()
 		return;
 }
 
-template<typename T>
+	template<typename T>
 bool LinkedList<T>::Insert(size_t i, T x)
 {
 	if(!isempty())
@@ -144,7 +145,7 @@ bool LinkedList<T>::Insert(size_t i, T x)
 		return false;
 }
 
-template<typename T>
+	template<typename T>
 bool LinkedList<T>::push_back(const T &x)
 {
 	if(head != nullptr)
@@ -159,13 +160,12 @@ bool LinkedList<T>::push_back(const T &x)
 		return false;
 }
 
-template<typename T>
+	template<typename T>
 bool LinkedList<T>::push_forward(const T &x)
 {
-	if(!isempty())
+	if(head != nullptr)
 	{
 		LNode<T> *t = new LNode<T>(x);
-		t->data = x;
 		t->next = head->next;
 		head->next = t;
 		leng++;
@@ -175,20 +175,20 @@ bool LinkedList<T>::push_forward(const T &x)
 		return false;
 }
 
-template<typename T>
+	template<typename T>
 bool LinkedList<T>::push_forward(LNode<T> *p)
 {
-	if(!isempty())	
+	if(head != nullptr)
 	{
 		p->next = head->next;
 		head->next = p;
 		leng++;
 		return true;
 	}
-	else 
+	else
 		return false;
 }
-template<typename T>
+	template<typename T>
 bool LinkedList<T>::pop_forward(T &x)
 {
 	if(!isempty())
@@ -199,13 +199,37 @@ bool LinkedList<T>::pop_forward(T &x)
 		delete tmp;
 		tmp = nullptr;
 		leng--;
+		if(leng == 0)
+			tail = head;
 		return true;
 	}
 	else
 		return false;
 }
 
-template<typename T>
+	template<typename T>
+bool LinkedList<T>::Delete(T roo,T &re)
+{
+	if(isempty())
+		return false;
+	LNode<T> *p,*pre;
+	p = head;
+	pre = nullptr;
+	while(p != nullptr && p->data != roo)
+		pre = p,p = p->next;
+	if(p == nullptr)
+		return false;
+	//if p is the tail,the tail pointer must be changed.and the head node does not store data,and just keep it.
+	if(p == tail)
+		tail = pre;
+	pre->next = p->next;
+	re = p->data;
+	delete p;
+	p = nullptr;
+	leng--;
+	return true;
+}
+	template<typename T>
 bool LinkedList<T>::pop_back(T &x)
 {
 	if(!isempty())
@@ -224,7 +248,7 @@ bool LinkedList<T>::pop_back(T &x)
 		return false;
 }
 
-template<typename T>
+	template<typename T>
 void LinkedList<T>::ReverseMerge(LinkedList<T> &L)
 {
 	LNode<T> *pa,*pb,*q;
@@ -262,7 +286,7 @@ void LinkedList<T>::ReverseMerge(LinkedList<T> &L)
 	tail = q;
 }
 
-template<typename T>
+	template<typename T>
 void LinkedList<T>::ReversePart(LNode<T> *pr,LNode<T> *p,const int &n)
 {
 	LNode<T> *ppr = pr;
@@ -294,7 +318,7 @@ void LinkedList<T>::ReversePart(LNode<T> *pr,LNode<T> *p,const int &n)
 	}
 }
 
-template<typename T>
+	template<typename T>
 void LinkedList<T>::Reverse()
 {
 	LNode<T> *pr = head->next;
@@ -313,7 +337,7 @@ void LinkedList<T>::Reverse()
 	tail = q;
 }
 
-template<typename T>
+	template<typename T>
 void LinkedList<T>::RemoveRange(const T &min,const T &max)
 {
 	LNode<T> *pr,*p;
@@ -333,7 +357,7 @@ void LinkedList<T>::RemoveRange(const T &min,const T &max)
 	}
 }
 
-template<typename T>
+	template<typename T>
 void LinkedList<T>::RemoveRange_U(const T &min,const T &max)
 {
 	LNode<T> *pr,*p;
@@ -355,7 +379,7 @@ void LinkedList<T>::RemoveRange_U(const T &min,const T &max)
 	}
 }
 
-template<typename T>
+	template<typename T>
 void LinkedList<T>::DepartOD(LinkedList<T> &odd,LinkedList<T> &even)
 {
 	LNode<T> *p = head->next;

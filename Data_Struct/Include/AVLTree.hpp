@@ -21,7 +21,8 @@ class AVLTreeNode
 	T Data(){return data;}
 	private:
 	T data;
-	int bf;//Abbreviation for "balance factor",bf = Height(rchild) - Height(lchild).it only has values of -1,0,1	
+	//Abbreviation for "balance factor",bf = Height(rchild) - Height(lchild).it only has values of -1,0,1
+	int bf;	
 	AVLTreeNode<T> *lchild;
 	AVLTreeNode<T> *rchild;
 
@@ -62,6 +63,7 @@ void AVLTree<T>::destroy(AVLTreeNode<T> *roo)
 	destroy(roo->lchild);
 	destroy(roo->rchild);
 	delete roo;
+	roo = nullptr;
 }
 	
 template<typename T>
@@ -120,9 +122,7 @@ void AVLTree<T>::CreateTree(std::istream &is)
 {
 	T vle;
 	while(is>>vle)
-	{
 		Insert_NR(vle);
-	}
 }
 
 template<typename T>
@@ -166,7 +166,7 @@ void AVLTree<T>::rotatelr(AVLTreeNode<T> *&roo)
 {
 	AVLTreeNode<T> *subL = roo->lchild;
 	AVLTreeNode<T> *subR = roo;
-	roo = subL->lchild;
+	roo = subL->rchild;
 	subL->rchild = roo->lchild;
 	roo->lchild = subL;
 	if(roo->bf <= 0)
