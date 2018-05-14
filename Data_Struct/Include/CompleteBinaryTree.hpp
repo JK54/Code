@@ -11,9 +11,10 @@ class CBTree
 {
 	public:
 		CBTree(int ss = DEFAULTSIZE):Data(new T[ss]),maxsize(ss),size(0){}
-		~CBTree(){delete [] Data;}
+		virtual ~CBTree(){delete [] Data;}
 		T& operator[](int i){if(i < size)return Data[i];else exit(1);}
 		
+		int Size(){return size;}
 		bool IsEmpty(){bool e = size > 0?0:1;return e;}
 		bool IsFull(){return size == maxsize;}
 		void Resize();

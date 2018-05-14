@@ -7,6 +7,7 @@ template<typename T>
 class Heap:public CBTree<T>
 {
 	public:
+		Heap(int sz = DEFAULTSIZE):CBTree<T>(sz){}
 		void CreateHeap(const T arr[], int n);
 		void CreateHeap(std::istream &is);
 		bool Insert(const T &vle);
@@ -20,6 +21,7 @@ template<typename T>
 class MinHeap : public Heap<T>
 {
 	public:
+		MinHeap(int sz = DEFAULTSIZE):Heap<T>(sz){}
 		virtual void siftUp(int i,int m) override;
 		virtual void siftDown(int i,int m) override;
 };
@@ -27,6 +29,7 @@ template<typename T>
 class MaxHeap : public Heap<T>
 {
 	public:
+		MaxHeap(int sz = DEFAULTSIZE):Heap<T>(sz){}
 		virtual void siftUp(int i,int m) override;
 		virtual void siftDown(int i,int m) override;
 
