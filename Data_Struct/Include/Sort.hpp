@@ -11,14 +11,18 @@ class Element
 {
 	public:
 		//we can also define more key or data member,blank for default.
+		Element(){}
+		Element(T x):key(x){}
 		T key;
 		Element<T>& operator=(const Element<T> &x){key = x.key;return *this;}
 		bool operator==(const Element<T> &x){return key == x.key;}
 		bool operator!=(const Element<T> &x){return key != x.key;}
+		bool operator!=(const T &x){return key !=x;}
 		bool operator<=(const Element<T> &x){return key <= x.key;}
 		bool operator>=(const Element<T> &x){return key >= x.key;}
 		bool operator<(const Element<T> &x) {return key < x.key;}
 		bool operator>(const Element<T> &x) {return key > x.key;}
+		void operator<<(const Element<T> &x){std::cout<<x.key<<" ";}
 };
 
 template<typename T>
@@ -26,8 +30,10 @@ class DataList
 {
 	public:
 		DataList(int s = DEFAULT_SIZE):Vector(new Element<T>[s]),maxsize(s),currentsize(0){}
+		DataList(T mv,int s = DEFAULT_SIZE):Vector(new Element<T>[s]),maxvalue(mv),maxsize(s),currentsize(0){}
 		~DataList(){delete [] Vector;}
 		Element<T>& operator[](int i){return Vector[i];}
+		void SetMaxvalue(T x){maxvalue = x;}
 		void Initial(std::istream &is);
 		void Initial(T a[],int n);
 		void Insert(const T &vle);
@@ -40,30 +46,41 @@ class DataList
 		void BubbleSort();
 		void BubbleSort_I();
 		void CocktailSort();
+		
 		//insert sort
 		void InsertSort();
 		void BinaryInsertSort();
 		void ShellSort();
+		
 		//quick sort
 		int Partition(const int left,const int right);
 		int Partition(DataList<T> &L,const int left,const int right);//Another method to select base pivot
-		void Partition(DataList<T> &,const int left,const int right,int &,int &);//for huge amount of reapting elements.
+		//for huge amount of reapting elements.
+		void Partition(DataList<T> &,const int left,const int right,int &,int &);
+		//no-recursion
 		void QuickSort();
 		void QuickSort2();
+		//recursion
 		void QuickSort(DataList<T> &L,const int left,const int right);//basical quick sort.
 		void Quick_Insert_Mixed_Sort(DataList<T> &L,const int left,const int right);//mixed sort.
-		void Quick_Insert_Mixed_Sort_N(DataList<T> &L,const int left,const int right);//drop insert sort
-		void HybirdSort(DataList<T> &L,const int left,const int right);//efficient quick sort mixed with insert sort.
+		//efficient quick sort mixed with insert sort.
+		void HybirdSort(DataList<T> &L,const int left,const int right);	
+		void Quick_Insert_Mixed_Sort_N(DataList<T> &L,const int left,const int right);
+		
 		//select sort
 		void SelectSort();
 		void HeapSort();
 		void HeapSort2();
 		void TournamentSort();
 		//merge sort
+		void MergeSort(const int &left,const int &right);
 		void MergeSort();
+		//here designate mid,because there are the situation:the array is odd,that the last element is very hard to handle,if using mid parameter it could be easy to merge unequal length array.if it's odd,handle the right half elements before the final merge.
+		void Merge(const int &left,const int &mid,const int &right);
 
 	private:
 		Element<T> *Vector;
+		T maxvalue;
 		int maxsize;
 		int currentsize;
 };
@@ -536,9 +553,121 @@ void DataList<T>::HeapSort2()
 		/* h.Remove(Vector[i--]); */
 }
 
+//when the two player have the same key value,the left child win to make the sort method stable.
 template<typename T>
 void DataList<T>::TournamentSort()
 {
-
+	int i,j,n,k = 0;
+	n = currentsize;
+	//the number of interior node is exterior node minus one.
+	CBTree<int> Winner(n - 1);
+	CBTree<Element<T>> Player(n);
+	for(i = 0;i < n - 1;i++)
+		Winner.Insert(0);
+	for(i = 0;i < n;i++)
+		Player.Insert(Vector[i]);
+	//the isodd flag the control the way to find brother(competitor) and parent(winner)
+	//The sort process ends when the root node equals to maxvalue
+	while(1)
+	{
+	//play begin at the last extorior node every time.
+	//the hidden thread is the node number must bigger than 1,otherwise it will be buggy.
+		if(n %2 == 0)
+		{
+			for(i = n - 1;i >= 1;i -= 2)
+			{
+				//index of parent
+				j = (i + n)/2 - 1;
+				if(i % 2 == 0)
+					Winner[j] = Player[i] <= Player[i + 1] ? i : i + 1;
+				else
+					Winner[j] = Player[i - 1] <= Player[i] ? i - 1 : i;
+			}
+			for(i = n - 2;i > 0;i -= 2)
+			{
+				j = (i - 1) / 2;
+				if (i % 2 == 0)
+					Winner[j] = Player[Winner[i - 1]] <= Player[Winner[i]]? Winner[i - 1]: Winner[i];
+				else
+					Winner[j] = Player[Winner[i]] <= Player[Winner[i + 1]]? Winner[i] : Winner[i + 1];
+			}
+		}
+		else
+		{
+			for(i = n - 1;i >= 0;i -= 2)
+			{
+				if(i == 0)
+					Winner[j] = Player[Winner[n - 2]] <= Player[i]? Winner[n - 2] : i;
+				else if(i % 2 != 0)
+					Winner[j] = Player[i] <= Player[i + 1] ? i : i + 1;
+				else
+					Winner[j] = Player[i - 1] <= Player[i] ? i - 1 : i;
+			}
+			//the last interior was handled in the last round of exterior,so begin from the second last node
+			for (i = n - 3; i >= 1;i -= 2)
+			{
+				if(i % 2 == 0)
+					Winner[j] = Player[Winner[i - 1]] <= Player[Winner[i]]? Winner[i - 1]: Winner[i];
+				else
+					Winner[j] = Player[Winner[i]] <= Player[Winner[i + 1]]? Winner[i] : Winner[i + 1];
+			}
+		}
+	//after the compete,the final winner arises.
+	if(Player[Winner[0]] == maxvalue)
+		break;
+	//insert the winner
+	Vector[k++] = Player[Winner[0]];
+	//change the winner ndoe to maxvalue.
+	Player[Winner[0]]= maxvalue;
+	}
 }
-#endif
+
+template<typename T>
+void DataList<T>::Merge(const int &left,const int &mid,const int &right)
+{
+	Element<T> *tmp = new Element<T>[right - left];
+	int i = left - 1,j = mid,k = 0;
+	while(i < mid && j < right)
+	{
+		if(Vector[i] <= Vector[j])
+			tmp[k++] = Vector[i++];
+		else
+			tmp[k++] = Vector[j++];
+	}
+	while(i < mid)
+		tmp[k++] = Vector[i++];
+	while(j < right)
+		tmp[k++] = Vector[j++];
+	for(i = right - 1,k--;i >= left - 1;i--,k--)
+		Vector[i] = tmp[k];
+	delete [] tmp;
+}
+
+template<typename  T>
+void DataList<T>::MergeSort(const int &left,const int &right)
+{
+	if(left >= right)
+		return;
+	int i = (left + right)/2;
+	MergeSort(left,i);
+	MergeSort(i + 1,right);
+	Merge(left,i,right);
+}
+
+template<typename T>
+void DataList<T>::MergeSort()
+{
+	int i;
+	int len = 2;
+	while(len <= currentsize/2)
+	{
+		for(i = 1;i <= currentsize - len + 1;i = i + len)
+			Merge(i,(i + i + len - 1) / 2,i + len - 1);
+		len *= 2;
+	}
+	if(currentsize % 2 != 0)
+		Merge(currentsize/2 + 1,currentsize - 1,currentsize);
+	Merge(1,currentsize/2,currentsize);
+}
+
+#endif	

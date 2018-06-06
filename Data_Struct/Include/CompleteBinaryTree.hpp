@@ -15,10 +15,13 @@ class CBTree
 		T& operator[](int i){if(i < size)return Data[i];else exit(1);}
 		
 		int Size(){return size;}
+		T Datai(int i){return Data[i];}
+		int Maxsize(){return maxsize;}
 		bool IsEmpty(){bool e = size > 0?0:1;return e;}
 		bool IsFull(){return size == maxsize;}
 		void Resize();
 		void Insert(const T &vle);
+		void Insert(int i,const T &vle);
 		void Insert_Noreapting(const T &vle);
 		void Clear();
 		void BuildTree(std::istream &is);
@@ -61,6 +64,15 @@ void CBTree<T>::Insert(const T &vle)
 	Data[size++] = vle;
 }
 
+template<typename T>
+void CBTree<T>::Insert(int i,const T &vle)
+{
+	if(IsFull())
+		Resize();
+	if(i < 1 || i > maxsize)
+		exit(1);
+	Data[i++] = vle;
+}
 template<typename T>
 void CBTree<T>::Insert_Noreapting(const T &vle)
 {
