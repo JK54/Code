@@ -4,15 +4,24 @@
 #include <utmp.h>
 #include <fcntl.h>
 #include <time.h>
+#include <string.h>
 
 void show_time(long);
 void show_info(struct utmp *);
 
-int main()
+int main(int argc,char **argv)
 {
 	struct utmp utbuf;
 	int utmpfd;
-	if((utmpfd = open(UTMP_FILE,O_RDONLY)) == -1)
+	const char *uw = "/var/run/utmp";
+	if(argc > 1)
+	{
+		if(strncmp(argv[1],"-w",2) == 0)
+			uw = WTMP_FILE;
+		else
+			uw = UTMP_FILE;
+	}
+	if((utmpfd = open(uw,O_RDONLY)) == -1)
 	{
 		perror(UTMP_FILE);
 		exit(1);
@@ -27,7 +36,7 @@ void show_info(struct utmp *utbufp)
 {
 	if(utbufp->ut_type != USER_PROCESS)
 		return;
-	printf("%-8.8s",utbufp->ut_user);
+	printf("%-8.8s",utbufp->ut_name);
 	printf(" ");
 	printf("%-8.8s",utbufp->ut_line);
 	show_time(utbufp->ut_tv.tv_sec);

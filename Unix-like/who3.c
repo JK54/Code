@@ -10,12 +10,13 @@
 void show_time(long);
 void show_info(struct utmp *);
 int utmp_open(const char *filename );
-int utmp_read(int fd,char *,int size);
+int utmp_read(int fd,struct utmp*,int size);
 int utmp_close(int);
 
 int main()
 {
-	char utbuf[DEFAULT_SIZE*UTMP_SIZE];
+	struct utmp utbuf[DEFAULT_SIZE];
+	/* char utbuf[DEFAULT_SIZE*UTMP_SIZE]; */
 	int fd,num_rec,i;
 	if((fd = utmp_open(UTMP_FILE)) == -1)
 	{
@@ -26,7 +27,8 @@ int main()
 	{
 		i = 0;
 		while(i != num_rec)
-			show_info((struct utmp*)&utbuf[i++*UTMP_SIZE]);
+			show_info(&utbuf[i++]);
+			/* show_info((struct utmp*)&utbuf[i++*UTMP_SIZE]); */
 	}
 	utmp_close(fd);
 	return 0;
@@ -58,7 +60,7 @@ int utmp_open(const char *filename)
 	return fd;
 }
 
-int utmp_read(int fd,char *utbuf,int size)
+int utmp_read(int fd,struct utmp *utbuf,int size)
 {
 	int num_read = read(fd,utbuf,size*UTMP_SIZE);
 	return num_read;
