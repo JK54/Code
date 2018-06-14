@@ -23,4 +23,6 @@ int main()
 	for(i = 0;i < n;i++)
 		sqsum += pow(ele[i],2);
 	std::cout<<ele[n - 2]<<'\n'<<ele[1]<<'\n'<<sqsum<<std::endl;
+	delete [] ele;
+	return 0;
 }

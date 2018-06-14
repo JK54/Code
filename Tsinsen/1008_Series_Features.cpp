@@ -19,4 +19,6 @@ int main()
 		sum += ele[i];
 	}
 	std::cout<<max<<"\n"<<min<<"\n"<<sum<<std::endl;
+	delete [] ele;
+	return 0;
 }
