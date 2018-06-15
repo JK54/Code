@@ -14,7 +14,7 @@ void Check(std::string *list,std::string wanted,std::string &result)
 	while(tmp != "")
 	{
 		p = tmp.begin();
-		while(*q == *p)
+		while(*q == *p && p != tmp.end() && q != wanted.end())
 			p++,q++;
 		if( p == tmp.end() && q == wanted.end())
 			result = tmp;
