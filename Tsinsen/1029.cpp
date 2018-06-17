@@ -23,4 +23,5 @@ int main()
     else
 		maxmin_1(a, b, c, max, min);
     std::cout << max << ' ' << min << std::endl;
+	return 0;
 }

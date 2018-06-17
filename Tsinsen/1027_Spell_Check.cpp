@@ -27,7 +27,7 @@ void Check(std::string *list,std::string wanted,std::string &result)
 				else
 					q++;
 			}
-			if(k == wanted.length() - 1 && tmpresult == "")
+			if(k == tmp.length() && tmpresult == "")
 				tmpresult = tmp;
 		}
 		else if(tmp.length() == wanted.length() + 1)
@@ -43,7 +43,7 @@ void Check(std::string *list,std::string wanted,std::string &result)
 			if(k == wanted.length() && tmpresult == "")
 				tmpresult = tmp;
 		}
-		else
+		else if(tmp.length() == wanted.length())
 		{
 			if(tmp == wanted)
 			{
@@ -60,7 +60,7 @@ void Check(std::string *list,std::string wanted,std::string &result)
 					else
 						p++,q++;
 				}
-				if(k == wanted.length() && tmpresult == "")
+				if(k == wanted.length() - 1&& tmpresult == "")
 					tmpresult = tmp;				
 			}
 		}
@@ -83,4 +83,5 @@ int main()
 	Check(list,wanted,result);
 	std::cout<<result<<std::endl;
 	delete [] list;
+	return 0;
 }
