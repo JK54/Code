@@ -19,4 +19,5 @@ int main()
 	else
 		result = method(n);
 	std::cout<<result<<std::endl;
+	return 0;
 }

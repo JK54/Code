@@ -2,37 +2,35 @@
 
 void draw(int n)
 {
-	int i,j;
+	int i,j,count,size,**data;
+	count = 1;
+	size = n * n;
 	//left,right,up,down ,flag of direction
-	bool l,r,u,d;
-	l = r = u = d = false;
-	int **data = new int *[n];
+	data = new int *[n];
 	for(i = 0;i < n;i++)
 		data[i] = new int [n];
-	for(i = 1;i <= 2 * n - 1;i++)
+	i = 0;
+	j = -1;	
+	while(count <= n * n)
 	{
-		if(r == true)
-			r = false,d = true;
-		else if(d == true)
-			d = false,l = true;
-		else if(l == true)
-			l = false,u = true;
-		else if(u == true)
-			u = false,d = true;
-		else
-			//the first round.
-			d = true;
-		//
-		if(r == true || l == true)
-		{
-		
-		}
-		//
-		else if(u == true || d == true)
-		{
-		
-		}
+		while(count <= n * n && j < n - i - 1)
+			data[i][++j] = count++;
+		while(count <= n * n && i < j)
+			data[++i][j] = count++;
+		while(count <= n * n && j > n - i - 1)
+			data[i][--j] = count++;
+		while(count <= n * n && i > j + 1)
+			data[--i][j] = count++;
 	}
+	for(i = 0;i < n;i++)
+	{
+		for(j = 0;j < n;j++)
+			std::cout<<data[i][j]<<" ";
+		std::cout<<std::endl;
+	}
+	for(i = 0;i < n;i++)
+		delete [] data[i];
+	delete [] data;
 }
 
 int main()

@@ -1,0 +1,19 @@
+#include <iostream>
+
+int length(std::string str)
+{
+	int i,j,k,L;
+	int max;
+	for(i = 0;i < static_cast<int>(str.length());i++)
+	{
+			
+	}
+}
+
+int main()
+{
+	std::string str;
+	std::cin>>str;
+	std::cout<<length(str)<<std::endl;
+	return 0;
+}
