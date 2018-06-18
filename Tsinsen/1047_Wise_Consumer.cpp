@@ -1,5 +1,4 @@
 #include <iostream>
-
 void purchase(int **data,int n,int m)
 {
 	int i,j,tmp;
@@ -8,7 +7,7 @@ void purchase(int **data,int n,int m)
 		tmp = 1;
 		for(i = 0;i < n;i++)
 		{
-			if(data[tmp - 1][j] >= data[i][j] && data[i][j] != 0)
+			if((data[tmp - 1][j] >= data[i][j] && data[i][j] != 0) || (data[tmp - 1][j] < data[i][j] && data[tmp - 1][j] == 0))
 				tmp = i + 1;
 		}
 		if(data[tmp - 1][j] == 0)
@@ -17,7 +16,6 @@ void purchase(int **data,int n,int m)
 	}
 	std::cout<<std::endl;
 }
-
 int main()
 {
 	int n,m,**data;
