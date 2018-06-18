@@ -1,20 +1,23 @@
 #include <iostream>
 #include <iomanip>
 
-bool isamong(double a,double b,double c)
-{
-	return (a < b) && (b < c);
-}
 double calunion(double *data)
 {
-
-	double result;
-	if((isamong(data[4],data[0],data[6]) || isamong(data[4],data[1],data[6])) && (isamong(data[5],data[1],data[7]) || isamong(data[5],data[3],data[7])))
-	{
-	
-	}
-	else
-		result = 0;
+	double x,y,result;
+	if(data[0] > data[2])
+		std::swap(data[0],data[2]);
+	if(data[1] > data[3])
+		std::swap(data[1],data[3]);
+	if(data[4] > data[6])
+		std::swap(data[4],data[6]);
+	if(data[5] > data[7])
+		std::swap(data[5],data[7]);
+	x = std::min(data[2],data[6]) - std::max(data[0],data[4]);
+	x = x < 0 ? 0 : x;
+	y = std::min(data[3],data[7]) - std::max(data[1],data[5]);
+	y = y < 0 ? 0 : y;
+	result = x * y;
+	return result;
 }
 
 int main()
