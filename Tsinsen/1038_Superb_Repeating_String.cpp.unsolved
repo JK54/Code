@@ -6,7 +6,7 @@ int length(std::string str)
 	int max;
 	for(i = 0;i < static_cast<int>(str.length());i++)
 	{
-			
+		
 	}
 }
 
