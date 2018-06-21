@@ -1,0 +1,41 @@
+#include <iostream>
+
+bool ismagic(int **data)
+{
+	int i,j,sum,tmp;
+	sum = 0;
+	for(i = 0;i < 4;i++)
+		sum += data[0][i];
+	for(i = 1;i < 4;i++)
+	{
+		tmp = 0;
+		for(j = 0;j < 4;j++)
+			tmp += data[i][j];
+		if(tmp != sum)
+			return false;
+	}
+	for(i = 0;i < 4;i++)
+	{
+		tmp = 0;
+		for(j = 0;j < 4;j++)
+			tmp += data[j][i];
+		if(tmp != sum)
+			return false;
+	}
+	if(data[0][0] + data[1][1] + data[2][2] + data[3][3] != sum)
+		return false;
+	if(data[3][0] + data[2][1] + data[1][2] + data[0][3] != sum)
+		return false;
+	return true;
+}
+
+int main()
+{
+	int i,j,K;
+	int data[4][4];
+	std::cin>>K;
+	for(i = 0;i < 4;i++)
+		for(j = 0;j < 4;j++)
+			data[i][j] = 0;
+	return 0;
+}

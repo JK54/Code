@@ -1,0 +1,17 @@
+#include <iostream>
+
+int main()
+{
+	int n,i;
+	double Vt[4],Vr[4],T,Ti[4],Li[4];
+	double t1,t2;
+	std::cin>>n>>T;
+	for(i = 0;i < 4;i++)
+		std::cin>>Vt[i];
+	for(i = 0;i < 4;i++)
+		std::cin>>Vr[i];
+	for(i = 0;i < 4;i++)
+		std::cin>>Ti[i]>>Li[i];
+	
+	return 0;
+}
