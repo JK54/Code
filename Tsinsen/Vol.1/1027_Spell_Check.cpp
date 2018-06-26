@@ -5,45 +5,47 @@
 #define LENGTH 100
 #define MAXWORDLEN 20
 //5 situation:1.one less char;2.one more char;3.one wrong char;4.absolutely correct;5.others,just return "NOANSWER"
-void Check(std::string *list,std::string wanted,std::string &result)
+void Check(std::string *list,int n,std::string wanted,std::string &result)
 {
-	size_t i,j,k;
+	int i,j,k,l,m;
+	l = wanted.length();
 	std::string::iterator p,q;
 	std::string tmp;
 	std::string tmpresult;
 	result = "";
-	for(i = 0;i < LENGTH;i++)
+	for(i = 0;i < n;i++)
 	{
 		tmp = list[i];
 		p = tmp.begin();
 		q = wanted.begin();
-		if(tmp.length() == wanted.length() - 1)
+		m = tmp.length();
+		if(m == l - 1)
 		{
 			k = 0;
-			for(j = 0;j < wanted.length();j++)
+			for(j = 0;j < l;j++)
 			{
 				if(*p == *q)
 					p++,q++,k++;
 				else
 					q++;
 			}
-			if(k == tmp.length() && tmpresult == "")
+			if(k == m && tmpresult == "")
 				tmpresult = tmp;
 		}
-		else if(tmp.length() == wanted.length() + 1)
+		else if(m == l + 1)
 		{
 			k = 0;
-			for(j = 0;j < tmp.length();j++)
+			for(j = 0;j < m;j++)
 			{
 				if(*p == *q)
 					p++,q++,k++;
 				else
 					p++;
 			}
-			if(k == wanted.length() && tmpresult == "")
+			if(k == l && tmpresult == "")
 				tmpresult = tmp;
 		}
-		else if(tmp.length() == wanted.length())
+		else if(m == l)
 		{
 			if(tmp == wanted)
 			{
@@ -53,14 +55,14 @@ void Check(std::string *list,std::string wanted,std::string &result)
 			else
 			{
 				k = 0;
-				for(j = 0;j < tmp.length();j++)
+				for(j = 0;j < m;j++)
 				{
 					if(*p == *q)
 						p++,q++,k++;
 					else
 						p++,q++;
 				}
-				if(k == wanted.length() - 1&& tmpresult == "")
+				if(k == l - 1&& tmpresult == "")
 					tmpresult = tmp;				
 			}
 		}
@@ -72,15 +74,15 @@ void Check(std::string *list,std::string wanted,std::string &result)
 }
 int main()
 {
-	int i = 0;
-	std::ifstream is("1027_Word_List.txt");
-	std::string *list = new std::string [LENGTH];
+	int n,i;
 	std::string wanted;
-	std::string result;
-	while(is)
-		std::getline(is,list[i++]);
 	std::cin>>wanted;
-	Check(list,wanted,result);
+	std::cin>>n;
+	std::string result;
+	std::string *list = new std::string [n];
+	for(i = 0;i < n;i++)
+		std::cin>>list[i];
+	Check(list,n,wanted,result);
 	std::cout<<result<<std::endl;
 	delete [] list;
 	return 0;

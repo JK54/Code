@@ -16,33 +16,28 @@ int add(std::string str)
 			tmps += ts;
 		else
 		{
+			tmp = atoi(tmps.c_str());
 			if(ts == '=')
 			{
-				if(flag == 1)
+				if(flag == 1 || flag == 0)
 					result += tmp;
 				else if( flag == 2)
 					result -= tmp;
 				return result;
 			}
-			tmp = atoi(tmps.c_str());
-			if(flag == 1)
+			if(flag == 1 || flag == 0)
 				result += tmp;
 			else if( flag == 2)
 				result -= tmp;
 			if(ts == '+')
-			{
 				flag = 1;
-				tmps = "";
-			}
 			else
-			{
 				flag = 2;
-				tmps = "";
-			}
+			tmps = "";
 		}
 		is++;
 	}
-	exit(1);
+	return result;
 }
 int main()
 {

@@ -1,42 +1,38 @@
 #include <iostream>
 
-void value(int **source,int **dest,int n)
+void value(long long **source,long long **dest,long long n)
 {
-	for(int i = 0;i < n;i++)
-	{
-		for(int j = 0;j < n;j++)
+	for(long long i = 0;i < n;i++)
+		for(long long j = 0;j < n;j++)
 			dest[i][j] = source[i][j];
-	}
 }
-void value(int **dest,int vle,int n)
+
+void value2(long long vle,long long **dest,long long n)
 {
-	for(int i = 0;i < n;i++)
-	{
-		for(int j = 0;j < n;j++)
+	for(long long i = 0;i < n;i++)
+		for(long long j = 0;j < n;j++)
 			dest[i][j] = vle;
-	}
 }
-void muti(int **data,int **result,int n,int m)
+void muti(long long **data,long long **result,long long n,long long m)
 {
-	int i,j,k,l;
-	int **tmp = new int* [n];
+	long long i,j,k,l;
+	long long **tmp = new long long* [n];
 	for(i = 0;i < n;i++)
 	{
-		tmp[i] = new int[n];
+		tmp[i] = new long long[n];
 		for(j = 0;j < n;j++)
 			tmp[i][j] = 0;
 	}
-	value(data,result,n);
+	if(m > 0)
+		value(data,result,n);
 	for(l = 1;l < m;l++)
 	{
 		for(i = 0;i < n;i++)
 			for(j = 0;j < n;j++)
 				for(k = 0;k < n;k++)
-				{
 					tmp[i][j] += result[i][k] * data[k][j];
-				}
 		value(tmp,result,n);
-		value(tmp,0,n);
+		value2(0,tmp,n);
 	}
 	for(i = 0;i < n;i++)
 	{
@@ -51,15 +47,19 @@ void muti(int **data,int **result,int n,int m)
 
 int main()
 {
-	int n,m,i,j;
-	int **data,**result;
+	long long n,m,i,j;
+	long long **data,**result;
 	std::cin>>n>>m;
-	data = new int*[n];
-	result = new int*[n];
+	data = new long long*[n];
+	result = new long long*[n];
 	for(i = 0;i < n;i++)
 	{
-		data[i] = new int[n];
-		result[i] = new int[n];
+		data[i] = new long long[n];
+		result[i] = new long long[n];
+		result[i][i] = 1;
+		for(j = 0;j < n;j++)
+			if(j != i)
+				result[i][j] = 0;
 	}
 	for(i = 0;i < n;i++)
 		for(j = 0;j < n;j++)

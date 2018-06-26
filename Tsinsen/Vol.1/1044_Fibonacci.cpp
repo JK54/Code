@@ -3,20 +3,23 @@
 
 int fibonacci(int n)
 {
-	int i,tmpa,tmpb,result;
+	int i,tmpa,tmpb,tmpc,result;
+	result = 0;
 	if(n == 2)
-		result = 1;
+		result = 2;
 	else if(n == 1)
-		result = 0;
+		result = 1;
 	else
 	{
-		tmpa = 0;
+		tmpa = 1;
 		tmpb = 1;
-		for(i = 2;i < n;i++)
+		tmpc = 2;
+		for(i = 2;i <= n;i++)
 		{
-			result = tmpa + tmpb;
+			result += tmpc;
+			tmpc = tmpa + tmpb;
 			tmpa = tmpb;
-			tmpb = result;
+			tmpb = tmpc;
 		}
 	}
 	return result;

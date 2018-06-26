@@ -8,6 +8,11 @@ int main()
 	std::cin>>INA>>p;
 	int i = LEN - 1,j;
 	int tmp;
+	if(INA == 0)
+	{
+		std::cout<<"0"<<std::endl;
+		return 0;
+	}
 	while(INA != 0)
 	{
 		tmp = INA % p; 

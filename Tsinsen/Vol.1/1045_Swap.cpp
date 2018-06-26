@@ -17,7 +17,7 @@ int main()
 		for(j = 0;j < m[i];j++)
 		{
 			std::cin>>tmpx>>tmpy;
-			std::swap(data[i][tmpx],data[i][tmpy]);
+			std::swap(data[i][tmpx - 1],data[i][tmpy - 1]);
 		}
 	}
 	for(i = 0;i < t;i++)

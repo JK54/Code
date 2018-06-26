@@ -26,6 +26,6 @@ int main()
 	double data[8];
 	for(i = 0;i < 7;i += 2)
 		std::cin>>data[i]>>data[i + 1];
-	std::cout<<std::setprecision(2)<<calunion(data)<<std::endl;
+	std::cout<<std::fixed<<std::setprecision(2)<<calunion(data)<<std::endl;
 	return 0;
 }

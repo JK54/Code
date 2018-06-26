@@ -1,6 +1,6 @@
 #include <iostream>
 
-int length(std::string str)
+int mslsub(std::string str)
 {
 	int i,j,k,L;
 	int max;
@@ -14,6 +14,6 @@ int main()
 {
 	std::string str;
 	std::cin>>str;
-	std::cout<<length(str)<<std::endl;
+	std::cout<<mslsub(str)<<std::endl;
 	return 0;
 }

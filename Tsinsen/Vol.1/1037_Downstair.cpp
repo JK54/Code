@@ -14,7 +14,7 @@ int main()
 {
 	int n,result;;
 	std::cin>>n;
-	if(n < 4 || n >= 20)
+	if(n < 4 || n > 20)
 		result = 0;
 	else
 		result = method(n);

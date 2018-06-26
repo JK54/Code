@@ -1,10 +1,10 @@
 #include <iostream>
-
+#include <cmath>
 void jump(int *data,int *result,int n)
 {
 	int i,j,tmp;
 	for(i = 1;i < n;i++)
-		result[i - 1] = abs(data[i] - data[i - 1]);
+		result[i - 1] = std::fabs(data[i] - data[i - 1]);
 	for(i = 0;i < n - 1;i++)
 	{
 		for(j = i + 1;j < n - 1;j++)
