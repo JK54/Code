@@ -4,15 +4,22 @@ using namespace std;
 
 int main()
 {
-	UndiGraph<char,int> aaa,bbb,ccc;
-	char a[] = {'A','B','B','E','B','D','D','E','C','B','A','C','C','D','A','E','C','E'};
-	int b[] = {4,3,2,1,5,6,7,3,4};
+	UndiGraph<char,int> aaa,bbb,ccc,ddd;
+	char a[] = {'A','B','A','C','B','D','E','E','F','G','E','G','G','H','A','H','H','I','C','I','C','J','D','E','E','F','A','J'};
+	int b[] = {3,2,1,0,7,4,6,3,5,4,8,2,9,7};
 	aaa.CreateGraph(a,b,sizeof(a)/sizeof(a[0]),sizeof(b)/sizeof(b[0]));
+	aaa.DFS('A');
 	aaa.DFS();
+	aaa.BFS();
+	cout<<aaa.CountWeight()<<endl;
 	aaa.Solin(bbb);
-	ccc = aaa.Kruskal();
-	cout<<bbb.CountWeight()<<endl;
 	bbb.DFS();
-	cout<<ccc.CountWeight()<<endl;
-	ccc.DFS();
+	cout<<bbb.CountWeight()<<endl;
+	// ccc = aaa.Kruskal();
+	// ccc.DFS();
+	// cout<<ccc.CountWeight()<<endl;
+	// aaa.Prim(ddd);
+	// ddd.DFS();
+	/* cout<<ddd.CountWeight()<<endl; */
+	return 0;
 }

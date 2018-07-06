@@ -96,6 +96,7 @@ void CBTree<T>::Clear()
 template<typename T>
 void CBTree<T>::BuildTree(std::istream &is)
 {
+	Clear();
 	T tmp;
 	while(is>>tmp)
 		Insert(tmp);
@@ -175,5 +176,5 @@ void CBTree<T>::LinkedBST2ArrCBT(BinTreeNode<T> *p,int i)
 	LinkedBST2ArrCBT(p->lchild, 2 * i + 1);
 	LinkedBST2ArrCBT(p->rchild,2*i + 2);
 }
-#endif
 
+#endif

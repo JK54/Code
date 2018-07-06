@@ -6,6 +6,8 @@
 #include "Stack.hpp"
 #include "UFSet.hpp"
 #include "Heap_Array.hpp"
+#include "Forest.hpp"
+
 #define MAXVERT 100
 #define MAXWEIGHT 32767
 
@@ -111,7 +113,7 @@ class Graph
 
 //--------------------declaration of weighted undigraph-----------------
 template<typename K>
-class MinEdge;
+class AuxiEdge;
 
 template<typename T,typename K>
 class UndiGraph:public WGraph<T,K>
@@ -143,7 +145,7 @@ class UndiGraph:public WGraph<T,K>
 		virtual void BFS() override;
 		//----------------application of traverse------------
 		bool IsTree();
-		bool IsInLoop(const int &v1,const int &v2);
+		bool IsInLoop(UndiGraph<T,K> tmp,const int &v1,const int &v2);
 		K CountWeight();
 		//here abandon the weight value,if necessary,modify the tree node type to receive the weight.
 		void CreateForest(Forest<T> &result);
@@ -169,8 +171,8 @@ template<typename T,typename K>
 class DiGraph:public WGraph<T,K>
 {
 	public:	
-		DiGraph():WGraph<T,K>(){InNodeTable = new WVertex<T,K>[this->maxvertex],OutNodeTable = new WVertex<T,K>[this->maxvertex];}
-		DiGraph(int x):WGraph<T,K>(x){InNodeTable = new WVertex<T,K>[this->maxvertex],OutNodeTable = new WVertex<T,K>[this->maxvertex];}
+		DiGraph();
+		DiGraph(int x);
 		~DiGraph();
 		virtual void CreateGraph(const T *,const K *,const int &n) override;
 		virtual void CreateGraph(std::istream &is) override;
@@ -185,21 +187,15 @@ class DiGraph:public WGraph<T,K>
 		virtual bool RemoveVertex(const int &i) override;
 		virtual bool RemoveEdge(const int &v1,const int &v2) override;
 	private:
-		WVertex<T,K> *InNodeTable;
-		WVertex<T,K> *OutNodeTable;
+		T *NodeTable;
+		K **AdjMatrix;
 };
 //---------------------common function-------------------------------------
 template<typename T,typename K>
 bool WGraph<T,K>::isvalid(const int &v1,const int &v2) const 
 {
 	if((v1 < 1 || v1 > this->currentvertex) || (v2 < 1 || v2 > this->currentvertex) || v1 == v2)
-	{
-	   /*  if(v1 == v2 && (v1 >= 1 || v1 <= this->currentvertex)) */
-			// std::cout<<"one vertex does not have loop edge!"<<std::endl;
-		// else
-			/* std::cout<<"invalid vertex"	<<std::endl; */
 		return false;
-	}
 	return true;
 }
 	
@@ -207,13 +203,7 @@ template<typename T>
 bool Graph<T>::isvalid(const int &v1,const int &v2) const 
 {
 	if((v1 < 1 && v1 > this->currentvertex) || (v2 < 1 && v2 > this->currentvertex) || v1 == v2)
-	{
-	   /*  if(v1 == v2 && (v1 >= 1 || v1 <= this->currentvertex)) */
-			// std::cout<<"one vertex does not have loop edge!"<<std::endl;
-		// else
-			/* std::cout<<"invalid vertex"	<<std::endl; */
 		return false;
-	}
 	return true;
 }
 
@@ -249,7 +239,6 @@ template<typename T,typename K>
 UndiGraph<T,K>& UndiGraph<T,K>::operator=(UndiGraph<T,K> &&p)
 {
 	this->~UndiGraph();
-	// UndiGraph<T,K> q = std::move(p);
 	NodeTable = new WVertex<T,K>[p.maxvertex];
 	for(int i = 0;i < p.currentvertex;i++)
 		InsertVertex(p.NodeTable[i].data);
@@ -265,9 +254,7 @@ void UndiGraph<T,K>::CreateGraph(const T *d,const K *w,const int &nd,const int &
 	for(int i = 0;i < nd;i++)
 		InsertVertex(d[i]);
 	for(int i = 0;i < nw;i++)
-	{
 		InsertEdge(GetVertexPos(d[2 * i]),GetVertexPos(d[2 * i + 1]),w[i]);
-	}
 }
 
 template<typename T,typename K>
@@ -325,10 +312,7 @@ template<typename T,typename K>
 int UndiGraph<T,K>::GetFirstNeighbor(const int &v)
 {
 	if(v < 1 && v > this->currentvertex)
-	{
-		std::cout<<"invalid vertex"<<std::endl;
-		exit(1);
-	}
+		return -1;
 	WEdge<T,K> *e = NodeTable[v - 1].adj;
 	if(e != nullptr)
 		return e->dest + 1;
@@ -455,6 +439,7 @@ void UndiGraph<T,K>::BFS()
 {
 	bfs(NodeTable[0].data);
 }
+
 template<typename T,typename K>
 void UndiGraph<T,K>::bfs(const T &v)
 {
@@ -489,7 +474,7 @@ template<typename T,typename K>
 void UndiGraph<T,K>::DFS(const T &v)
 {
 	bool *visited = new bool[this->currentvertex];
-	for(int i = 0;i<this->currentvertex;i++)
+	for(int i = 0;i < this->currentvertex;i++)
 		visited[i] = false;
 	dfs(GetVertexPos(v),visited);
 	std::cout<<std::endl;
@@ -498,12 +483,8 @@ void UndiGraph<T,K>::DFS(const T &v)
 template<typename T,typename K>
 void UndiGraph<T,K>::DFS()
 {
-	bool *visited = new bool[this->currentvertex];
-	for(int i = 0;i<this->currentvertex;i++)
-		visited[i] = false;
 	udfs(1);
 	std::cout<<std::endl;
-	delete [] visited;
 }
 
 template<typename T,typename K>
@@ -524,22 +505,22 @@ template<typename T,typename K>
 void UndiGraph<T,K>::udfs(const int &v)
 {
 	bool *visited = new bool[this->currentvertex];
-	Stack<int> s;
+	Stack<int> sq;
 	int tp,trav = v;
-	for(int i = 0;i < this->currentvertex;i++)
-		visited[i] = false;
-	s.Push(trav);
+	std::memset(visited,false,this->currentvertex);
+	sq.Push(trav);
 	visited[trav - 1] = true;
-	while(!s.IsEmpty())
+	while(!sq.IsEmpty())
 	{
-		s.Pop(trav);
+		// sq.Traverse();
+		sq.Pop(trav);
 		std::cout<<NodeTable[trav - 1].data<<" ";
 		tp = GetFirstNeighbor(trav);
 		while(tp != -1)
 		{
 			if(visited[tp - 1] == false)
 			{
-				s.Push(tp);
+				sq.Push(tp);
 				visited[tp - 1] = true;
 			}
 			tp = GetNextNeighbor(trav,tp);
@@ -567,23 +548,9 @@ bool UndiGraph<T,K>::IsTree()
 }
 
 template<typename T,typename K>
-bool UndiGraph<T,K>::IsInLoop(const int &v1,const int &v2)
+bool UndiGraph<T,K>::IsInLoop(UndiGraph<T,K> tmp,const int &v1,const int &v2)
 {
-	UFSet<int> u(this->currentvertex);
-	int tp = GetFirstNeighbor(v1);
-	int i = 0,j = 0;
-	while(tp != -1)
-	{
-		i++;
-		u.Union(v1 - 1,tp - 1);
-		tp = GetNextNeighbor(v1,tp);
-	}
-	//the auxiliary array record the child of v1.
-	int *v1child = new int[i];
-	for(i = 0,j = 0;j < this->currentvertex;j++)
-		if(u.Find(j) == v1 - 1)
-			v1child[i++] = j;
-
+	
 }
 template<typename T,typename K>
 K UndiGraph<T,K>::CountWeight()
@@ -597,24 +564,27 @@ K UndiGraph<T,K>::CountWeight()
 }
 template<typename T,typename K>
 void UndiGraph<T,K>::CreateForest(Forest<T> &result)
-{}
+{
+
+}
 
 //----------------MST----------------------------------
 template <typename K>
-class MinEdge
+class AuxiEdge
 {
 	public:
-		MinEdge():i(0),j(0){}
-		MinEdge(int x,int y,K w):i(x),j(y),weight(w){}
-		MinEdge<K>& operator=(const MinEdge<K> &p){i = p.i;j=p.j;weight=p.weight;return *this;}
-		bool operator<=(const MinEdge<K> &p){return weight <= p.weight;}
-		bool operator>(const MinEdge<K> &p){return weight > p.weight;}
+		AuxiEdge():i(0),j(0){}
+		AuxiEdge(int x,int y,K w):i(x),j(y),weight(w){}
+		AuxiEdge<K>& operator=(const AuxiEdge<K> &p){i = p.i;j=p.j;weight=p.weight;return *this;}
+		bool operator<=(const AuxiEdge<K> &p){return weight <= p.weight;}
+		bool operator<(const AuxiEdge<K> &p){return weight < p.weight;}
+		bool operator>(const AuxiEdge<K> &p){return weight > p.weight;}
 		int i,j;
 		K weight;
 };
 
 //Main idea of Kruskal: 
-//it is suitable from the sparse graph.
+//it is suitable from the sparse graph,based on vertex.
 //1.bulid a vertex set contains all the vertex;
 //2.order edges in weight ascending order;
 //3.select edge from the edge set,if the head and tail vertex is already connected,then abondan the edge,continuing the process until the edge num of result is vertex minus 1.
@@ -623,8 +593,8 @@ UndiGraph<T,K> UndiGraph<T,K>::Kruskal()
 {
 	int i,j;
 	bool *connected = new bool[this->currentvertex];
-	MinHeap<MinEdge<K>> h;
-	MinEdge<K> trav;
+	MinHeap<AuxiEdge<K>> h;
+	AuxiEdge<K> trav;
 	UndiGraph<T,K> result;
 	//construct a graph with all vertexs and zero edge.
 	for(i = 0;i < this->currentvertex;i++)
@@ -637,9 +607,9 @@ UndiGraph<T,K> UndiGraph<T,K>::Kruskal()
 	{
 		for(j = i + 1; j <= this->currentvertex;j++)
 			if(GetWeight(i,j) != this->maxweight)
-				h.Insert(MinEdge<K>(i,j,GetWeight(i,j)));
+				h.Insert(AuxiEdge<K>(i,j,GetWeight(i,j)));
 	}
-	//the main process
+	//the main process,use ufset is more concise.
 	while(result.currentedge != result.currentvertex - 1)
 	{
 		h.Remove(trav);
@@ -660,7 +630,7 @@ UndiGraph<T,K> UndiGraph<T,K>::Kruskal()
 template<typename T,typename K>
 int UndiGraph<T,K>::minedge(int source,bool *connected)
 {
-	MinEdge<K> trav;
+	AuxiEdge<K> trav;
 	WEdge<T,K> *p = NodeTable[source - 1].adj;
 	trav.i = source;
 	trav.weight = this->maxweight;
@@ -682,22 +652,22 @@ int UndiGraph<T,K>::minedge(int source,bool *connected)
 template<typename T,typename K>
 void UndiGraph<T,K>::Prim(UndiGraph<T,K> &result)
 {
-	bool *connected = new bool[this->currentvertex];
+	bool *connected = new bool [this->currentvertex];
 	int i,j,mini,minj;
 	for(int i = 0;i < this->currentvertex;i++)
 		connected[i] = false;
 	result.currentvertex = result.currentedge = 0;
-	//first step:select the minimum wight edge connected with the first vertex(or another vertex)
+	//first step:select the minimum weight edge connected with the first vertex(or another vertex)
 	minj = minedge(1,connected);
 	connected[0] = connected[minj - 1] = true;
 	result.InsertVertex(NodeTable[0].data);
 	result.InsertVertex(NodeTable[minj - 1].data);
+	//because the NodeTable of result is builded from empty,now it contains two vertex.
 	result.InsertEdge(1,2,GetWeight(1,minj));
-	//loop
 	while(result.currentvertex != this->currentvertex)
 	{
-		//select the minimum edge
 		mini = minj = this->maxvertex;
+		//select the minimum edge
 		for(i = 1;i <= this->currentvertex;i++)
 		{
 			if(connected[i - 1] == true)
@@ -722,56 +692,43 @@ void UndiGraph<T,K>::Solin(UndiGraph<T,K> &result)
 {
 	int i;
 	WEdge<T,K> *trav;
-	K travwe;
-	//equal define of ufset.
-	int *connected = new int[this->currentvertex];
-	bool finished  = false;
+	UFSet<int> connected(this->currentvertex);
 	result.currentvertex = result.currentedge = 0;
-	for(i = 0;i < this->currentvertex;i++)
-	{
-		connected[i] = -1;
-		result.InsertVertex(NodeTable[i].data);
-	}
-	while(finished == false)
-	{
-		for(int i = 0;i < this->currentvertex;i++)
-		{
-			if(connected[i] == -1)
-			{
-				trav = NodeTable[i].adj;
-				travwe = this->maxweight;
-				while(trav != nullptr)
-				{
-					if(trav->cost < travwe)
-					{
-						travwe = trav->cost;
-						connected[i] = trav->dest;
-					}
-					trav = trav->next;
-				}
-			}
-			result.InsertEdge(i + 1,connected[i] + 1,travwe);
-		}
-		finished = true;
-		for(int i = 0;i <this->currentvertex;i++)
-			if(connected[i] == -1)
-				finished = false;
-	}
 }
 template<typename T,typename K>
 void UndiGraph<T,K>::Rosenstiehl(UndiGraph<T,K> &result)
 {
 	result.currentedge = result.currentvertex = 0;
-	UFSet<
+
 }
 //----------------------definition of weighted-digraph---------------
 template<typename T,typename K>
+DiGraph<T,K>::DiGraph()
+{
+	this->WGraph<T, K>();
+	NodeTable = new T [this->maxvertex];
+	AdjMatrix = new K* [this->maxvertex];
+	for(int i = 0;i < this->maxvertex;i++)
+		AdjMatrix[i] = new K [this->maxvertex];
+}
+	
+template<typename T,typename K>
+DiGraph<T,K>::DiGraph(int x)
+{
+	this->WGraph<T, K>(x);
+	NodeTable = new T [this->maxvertex];
+	AdjMatrix = new K* [this->maxvertex];
+	for(int i = 0;i < this->maxvertex;i++)
+		AdjMatrix[i] = new K [this->maxvertex];
+}
+
+template<typename T,typename K>
 DiGraph<T,K>::~DiGraph()
 {
-	while(this->currentvertex > 0)
-		RemoveVertex(this->currentvertex - 1);
-	delete [] InNodeTable;
-	delete [] OutNodeTable;
+	delete [] NodeTable;
+	for(int i = 0;i < this->maxvertex;i++)
+		delete [] AdjMatrix[i];
+	delete [] AdjMatrix;
 }
 
 template<typename T,typename K>
@@ -809,31 +766,23 @@ bool DiGraph<T,K>::IsFull()
 template<typename T,typename K>
 T DiGraph<T,K>::GetValue(const int &i)
 {
-	return InNodeTable[i - 1].data;
+	return NodeTable[i - 1];
 }
 
 template<typename T,typename K>
 K DiGraph<T,K>::GetWeight(const int &v1,const int &v2)
 {
-	if(!this->isvalid())
+	if(!this->isvalid(v1,v2))
 		return this->maxweight;
-	WEdge<T,K> *trav = OutNodeTable[v1 - 1].next;
-	while(trav != nullptr && trav->dest != v2 - 1)
-		trav = trav->next;
-	if(trav == nullptr)
-	{
-		std::cout<<"the two vertex are not connected.."<<std::endl;
-		return this->maxweight;
-	}
-	else
-		return trav->cost;
+	return AdjMatrix[v1 - 1][v2 - 1];
 }
+
 template<typename T,typename K>
 int DiGraph<T,K>::GetVertexPos(const T &v)
 {
 	int i;
-	for(i = 0;InNodeTable[i].data != v && i < this->currentvertex;i++);
-	if(InNodeTable[i].data != v)
+	for(i = 0;NodeTable[i] != v && i < this->currentvertex;i++);
+	if(NodeTable[i] != v)
 		return -1;
 	else
 		return i + 1;
@@ -842,35 +791,28 @@ int DiGraph<T,K>::GetVertexPos(const T &v)
 template<typename T,typename K>
 int DiGraph<T,K>::GetFirstNeighbor(const int &v)
 {
+	int i;
 	if(v < 1 && v > this->currentvertex)
 	{
 		std::cout<<"invalid vertex"<<std::endl;
 		exit(1);
 	}
-	WEdge<T,K> *e = OutNodeTable[v - 1].adj;
-	if(e != nullptr)
-		return e->dest + 1;
-	else
-		return -1;
+	for(i = 0;i < this->maxvertex;i++)
+		if(AdjMatrix[v - 1][i] != this->maxweight)
+			return i + 1;
+	return -1;
 }
 
 template<typename T,typename K>
 int DiGraph<T,K>::GetNextNeighbor(const int &v,const int &w)
 {
-	if(!this->isvalid())
+	int i;
+	if(!this->isvalid(v,w))
 		return -1;
-	WEdge<T,K> *trav = OutNodeTable[v - 1].adj;
-	while(trav != nullptr && trav->dest != w -1)
-		trav = trav->next;
-	if(trav->dest != w - 1)
-	{
-		std::cout<<"the two vertex are not connected"<<std::endl;
-		return -1;
-	}
-	if(trav->next != nullptr)
-		return trav->next->dest + 1;
-	else
-		return -1;
+	for(i = w;i < this->maxvertex;i++)
+		if(AdjMatrix[v - 1][i] != this->maxweight)
+			return i + 1;
+	return -1;
 }
 template<typename T,typename K>
 bool DiGraph<T,K>::InsertVertex(const T &ver)
@@ -882,12 +824,14 @@ bool DiGraph<T,K>::InsertVertex(const T &ver)
 	}
 	if(GetVertexPos(ver) == -1)
 	{
-		InNodeTable[this->currentvertex].data = ver;
-		OutNodeTable[this->currentvertex].data = ver;
+		NodeTable[this->currentvertex] = ver;
 		this->currentvertex++;
 	}
 	else
+	{
+		std::cout<<"The Vertex"<<ver<<"is already existed.."<<std::endl;
 		return false;
+	}
 	return true;
 }
 template<typename T,typename K>
@@ -895,23 +839,12 @@ bool DiGraph<T,K>::InsertEdge(const int &v1,const int &v2,const K &weight)
 {
 	if(!this->isvalid(v1,v2))
 		return false;
-	WEdge<T,K> *tmpv1 = new WEdge<T,K>(v2,weight);
-	WEdge<T,K> *tmpv2 = new WEdge<T,K>(v1,weight);
-	WEdge<T,K> *trav = OutNodeTable[v1 - 1].adj;
-	while(trav != nullptr)
+	if(AdjMatrix[v1 - 1][v2 - 1] != this->maxweight)
 	{
-		if(trav->dest == v2 - 1)
-		{
-			std::cout<<"the edge is already existed.."<<std::endl;
-			return false;
-		}
-		trav = trav->next;
+		std::cout<<"the edge is occuped.."<<std::endl;
+		return false;
 	}
-	tmpv1->next = OutNodeTable[v1 - 1].adj;
-	OutNodeTable[v1 - 1].adj = tmpv1;
-	tmpv2->next = InNodeTable[v2 - 1].adj;
-	InNodeTable[v2 - 1].adj = tmpv2;
-	this->currentedge++;
+	AdjMatrix[v1 - 1][v2 - 1] = weight;
 	return true;
 }
 
@@ -920,75 +853,31 @@ bool DiGraph<T,K>::RemoveEdge(const int &v1,const int &v2)
 {
 	if(!this->isvalid(v1,v2))
 		return false;
-	WEdge<T,K>*trav,pre;
-	trav = OutNodeTable[v1 - 1].adj;
-	pre = trav;
-	while(trav->dest != v2 - 1 && trav != nullptr)
+	if(GetWeight(v1,v2) == this->maxweight)
 	{
-		pre = trav;
-		trav = trav->next;
-	}
-	if(trav == nullptr)
-	{
-		std::cout<<"the edge is not existed"<<std::endl;
+		std::cout<<"there is no edge between"<<NodeTable[v1 - 1]<<"and"<<NodeTable[v2 - 1]<<"to remove.."<<std::endl;
 		return false;
 	}
-	//if edge is the first neighbor
-	if(pre == trav)
-		OutNodeTable[v1 - 1].adj = trav->next;
-	else
-		pre->next = trav->next;
-	delete trav;
-	trav = nullptr;
-	//below is the same as above,the difference is that modify the InNodeTable
-	trav = InNodeTable[v2 - 1].adj;
-	pre = trav;
-	while(trav->dest != v1 - 1 && trav != nullptr)
-	{
-		pre = trav;
-		trav = trav->next;
-	}
-	if(trav == nullptr)
-	{
-		std::cout<<"the edge is not existed"<<std::endl;
-		return false;
-	}
-	//if edge is the first neighbor
-	if(pre == trav)
-		InNodeTable[v2 - 1].adj = trav->next;
-	else
-		pre->next = trav->next;
-	delete trav;
-	trav = nullptr;	
+	AdjMatrix[v1 - 1][v2 - 1] = this->maxweight;
 	this->currentedge--;
-	return true;
 }
 
 template <typename T,typename K>
 bool DiGraph<T,K>::RemoveVertex(const int &v1)
 {
+	int i;
 	if(v1 < 1 || v1 > this->currentvertex)
 	{
 		std::cout<<"the vertex is invalid"<<std::endl;
 		return false;
 	}
-	WEdge<T,K>* trav,tmp;
-	trav = OutNodeTable[v1 - 1].adj;
-	while(trav != nullptr)
+	for(i = 0;i < this->currentvertex;i++)
 	{
-		tmp = trav->next;
-		delete trav;
-		trav = tmp;
-		this->currentedge--;
+		if(AdjMatrix[v1 - 1][i] != this->maxweight)
+			this->currentedge--;
+		AdjMatrix[v1 - 1][i] = AdjMatrix[this->currentvertex - 1][i];
 	}
-	trav = InNodeTable[v1 - 1].adj;
-	while(trav != nullptr)
-	{
-		tmp = trav->next;
-		delete trav;
-		trav = tmp;
-		this->currentedge--;
-	}
+	NodeTable[v1 - 1] = NodeTable[this->currentvertex - 1];
 	this->currentvertex--;
 	return true;
 }

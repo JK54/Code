@@ -241,7 +241,7 @@ BinTreeNode<T>* Tree<T>::Tran2Bint(TreeNode<T> *roo)
 	}
 }
 
-	template<typename T>
+template<typename T>
 TreeNode<T>* Tree<T>::Build4Bint(BinTreeNode<T> *roo)
 {
 	if(roo == nullptr)
@@ -448,4 +448,5 @@ void Forest<T>::Build4Bin(BinTreeNode<T> *roo)
 		qtree.Enqueue(tree);
 	}
 }
+
 #endif
