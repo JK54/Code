@@ -14,7 +14,7 @@ class UFSet
 		int FindRoot(int x){while(elem[x] >= 0) x = elem[x];return x;}
 		void Merge(int x1,int x2){if(elem[x1] >= 0 || elem[x2] >= 0) return;elem[x1] += elem[x2];elem[x2] = x1;}
 		int CollapsePath(int);
-
+		bool IsOne();
 	private:
 		T *elem;
 		int maxsize;
@@ -41,5 +41,17 @@ int UFSet<T>::CollapsePath(int e)
 			}
 		}
 	return r;
+}
+template <typename T>
+bool UFSet<T>::IsOne()
+{
+	int i,j;
+	for(i = 0,j = 0;i < maxsize;i++)
+		if(elem[i] < 0)
+			j++;
+	if(j == 1)
+		return true;
+	else
+		return false;
 }
 #endif
