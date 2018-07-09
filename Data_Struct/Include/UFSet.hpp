@@ -12,9 +12,10 @@ class UFSet
 		T& operator[](const int &i){if(i >= 0 && i < maxsize)return elem[i];else exit(1);}
 		void Init(){std::memset(elem,-1,maxsize*sizeof(T));}
 		int FindRoot(int x){while(elem[x] >= 0) x = elem[x];return x;}
-		void Merge(int x1,int x2){if(elem[x1] >= 0 || elem[x2] >= 0) return;elem[x1] += elem[x2];elem[x2] = x1;}
+		void Merge(int x1,int x2);
 		int CollapsePath(int);
 		bool IsOne();
+		int CountRoot(int *root);
 	private:
 		T *elem;
 		int maxsize;
@@ -28,7 +29,7 @@ int UFSet<T>::CollapsePath(int e)
 	r = FindRoot(e);
 	//collapse all the subbranch of tree r,not only the path of e to r.
 	for(i = 0;i < maxsize;i++)
-		if(FindRoot(i) == r && elem[i] != r)
+		if(i != r && FindRoot(i) == r && elem[i] != r)
 		{
 			tmp = elem[i];
 			elem[i] = r;
@@ -43,6 +44,27 @@ int UFSet<T>::CollapsePath(int e)
 	return r;
 }
 template <typename T>
+void UFSet<T>::Merge(int x1,int x2)
+{
+	if(x1 == x2)
+		return;
+	int xp1,xp2;
+	xp1 = FindRoot(x1);
+	xp2 = FindRoot(x2);
+	if(elem[xp1] <= elem[xp2])
+	{
+		elem[xp1] += elem[xp2];
+		elem[xp2] = xp1;
+	}
+	else
+	{
+		elem[xp2] += elem[xp1];
+		elem[xp1] = xp2;
+	}
+	CollapsePath(x1);
+	CollapsePath(x2);
+}
+template <typename T>
 bool UFSet<T>::IsOne()
 {
 	int i,j;
@@ -53,5 +75,17 @@ bool UFSet<T>::IsOne()
 		return true;
 	else
 		return false;
+}
+template <typename T>
+int UFSet<T>::CountRoot(int *root)
+{
+	int i,j;
+	for(i = 0,j = 0;i < maxsize;i++)
+		if(elem[i] < 0)
+		{
+			root[j] = i;
+			j++;
+		}
+	return j;
 }
 #endif

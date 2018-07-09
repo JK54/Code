@@ -2,7 +2,7 @@
 #define _HEAP_ARR
 
 #include "CompleteBinaryTree.hpp"
-
+//heap protected member are size and maxsize,ref from the include file.
 template<typename T>
 class Heap:public CBTree<T>
 {

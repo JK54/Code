@@ -165,16 +165,19 @@ class UndiGraph:public WGraph<T,K>
 		void Prim(UndiGraph<T,K> &);
 		void Solin(UndiGraph<T,K> &);
 		void Rosenstiehl(UndiGraph<T,K> &);
-		void Dijkstra();
+		// void Dijkstra(UndiGraph<T,K> &);
+		// --------------Shortest Path--------------
+		 
 
 	private:
 		WVertex<T,K> *NodeTable;
 
 		bool removeedge(const int &v1,const int &v2);
-		void dfs(const int &,bool *);
+		void dfs(const int &,bool *,const int &);
 		void udfs(const int &);
 		void bfs(const T &);
-		int minedge(int source,bool *);
+		int minedge(const int &,bool *);
+		int minedge(const int &root,UFSet<int> &connected,bool *picked,AuxiEdge<K> *branch);
 };
 
 //--------------------declaration of weighted digraph------------
@@ -222,8 +225,19 @@ bool Graph<T>::isvalid(const int &v1,const int &v2) const
 template<typename T,typename K>
 UndiGraph<T,K>::~UndiGraph()
 {
-	while(this->currentvertex > 0)
-		RemoveVertex(this->currentvertex - 1);
+	int i;
+	WEdge<T,K> *trav,*pre;
+	for(i = 0;i < this->currentvertex;i++)
+	{
+		trav = NodeTable[i].adj;
+		while(trav != nullptr)
+		{
+			pre = trav;
+			trav = trav->next;
+			delete pre;
+			pre = nullptr;
+		}
+	}
 	delete [] NodeTable;
 }
 template<typename T,typename K>		
@@ -422,10 +436,13 @@ bool UndiGraph<T,K>::removeedge(const int &v1,const int &v2)
 template<typename T,typename K>
 bool UndiGraph<T,K>::RemoveEdge(const int &v1,const int &v2)
 {
+	int v,w;
+	v = v1;
+	w = v2;
 	if(!this->isvalid(v1,v2) && GetWeight(v1,v2) == this->maxweight)
 		return false;
-	removeedge(v1,v2);
-	removeedge(v2,v1);
+	removeedge(v,w);
+	removeedge(w,v);
 	this->currentedge--;
 	return true;
 }
@@ -510,7 +527,7 @@ void UndiGraph<T,K>::DFS(const T &v)
 	bool *visited = new bool[this->currentvertex];
 	for(int i = 0;i < this->currentvertex;i++)
 		visited[i] = false;
-	dfs(GetVertexPos(v),visited);
+	dfs(GetVertexPos(v),visited,0);
 	std::cout<<std::endl;
 	delete [] visited;
 }
@@ -522,15 +539,16 @@ void UndiGraph<T,K>::DFS()
 }
 
 template<typename T,typename K>
-void UndiGraph<T,K>::dfs(const int &v,bool visited[])
+void UndiGraph<T,K>::dfs(const int &v,bool visited[],const int &flag)
 {
-	std::cout<<NodeTable[v].data<<" ";
+	if(flag == 0)
+		std::cout<<NodeTable[v].data<<" ";
 	visited[v] = true;
 	int w = GetFirstNeighbor(v);
 	while(w != -1)
 	{
 		if(visited[w] == false)
-			dfs(w,visited);
+			dfs(w,visited,flag);
 		w = GetNextNeighbor(v,w);
 	}
 }
@@ -541,7 +559,7 @@ void UndiGraph<T,K>::udfs(const int &v)
 	bool *visited = new bool[this->currentvertex];
 	Stack<int> sq;
 	int tp,trav = v;
-	std::memset(visited,false,this->currentvertex);
+	std::memset(visited,false,sizeof(bool)*this->currentvertex);
 	sq.Push(trav);
 	visited[trav] = true;
 	while(!sq.IsEmpty())
@@ -570,7 +588,7 @@ bool UndiGraph<T,K>::IsTree()
 	bool *visited = new bool[this->currentvertex];
 	for(int i = 0;i < this->currentvertex;i++)
 		visited[i] = false;
-	dfs(1,visited);
+	dfs(0,visited,1);
 	for(int i = 0;i<this->currentvertex;i++)
 		if(visited[i] == false)
 		{
@@ -646,7 +664,7 @@ UndiGraph<T,K> UndiGraph<T,K>::Kruskal()
 //2.select the minimum weight edge which contains the vertex that does exits in the connected component,the loop ends when all the vertex are connected.
 
 template<typename T,typename K>
-int UndiGraph<T,K>::minedge(int source,bool *connected)
+int UndiGraph<T,K>::minedge(const int &source,bool *connected)
 {
 	AuxiEdge<K> trav;
 	WEdge<T,K> *p = NodeTable[source].adj;
@@ -665,6 +683,33 @@ int UndiGraph<T,K>::minedge(int source,bool *connected)
 		return trav.j;
 	else
 		return -1;
+}
+
+template<typename T,typename K>
+int UndiGraph<T,K>::minedge(const int &root,UFSet<int> &connected,bool *picked,AuxiEdge<K> *branch)
+{
+	int i,j,k;
+	k = -1;
+	for(i = 0;i < this->currentvertex;i++)
+	{
+		if(connected.FindRoot(i) == root)
+		{
+			for(j = 0;j < this->currentedge;j++)
+			{
+				if((branch[j].i == i || branch[j].j == i) && picked[j] == false)
+				{
+					if(k == -1)
+						k = j;
+					else
+					{
+						if(branch[k].weight > branch[j].weight)
+							k = j;
+					}
+				}
+			}
+		}
+	}
+	return k;
 }
 
 template<typename T,typename K>
@@ -708,16 +753,70 @@ void UndiGraph<T,K>::Prim(UndiGraph<T,K> &result)
 template<typename T,typename K>
 void UndiGraph<T,K>::Solin(UndiGraph<T,K> &result)
 {
-	int i;
-	WEdge<T,K> *trav;
+	int i,j,k;
+	//connected component
 	UFSet<int> connected(this->currentvertex);
+	//mark edge have been picked or not
+	bool *picked = new bool [this->currentedge];
+	//transform all the wedge to a auxiedge array
+	AuxiEdge<K> *branch = new AuxiEdge<K> [this->currentedge];
+	//temporary container for edge picked each round.
+	int *pick = new int [this->currentedge];
+	int *root = new int [this->currentvertex];
 	result.currentvertex = result.currentedge = 0;
+	//init the result vertex forest(equally)
+	for(i = 0;i < this->currentvertex;i++)
+		result.InsertVertex(NodeTable[i].data);
+	std::memset(picked,false,this->currentedge * sizeof(bool));
+	//transfer edge
+	for(i = 0,k = 0;i < this->currentvertex;i++)
+		for(j = i + 1;j < this->currentvertex;j++)
+			if(GetWeight(i,j) != this->maxweight)
+				branch[k++] = AuxiEdge<K>(i,j,GetWeight(i,j));
+	while(!connected.IsOne())
+	{
+		j = connected.CountRoot(root);
+		for(i = 0; i < j;i++)
+			pick[i] = minedge(root[i],connected,picked,branch);
+		//here can not combine the two loop
+		for(i = 0; i < j;i++)
+		{
+			picked[pick[i]] = true;
+			if(result.GetWeight(branch[pick[i]].i,branch[pick[i]].j) == this->maxweight)
+			{
+				result.InsertEdge(branch[pick[i]].i,branch[pick[i]].j,branch[pick[i]].weight);
+				connected.Merge(branch[pick[i]].i,branch[pick[i]].j);
+			}
+		}
+	}
+	delete [] branch;
+	delete [] picked;
+	delete [] pick;
+	delete [] root;
 }
+
 template<typename T,typename K>
 void UndiGraph<T,K>::Rosenstiehl(UndiGraph<T,K> &result)
 {
-	result.currentedge = result.currentvertex = 0;
-
+	int i,j;
+	AuxiEdge<K> trav;
+	MaxHeap<AuxiEdge<K>> h;
+	bool *visited = new bool[this->currentvertex];
+	result = *this;
+	for(i = 0;i < this->currentvertex;i++)
+		for(j = i + 1; j < this->currentvertex;j++)
+			if(GetWeight(i,j) != this->maxweight)
+				h.Insert(AuxiEdge<K>(i,j,GetWeight(i,j)));
+	while(!result.IsTree())
+	{
+		std::memset(visited,false,sizeof(bool) * this->currentvertex);
+		h.Remove(trav);
+		result.RemoveEdge(trav.i,trav.j);	
+		result.dfs(0,visited,1);
+		if(visited[trav.i] != visited[trav.j])
+			result.InsertEdge(trav.i,trav.j,trav.weight);
+	}
+	delete [] visited;
 }
 //----------------------definition of weighted-digraph---------------
 template<typename T,typename K>
