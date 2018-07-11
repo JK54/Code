@@ -169,6 +169,7 @@ class UndiGraph:public WGraph<T,K>
 		void Prim(UndiGraph<T,K> &);
 		void Solin(UndiGraph<T,K> &);
 		void Rosenstiehl(UndiGraph<T,K> &);
+		void Dijkstra(UndiGraph<T,K> &);
 		// --------------Shortest Path--------------
 		void Dijkstra(const int &v0);
 		void Floyd();
@@ -213,6 +214,7 @@ class DiGraph:public WGraph<T,K>
 				AdjMatrix[i][i] = 0;
 			}
 		};
+		DiGraph<T,K> &operator=(DiGraph<T,K> &p);
 		~DiGraph();
 		virtual void CreateGraph(const T *,const K *,const int &,const int &) override;
 		virtual void CreateGraph(std::istream &is) override;
@@ -227,10 +229,14 @@ class DiGraph:public WGraph<T,K>
 		virtual bool RemoveVertex(const int &i) override;
 		virtual bool RemoveEdge(const int &v1,const int &v2) override;
 		void Dijkstra(const int &v0);
+		void NDijkstra();
 		void Floyd();
+		void TopologicalSort();
+		void CriticalPath();
 	private:
 		T *NodeTable;
 		K **AdjMatrix;
+		void PrintAdj();
 };
 //---------------------common function-------------------------------------
 template<typename T,typename K>
@@ -847,6 +853,85 @@ void UndiGraph<T,K>::Rosenstiehl(UndiGraph<T,K> &result)
 	delete [] visited;
 }
 
+/* template<typename T,typename K> */
+// void UndiGraph<T,K>::Dijkstra(UndiGraph<T,K> &result)
+// {
+	// bool *S = new bool [this->currentvertex];
+	// K *dist = new K [this->currentvertex];
+	// int *path = new int [this->currentvertex];
+	// int *tmp = new int [this->currentvertex];
+	// int i,j,k,u,v0;
+	// K w,min;
+	// T tmpa,tmpb;
+	// int pa,pb;
+	// v0 = 0;
+	// result.currentedge = result.currentvertex = 0;
+	// for(i = 0;i < this->currentvertex;i++)
+	// {
+		// dist[i] = GetWeight(v0,i);
+		// S[i] = false;
+		// if(i != v0 && dist[i] < this->maxweight)
+			// path[i] = v0;
+		// else
+			// path[i] = -1;
+	// }
+	// S[v0] = true;
+	// dist[v0] = 0;
+	// for(i = 0;i < this->currentvertex - 1;i++)
+	// {
+		// min = this->maxweight;
+		// u = v0;
+		// for(j = 0;j < this->currentvertex;j++)
+			// if(S[j] == false && dist[j] < min)
+				// u = j,min = dist[j];
+		// S[u] = true;
+		// for(k = 0;k < this->currentvertex;k++)
+		// {
+			// w = GetWeight(u,k);
+			// if(S[k] == false && w < this->maxweight && dist[u] + w < dist[k])
+			// {
+				// dist[k] = dist[u] + w;
+				// path[k] = u;
+			// }
+		// }
+	// }
+	// for(i = 0;i < this->currentvertex;i++)
+	// {
+		// if(i != v0)
+		// {
+			// for(j = i,k = 0;path[j] != v0;j = path[j])
+				// tmp[k++] = j;
+			// tmp[k] = j;
+			// tmp[++k] = v0;
+			// while(k > 0)
+			// {
+				// tmpa = NodeTable[tmp[k]].data;
+				// tmpb = NodeTable[tmp[k - 1]].data;
+				// pa = result.GetVertexPos(tmpa);
+				// pb = result.GetVertexPos(tmpb);
+				// if(result.GetWeight(pa,pb) == this->maxweight)
+				// {
+					// if(pa == -1)
+					// {
+						// result.InsertVertex(tmpa);
+						// pa = result.GetVertexPos(tmpa);
+					// }
+					// if(pb == -1)
+					// {
+						// result.InsertVertex(tmpb);
+						// pb = result.GetVertexPos(tmpb);
+					// }
+					// result.InsertEdge(pa,pb,GetWeight(k,k - 1));
+				// }
+				// k--;
+			// }
+		// }
+	// }
+	// delete [] S;
+	// delete [] dist;
+	// delete [] path;
+	// delete [] tmp;
+/* } */
 //---------------SP-------------------------------
 template<typename T,typename K>
 void UndiGraph<T,K>::Dijkstra(const int &v0)
@@ -909,10 +994,11 @@ void UndiGraph<T,K>::Dijkstra(const int &v0)
 //1.call n times of Dijkstra
 //2.Floyd.
 //the differences between 1 and 2 is that:
+
+	
 template<typename T,typename K>
 void UndiGraph<T,K>::Floyd()
 {
-	int **dist,**path;
 	
 }
 
@@ -920,12 +1006,35 @@ void UndiGraph<T,K>::Floyd()
 template<typename T,typename K>
 DiGraph<T,K>::~DiGraph()
 {
-	delete [] NodeTable;
-	for(int i = 0;i < this->maxvertex;i++)
-		delete [] AdjMatrix[i];
-	delete [] AdjMatrix;
+	if(NodeTable != nullptr)
+		delete [] NodeTable;
+	if(AdjMatrix != nullptr)
+	{
+		for(int i = 0;i < this->maxvertex;i++)
+			if(AdjMatrix[i] != nullptr)
+				delete [] AdjMatrix[i];
+		delete [] AdjMatrix;
+	}
 }
 
+template<typename T,typename K>
+DiGraph<T,K> & DiGraph<T,K>::operator=(DiGraph<T,K> &p)
+{
+	this->~DiGraph();
+	this->currentedge = p.currentedge;
+	this->currentvertex = p.currentvertex;
+	this->maxvertex = p.maxvertex;
+	this->maxweight = p.maxweight;
+	NodeTable = new T [p.maxvertex];
+	AdjMatrix = new K* [p.maxvertex];
+	for(int i = 0;i < p.maxvertex;i++)
+	{
+		AdjMatrix[i] = new K [p.maxvertex];
+		for(int j = 0;j < p.currentvertex;j++)
+			AdjMatrix[i][j] = p.AdjMatrix[i][j];
+	}
+	return *this;
+}
 template<typename T,typename K>
 void DiGraph<T,K>::CreateGraph(const T *d,const K *w,const int &nd,const int &nw)
 {
@@ -989,7 +1098,7 @@ int DiGraph<T,K>::GetFirstNeighbor(const int &v)
 		exit(1);
 	}
 	for(i = 0;i < this->maxvertex;i++)
-		if(AdjMatrix[v][i] != this->maxweight)
+		if(i != v && AdjMatrix[v][i] != this->maxweight)
 			return i;
 	return -1;
 }
@@ -1000,11 +1109,28 @@ int DiGraph<T,K>::GetNextNeighbor(const int &v,const int &w)
 	int i;
 	if(!this->isvalid(v,w))
 		return -1;
-	for(i = w;i < this->maxvertex;i++)
+	for(i = w + 1;i < this->maxvertex;i++)
 		if(AdjMatrix[v][i] != this->maxweight)
 			return i;
 	return -1;
 }
+
+template<typename T,typename K>
+void DiGraph<T,K>::PrintAdj()
+{
+	for(int i = 0;i < this->currentvertex;i++)
+	{
+		for(int j = 0;j < this->currentvertex;j++)
+		{
+			if(AdjMatrix[i][j] == this->maxweight)
+				std::cout<<"∞"<<" ";
+			else
+				std::cout<<AdjMatrix[i][j]<<" ";
+		}
+		std::cout<<std::endl;
+	}
+}
+
 template<typename T,typename K>
 bool DiGraph<T,K>::InsertVertex(const T &ver)
 {
@@ -1121,12 +1247,15 @@ void DiGraph<T,K>::Dijkstra(const int &v0)
 		if(i != v0)
 		{
 			std::cout<<NodeTable[v0]<<" "<<NodeTable[i]<<"\t";
-			for(j = i,k = 0;path[j] != v0;j = path[j])
-				tmp[k++] = j;
-			tmp[k] = j;
-			tmp[++k] = v0;
-			while(k >= 0)
-				std::cout<<NodeTable[tmp[k--]]<<" ";
+			if(dist[i] != this->maxweight)
+			{
+				for(j = i,k = 0;path[j] != v0;j = path[j])
+					tmp[k++] = j;
+				tmp[k] = j;
+				tmp[++k] = v0;
+				while(k >= 0)
+					std::cout<<NodeTable[tmp[k--]]<<" ";
+			}
 			std::cout<<'\t'<<dist[i]<<std::endl;
 		}
 	}
@@ -1134,6 +1263,13 @@ void DiGraph<T,K>::Dijkstra(const int &v0)
 	delete [] dist;
 	delete [] path;
 	delete [] tmp;
+}
+
+template<typename T,typename K>
+void DiGraph<T,K>::NDijkstra()
+{
+	for(int i = 0;i < this->currentvertex;i++)
+		Dijkstra(i);
 }
 
 template<typename T,typename K>
@@ -1202,4 +1338,112 @@ void DiGraph<T,K>::Floyd()
 	delete [] path;
 	delete [] tmp;
 }
+
+template<typename T,typename K>
+void DiGraph<T,K>::TopologicalSort()
+{
+	Stack<int> sn;
+	int i,j,k,count,trav;
+	DiGraph<T,K> tmp;
+	tmp = *this;
+	//init stack
+	for(i = 0;i < this->currentvertex;i++)
+	{
+		for(j = 0,k = 0;j < this->currentvertex;j++)
+		{
+			if(i != j)
+			{
+				if(AdjMatrix[j][i] != this->maxweight)
+					k++;
+			}
+		}
+		if(k == 0)
+			sn.Push(i);
+	}
+	count = 0;
+	while(!sn.IsEmpty())
+	{
+		sn.Pop(trav);
+		std::cout<<NodeTable[trav]<<" ";
+		count++;
+		for(j = 0;j < this->currentvertex;j++)
+		{
+			if(trav != j && AdjMatrix[trav][j] != this->maxweight)
+			{
+				tmp.AdjMatrix[trav][j] = this->maxweight;
+				for(i = 0,k = 0;i < this->currentvertex;i++)
+					if(i != j)
+						if(tmp.AdjMatrix[i][j] != this->maxweight)
+							k++;
+				if(k == 0)
+					sn.Push(j);
+			}
+		}
+	}
+	std::cout<<std::endl;
+	if(count < this->currentvertex)
+		std::cout<<"Loop!"<<std::endl;
+	else
+		std::cout<<"No loop!"<<std::endl;
+}
+
+template<typename T,typename K>
+void DiGraph<T,K>::CriticalPath()
+{
+	int i,j,k,n;
+	K Ae,Al,w,*Ve,*Vl;
+	n = this->currentvertex;
+	Ve = new K [n];
+	Vl = new K [n];
+	for(i = 0;i < n;i++)
+		Ve[i] = 0,Vl[i] = 0;
+	for(i = 0;i < n;i++)
+	{
+		j = GetFirstNeighbor(i);
+		while(j != -1)
+		{
+			w = GetWeight(i,j);
+			if(Ve[i] + w > Ve[j])
+				Ve[j] = Ve[i] + w;
+			j = GetNextNeighbor(i,j);
+		}
+	}
+	PrintAdj();
+	for(i = 0;i < n;i++)
+		std::cout<<Ve[i]<<" ";
+	std::cout<<std::endl;
+	Vl[n - 1] = Ve[n - 1];
+	for(j = n - 2;j > 0;j--)
+	{
+		k = GetFirstNeighbor(j);
+		w = GetWeight(j,k);
+		if(Vl[j] == 0)
+			Vl[j] = Vl[k] - w;
+		while(k != -1)
+		{
+			w = GetWeight(j,k);
+			if(Vl[k] - w < Vl[j])
+				Vl[j] = Vl[k] - w;
+			k = GetNextNeighbor(j,k);
+		}
+	}
+	for(i = 0;i < n;i++)
+		std::cout<<Vl[i]<<" ";
+	std::cout<<std::endl;
+	for(i = 0;i < n;i++)
+	{
+		j = GetFirstNeighbor(i);
+		while(j != -1)
+		{
+			Ae = Ve[i];
+			Al = Vl[j] - GetWeight(i,j);
+			if(Ae == Al)
+				std::cout<<"<"<<GetValue(i)<<","<<GetValue(j)<<">"<<"is critical incident"<<std::endl;
+			j = GetNextNeighbor(i,j);
+		}
+	}
+	delete [] Vl;
+	delete [] Ve;
+}
+
 #endif
