@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 
 void draw(int n)
 {
@@ -8,12 +9,17 @@ void draw(int n)
 	//left,right,up,down ,flag of direction
 	data = new int *[n];
 	for(i = 0;i < n;i++)
+	{
 		data[i] = new int [n];
+		std::memset(data[i],0,sizeof(int) * n);
+	}
 	i = 0;
 	j = -1;	
 	while(count <= n * n)
 	{
-		while(count <= n * n && j < n - i - 1)
+		//another way of judge:axis less than boundary and the front element is unmodified.
+		// while(count <= n * n && j < n - i - 1)
+		while(j + 1 < n && data[i][j + 1] == 0)
 			data[i][++j] = count++;
 		while(count <= n * n && i < j)
 			data[++i][j] = count++;

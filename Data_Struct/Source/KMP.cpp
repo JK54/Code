@@ -5,13 +5,12 @@ using namespace std;
 
 int KMP(string T,string P)
 {
-	int j = 0,k = -1;//计算next数组
-	int *next = new int[static_cast<int>(P.length())];
+	int lengthP = P.length();
+	int lengthT = T.length();
+	int j = 0,k = -1;
+	int * next = new int[lengthP];
+	int posT = 0,posP = 0;
 	next[0] = -1;
-	int posT = 0,posP = 0;//匹配过程
-	int lengthP = static_cast<int>(P.length());
-	int lengthT = static_cast<int>(T.length());
-	//先计算next
 	while(j < lengthP)
 	{
 		if(k == -1||P[j] == P[k])
@@ -23,12 +22,9 @@ int KMP(string T,string P)
 		else
 			k = next[k];
 	}
-	//打印next的结果
 	for(int l = 0;l < lengthP; ++l)cout<<l<<"\t";cout<<endl;
 	for(int l = 0;l < lengthP; ++l)cout<<P[l]<<"\t";cout<<endl;
 	for(int l = 0;l < lengthP; ++l)cout<<next[l]<<"\t";cout<<endl;
-	
-	// 匹配过程
 	while(posP < lengthP && posT < lengthT)
 	{
 		if( posP == -1 || P[posP] == T[posT])
@@ -41,14 +37,14 @@ int KMP(string T,string P)
 	}
 	if( posP < lengthP)
 	{
-		cout<<"匹配失败"<<endl;
+		cout<<"failed"<<endl;
 		return -1;
 	}
 	else
 	{
-		cout<<"匹配成功"<<endl;
+		cout<<"successed"<<endl;
 		cout<<T<<endl;
-		for(auto i = 1; i <= posT - posP ;++i)
+		for(int i = 1; i <= posT - posP ;++i)
 			cout<<" ";
 		cout<<P<<endl<<endl;
 		return posT - posP;
@@ -57,14 +53,10 @@ int KMP(string T,string P)
 }
 
 
-int main(int argc,char **argv)
+int main()
 {
-	if(argc != 3)
-	{
-		perror("Usage: kmp sourcestring patch");
-		return 1;
-	}
-	string T = argv[1];
-	string P = argv[2];
+	string T,P;
+	std::cin>>T>>P;
 	KMP(T,P);
+	return 0;
 }
