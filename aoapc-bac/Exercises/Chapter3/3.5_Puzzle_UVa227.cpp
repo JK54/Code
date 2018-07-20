@@ -90,7 +90,7 @@ void output(char block[][DEFAULT_SIZE],char op[],int count)
 	}
 	std::cout<<"Puzzle #"<<count<<":"<<std::endl;
 	if(flag == false)
-		std::cout<<"This puzzle has no final configuration.";
+		std::cout<<"This puzzle has no final configuration."<<std::endl;
 	else
 	{
 		for(i = 0;i < DEFAULT_SIZE - 1;i++)
@@ -101,7 +101,7 @@ void output(char block[][DEFAULT_SIZE],char op[],int count)
 		}
 		for(j = 0;j < DEFAULT_SIZE - 1;j++)
 			std::cout<<block[i][j]<<" ";
-		std::cout<<block[i][j];
+		std::cout<<block[i][j]<<std::endl;
 	}
 }
 int main()
@@ -113,7 +113,7 @@ int main()
 	output(block,op,count);
 	while(input(std::cin,block,op,count))
 	{
-		std::cout<<std::endl<<std::endl;
+		std::cout<<std::endl;
 		output(block,op,count);
 	}
 	return 0;
