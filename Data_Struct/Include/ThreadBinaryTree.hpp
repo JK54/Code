@@ -48,7 +48,7 @@ class ThreadTree
 		ThreadNode<T>* buildthreadfrombin(ThreadNode<T> *ro,BinTreeNode<T> *roo);
 		ThreadNode<T>* parent(ThreadNode<T> *t,ThreadNode<T> *p);
 
-		virtual void CreateThread(ThreadNode<T> *current,ThreadNode<T> *&pre) = 0;
+		virtual void createthread(ThreadNode<T> *current,ThreadNode<T> *&pre) = 0;
 
 };
 
@@ -73,7 +73,7 @@ class PreThreadTree:public ThreadTree<T>
 		virtual	ThreadNode<T>* Prior(ThreadNode<T> *current) override;
 		virtual ThreadNode<T> *Parent(ThreadNode<T> *current) override;
 	protected:
-		virtual void CreateThread(ThreadNode<T> *current,ThreadNode<T> *&pre) override;
+		virtual void createthread(ThreadNode<T> *current,ThreadNode<T> *&pre) override;
 };
 
 template <typename T>
@@ -98,7 +98,7 @@ class InThreadTree:public ThreadTree<T>
 		ThreadNode<T>* NextPreOrder(ThreadNode<T> *roo);
 		void CompareInsert(ThreadNode<T> *roo,const T &vle);
 	protected:
-		virtual void CreateThread(ThreadNode<T> *current,ThreadNode<T> *&pre) override;
+		virtual void createthread(ThreadNode<T> *current,ThreadNode<T> *&pre) override;
 };
 
 template <typename T>
@@ -119,7 +119,7 @@ class PostThreadTree:public ThreadTree<T>
 		virtual	ThreadNode<T>* Prior(ThreadNode<T> *current) override;
 		virtual ThreadNode<T> *Parent(ThreadNode<T> *current) override;
 	protected:
-		virtual void CreateThread(ThreadNode<T> *current,ThreadNode<T> *&pre) override;
+		virtual void createthread(ThreadNode<T> *current,ThreadNode<T> *&pre) override;
 };
 //-------------ThreadNode begin--------------------
 //for buildthreadfrombin(),initialize the tag.make the createthread concise.
@@ -284,7 +284,7 @@ void PreThreadTree<T>::CreateThread(BinTreeNode<T> *p)
 	ThreadNode<T> *trav = this->root;
 	/* //using preorder traverse to build thread,it works,and the overload recursive method exist a fatal problem:when it come the First node of subtree,in this moment,current->lchild = pre,it will goes on an infinite loop:pre = current,CreateThread(pre,current)->CreteThread(current,pre).it need to be debugged. */
 	//the overload recursive solved,the key problem is plus 2 if statement,if the lchild and rchild is nullptr,we should not recurse it.And I thought the traverse is also helpful to understand the thread,keep it here.Think deeper,the two method is actually the one,differ in non-recursion and recursion.
-	// Stack<ThreadNode<T>*> s;
+   /*  Stack<ThreadNode<T>*> s; */
 	// if(trav->rchild != nullptr)
 		// s.Push(trav->rchild);
 	// if(trav->lchild != nullptr)
@@ -302,11 +302,11 @@ void PreThreadTree<T>::CreateThread(BinTreeNode<T> *p)
 		// if(trav->lchild == nullptr)
 			// trav->lchild = pre;
 	/* } */
-	CreateThread(trav,pre);
+	createthread(trav,pre);
 }
 
 template<typename T>
-void PreThreadTree<T>::CreateThread(ThreadNode<T> *current,ThreadNode<T> *&pre)
+void PreThreadTree<T>::createthread(ThreadNode<T> *current,ThreadNode<T> *&pre)
 {
 	//ltag and rtag are dealed with buildthreadfrombin,so do not need to handle them
 	if(current == nullptr)
@@ -316,11 +316,11 @@ void PreThreadTree<T>::CreateThread(ThreadNode<T> *current,ThreadNode<T> *&pre)
 	if(pre != nullptr && pre->rchild == nullptr)
 		pre->rchild = current;
 	pre = current;
-	//need to prevent the direction turn to privious
+	//need to prevent the direction turn to previous
 	if(current->ltag == 0)
-		CreateThread(current->lchild,pre);
+		createthread(current->lchild,pre);
 	if(current->rtag == 0)
-		CreateThread(current->rchild,pre);
+		createthread(current->rchild,pre);
 }
 
 template<typename T>
@@ -439,18 +439,18 @@ ThreadNode<T>* InThreadTree<T>::Parent(ThreadNode<T> *current)
 //why preorder need to if statement ,but inoder don't need it?
 //the sequence cause the different.it will blocked by the first judgement.
 template<typename T>
-void InThreadTree<T>::CreateThread(ThreadNode<T> *current,ThreadNode<T> *&pre)
+void InThreadTree<T>::createthread(ThreadNode<T> *current,ThreadNode<T> *&pre)
 {
 	if(current == nullptr)
 		return;
-	CreateThread(current->lchild,pre);
+	createthread(current->lchild,pre);
 	//ltag and rtag was handled by the buildthreadfrombin
 	if(current->lchild == nullptr)
 		current->lchild = pre;
 	if(pre != nullptr && pre->rchild == nullptr)
 		pre->rchild = current;
 	pre = current;
-	CreateThread(current->rchild,pre);
+	createthread(current->rchild,pre);
 }
 
 	template<typename T>
@@ -459,7 +459,7 @@ void InThreadTree<T>::CreateThread(BinTreeNode<T> *ro)
 	ThreadNode<T> *pre = nullptr;
 	ThreadTree<T>::root = ThreadTree<T>::buildthreadfrombin(ThreadTree<T>::root,ro);
 	if(ThreadTree<T>::root != nullptr)
-		CreateThread(ThreadTree<T>::root,pre);
+		createthread(ThreadTree<T>::root,pre);
 }
 
 	template<typename T>
@@ -692,16 +692,16 @@ void PostThreadTree<T>::CreateThread(BinTreeNode<T> *ro)
 	ThreadTree<T>::root = this->buildthreadfrombin(this->root,ro);
 	ThreadNode<T> *trav = ThreadTree<T>::root;
 	ThreadNode<T> *pre = nullptr;
-	CreateThread(trav,pre);
+	createthread(trav,pre);
 }
 
 template<typename T>
-void PostThreadTree<T>::CreateThread(ThreadNode<T> *trav,ThreadNode<T> *&pre)
+void PostThreadTree<T>::createthread(ThreadNode<T> *trav,ThreadNode<T> *&pre)
 {
 	if(trav == nullptr)
 		return;
-	CreateThread(trav->lchild,pre);
-	CreateThread(trav->rchild,pre);
+	createthread(trav->lchild,pre);
+	createthread(trav->rchild,pre);
 	if(trav->lchild == nullptr)
 		trav->lchild = pre;
 	if(pre != nullptr && pre->rchild == nullptr)
