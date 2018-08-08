@@ -1,31 +1,54 @@
 #include "../Include/AVLTree.hpp"
-
-using namespace std;
-
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdlib.h>
 int main()
 {
 	AVLTree<int> aaa;
-	/*
-	 * int num;
-	 * std::cin>>num;
-	 */
-	int a[] = {4,2,6,1,3,5,7,16,15,14,13,12,11,10,8,9};
-	for(int i = 0;i < static_cast<int>(sizeof(a)/sizeof(a[0]));++i)
-		aaa.Insert(a[i]);
-	aaa.TraversePreOrder(aaa.Root());
-	cout<<endl;
-	aaa.TraverseInOrder(aaa.Root());
-	std::cout<<endl;
-	aaa.TraverseLevelOrder(aaa.Root());
-	std::cout<<endl<<endl;
-	for(int i = 0; i < static_cast<int>(sizeof(a)/sizeof(a[0]));i++)
+#if 0
+	std::ifstream op("11.txt");
+#else 
+	std::ofstream ip("11.txt");
+#endif
+	unsigned short a[30];
+	int fd = open("/dev/urandom",O_RDONLY);
+	int num = static_cast<int>(sizeof(a)/sizeof(a[0]));
+	for(int i = 0;i < num;i++)
 	{
+#if 1 
+		read(fd,&a[i],sizeof(unsigned short));
+		a[i] = a[i] % (2 * num);
+		while(aaa.Search(a[i]))
+		{
+			read(fd,&a[i],sizeof(unsigned short));
+			a[i] = a[i] % (3 * num);
+		}
+		ip<<a[i]<<" ";
+		ip.flush();
+#else 
+		op>>a[i];
+#endif
+		aaa.Insert(a[i]);
+	}
+	close(fd);
+	for(int i = num - 1; i >= 0;i--)
+	{
+   /*      std::cout<<"preorder : "; */
+		// aaa.TraversePreOrder(aaa.Root());
+		// std::cout<<std::endl;
+		// std::cout<<"inorder  : ";
+		// aaa.TraverseInOrder(aaa.Root());
+		// std::cout<<std::endl;
+		// std::cout<<"levelord : ";
+		// aaa.TraverseLevelOrder(aaa.Root());
+		// std::cout<<std::endl;std::cout<<"wanted : "<<a[i]<<std::endl;
 		aaa.Remove(a[i]);
-		aaa.TraversePreOrder(aaa.Root());
-		std::cout<<endl;
-	 	aaa.TraverseInOrder(aaa.Root());
-		std::cout<<endl;
-		cout<<endl;
+		// std::cout<<"inorder  : ";
+		// aaa.TraverseInOrder(aaa.Root());
+		// std::cout<<std::endl;
+		// std::cout<<"still remain : ";
+		aaa.PrintCount();
+		/* std::cout<<std::endl; */
 	}
 	return 0;
 }

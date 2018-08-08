@@ -21,6 +21,7 @@ class BSTree:public BinTree<T>
 		bool Remove_NR(const T &vle);
 		bool Search(const T &vle);
 		bool Remove(const T &vle,BinTreeNode<T> *&roo);//only support for the BSTree,not for AVLTree.
+		bool Remove(const T &vle);
 		void RemoveMax();
 		void RemoveLessThanX(BinTreeNode<T> *roo,const T &vle);
 };
@@ -122,7 +123,60 @@ bool BSTree<T>::Remove_NR(const T &vle)
 	return true;
 }
 
-	template<typename T>
+template<typename T>
+bool BSTree<T>::Remove(const T &vle)
+{
+	BinTreeNode<T> *pre,*trav,*wanted,*tmp;
+	pre = nullptr;
+	trav = BinTree<T>::root;
+	while(trav != nullptr)
+	{
+		pre = trav;
+		if(trav->data > vle)
+			trav = trav->lchild;
+		else if(trav->data < vle)
+			trav = trav->rchild;
+		else
+			break;
+	}
+	if(trav == nullptr)
+		return false;
+	wanted = trav;
+	if(trav->lchild != nullptr && trav->rchild != nullptr)
+	{
+		tmp = trav;
+		trav = trav->lchild;
+		if(trav->rchild != nullptr)
+			tmp = trav;
+		while(trav->rchild != nullptr)
+		{
+			tmp = trav;
+			trav = trav->rchild;
+		}
+		if(tmp->lchild != trav)
+			tmp->rchild = trav->lchild;
+		else
+			tmp->lchild = trav->lchild;
+	}
+	else if(trav->rchild != nullptr)
+		trav = trav->rchild;
+	else
+		trav = trav->lchild;
+	if(wanted == pre)
+		BinTree<T>::root = trav;
+	else
+	{
+		if(pre->lchild == wanted)
+			pre->lchild = trav;
+		else
+			pre->rchild = trav;
+	}
+	delete wanted;
+	wanted = nullptr;
+	return true;
+}
+
+template<typename T>
 bool BSTree<T>::Remove(const T &vle,BinTreeNode<T> *&roo)
 {
 	BinTreeNode<T> *tmp;
