@@ -15,17 +15,15 @@ class AVLTreeNode
 {
 	friend class AVLTree<T>;
 	public:
-	AVLTreeNode():lchild(nullptr),rchild(nullptr),bf(0){}
-	AVLTreeNode(T x):data(x),lchild(nullptr),rchild(nullptr),bf(0){}
-
+	AVLTreeNode():height(1),parent(this),lchild(nullptr),rchild(nullptr){}
+	AVLTreeNode(T x):data(x),height(1),parent(this),lchild(nullptr),rchild(nullptr){}
 	T Data(){return data;}
 	private:
 	T data;
-	//Abbreviation for "balance factor",bf = Height(rchild) - Height(lchild).it only has values of -1,0,1
-	int bf;	
+	int height;
+	AVLTreeNode<T> *parent;
 	AVLTreeNode<T> *lchild;
 	AVLTreeNode<T> *rchild;
-
 };
 
 template<typename T>
@@ -33,27 +31,32 @@ class AVLTree
 {
 	public:
 		AVLTree():root(nullptr){}
-		AVLTree(T x):root(new AVLTreeNode<T>(x)){}
+		AVLTree(T x){root(new AVLTreeNode<T>(x));root->parent = nullptr;}
 		~AVLTree();
 
 		AVLTreeNode<T>* Root(){return root;}
 		void CreateTree(std::istream &is);
-		AVLTreeNode<T>* Search(const T &vle) const;
+		void CreateTree(T *data,int n);
+		AVLTreeNode<T>* Search(const T &vle);
 		bool Insert(const T &vle);
-		bool Remove(const T &vle);//need re-read it to make sure completely understanding.
-		void Traverse(AVLTreeNode<T> *roo);
+		bool Remove(const T &vle);
+		void TraversePreOrder(AVLTreeNode<T> *roo);
+		void TraverseInOrder(AVLTreeNode<T> *roo);
 		void TraverseLevelOrder(AVLTreeNode<T> *roo);
+		void UpdateHeight(AVLTreeNode<T> *roo);
 	  private:
-		AVLTreeNode<T> *root;
-		
-		void rotatel(AVLTreeNode<T> *&roo);//RR
-		void rotater(AVLTreeNode<T> *&roo);//LL
-		void rotatelr(AVLTreeNode<T> *&roo);//LR
-		void rotaterl(AVLTreeNode<T> *&roo);//RL
+		int getbf(AVLTreeNode<T> *roo);
+		void rebalance(AVLTreeNode<T> *roo);
+		void replace(AVLTreeNode<T>*,AVLTreeNode<T>*);
+		size_t Height(AVLTreeNode<T> *roo);
+		AVLTreeNode<T>* rotatel(AVLTreeNode<T> *roo);
+		AVLTreeNode<T>* rotater(AVLTreeNode<T> *roo);
+		AVLTreeNode<T>* rotatelr(AVLTreeNode<T> *roo);
+		AVLTreeNode<T>* rotaterl(AVLTreeNode<T> *roo);
 		void destroy(AVLTreeNode<T> *roo);
-		size_t height(AVLTreeNode<T> *roo);
+		//member
+		AVLTreeNode<T> *root;
 };
-
 
 template<typename T>
 void AVLTree<T>::destroy(AVLTreeNode<T> *roo)
@@ -71,29 +74,27 @@ AVLTree<T>::~AVLTree()
 {
 	destroy(root);
 }
-	
-template<typename T>
-size_t AVLTree<T>::height(AVLTreeNode<T> *roo)
-{
-	if(roo == nullptr)
-		return 0;
-	size_t hl = height(roo->lchid);
-	size_t hr = height(roo->rchild);
-	size_t ht = hl > hr? hl + 1 : hr + 1;
-	return ht;
-}
 
 template<typename T>
-void AVLTree<T>::Traverse(AVLTreeNode<T> *roo)
+void AVLTree<T>::TraversePreOrder(AVLTreeNode<T> *roo)
 {
 	if(roo != nullptr)
 	{
-		Traverse(roo->lchild);
 		std::cout<<roo->data<<" ";
-		Traverse(roo->rchild);
+		TraversePreOrder(roo->lchild);
+		TraversePreOrder(roo->rchild);
 	}
 }
 
+template<typename T>
+void AVLTree<T>::TraverseInOrder(AVLTreeNode<T> *roo)
+{
+	if(roo == nullptr)
+		return;
+	TraverseInOrder(roo->lchild);
+	std::cout<<roo->data<<" ";
+	TraverseInOrder(roo->rchild);
+}
 template<typename T>
 void AVLTree<T>::TraverseLevelOrder(AVLTreeNode<T> *roo)
 {
@@ -122,17 +123,42 @@ void AVLTree<T>::CreateTree(std::istream &is)
 {
 	T vle;
 	while(is>>vle)
-		Insert_NR(vle);
+		Insert(vle);
 }
 
 template<typename T>
-AVLTreeNode<T>* AVLTree<T>::Search(const T &vle) const
+void AVLTree<T>::CreateTree(T *data,int n)
 {
-	if(root == nullptr)
-		return nullptr;
-	AVLTreeNode<T> *trav = root;
+	for(int i = 0;i < n;i++)
+		Insert(data[i]);
+}
+
+template<typename T>
+size_t AVLTree<T>::Height(AVLTreeNode<T> *roo)
+{
+	if(roo == nullptr)
+		return 0;
+	size_t lh = roo->lchild == nullptr ? 0 : roo->lchild->height;
+	size_t lr = roo->rchild == nullptr ? 0 : roo->rchild->height;
+	return std::max(lh,lr) + 1;
+}
+
+template<typename T>
+void AVLTree<T>::UpdateHeight(AVLTreeNode<T> *roo)
+{
+	if(roo != nullptr)
+		roo->height = Height(roo);
+}
+
+template<typename T>
+AVLTreeNode<T>* AVLTree<T>::Search(const T &vle)
+{
+	AVLTreeNode<T> *pre,*trav;
+	pre = nullptr;
+	trav = root;
 	while(trav != nullptr)
 	{
+		pre = trav;
 		if(trav->data > vle)
 			trav = trav->lchild;
 		else if(trav->data < vle)
@@ -140,256 +166,226 @@ AVLTreeNode<T>* AVLTree<T>::Search(const T &vle) const
 		else
 			return trav;
 	}
-}
-template<typename T>
-void AVLTree<T>::rotatel(AVLTreeNode<T> *&roo)
-{
-	AVLTreeNode<T> *p = roo;
-	roo = roo->rchild;
-	p->rchild = roo->lchild;
-	roo->lchild = p;
-	roo->bf = p->bf = 0;
+	return pre;
 }
 
 template<typename T>
-void AVLTree<T>::rotater(AVLTreeNode<T> *&roo)
+AVLTreeNode<T>* AVLTree<T>::rotatel(AVLTreeNode<T> *roo)
 {
-	AVLTreeNode<T> *p = roo;
-	roo = roo->lchild;
-	p->lchild = roo->rchild;
-	roo->rchild = p;
-	roo->bf = p->bf = 0;
+	AVLTreeNode<T> *r;
+	r = roo->rchild;
+	roo->rchild = r->lchild;
+	if(root == roo)
+	{
+		root = r;
+		root->parent = nullptr;
+	}
+	else
+	{
+		r->parent = roo->parent;
+		if(roo->parent->lchild == roo)
+			roo->parent->lchild = r;
+		else
+			roo->parent->rchild = r;
+	}
+	if(r->lchild != nullptr)
+		r->lchild->parent = roo;
+	r->lchild = roo;
+	roo->parent = r;
+	UpdateHeight(roo);
+	UpdateHeight(r);
+	return r;
 }
 
 template<typename T>
-void AVLTree<T>::rotatelr(AVLTreeNode<T> *&roo)
+AVLTreeNode<T>* AVLTree<T>::rotater(AVLTreeNode<T> *roo)
 {
-	AVLTreeNode<T> *subL = roo->lchild;
-	AVLTreeNode<T> *subR = roo;
-	roo = subL->rchild;
-	subL->rchild = roo->lchild;
-	roo->lchild = subL;
-	if(roo->bf <= 0)
-		subL->bf = 0;
+	AVLTreeNode<T> *l;
+	l = roo->lchild;
+	roo->lchild = l->rchild;
+	if(root == roo)
+	{
+		root = l;
+		root->parent = nullptr;
+	}
 	else
-		subL->bf = -1;
-	subR->lchild = roo->rchild;
-	roo->rchild = subR;
-	if(roo->bf == -1 )
-		subR->bf = 1;
-	else
-		subR->bf = 0;
-	roo->bf = 0;
+	{
+		l->parent = roo->parent;
+		if(roo->parent->lchild == roo)
+			roo->parent->lchild = l;
+		else
+			roo->parent->rchild = l;
+	}
+	if(l->rchild != nullptr)
+		l->rchild->parent = roo;
+	l->rchild = roo;
+	roo->parent = l;
+	UpdateHeight(roo);
+	UpdateHeight(l);
+	return l;
 }
 
 template<typename T>
-void AVLTree<T>::rotaterl(AVLTreeNode<T> *&roo)
+AVLTreeNode<T>* AVLTree<T>::rotatelr(AVLTreeNode<T> *roo)
 {
-	AVLTreeNode<T> *subL = roo;
-	AVLTreeNode<T> *subR = roo->rchild;
-	roo = subR->lchild;
-	subR->lchild = roo->rchild;
-	roo->rchild = subR;
-	if(roo->bf == - 1)
-		subR->bf = 1;
-	else
-		subR->bf = 0;
-	subL->rchild = roo->lchild;
-	roo->lchild = subL;
-	if(roo->bf == -1)
-		subL->bf = 0;
-	else
-		subL->bf = -1;
-	roo->bf = 0;
+	rotatel(roo->lchild);
+	return rotater(roo);
+}
+
+template<typename T>
+AVLTreeNode<T>* AVLTree<T>::rotaterl(AVLTreeNode<T> *roo)
+{
+	rotater(roo->rchild);
+	return rotatel(roo);
+}
+
+template<typename T>
+int AVLTree<T>::getbf(AVLTreeNode<T> *roo)
+{
+	if(roo == nullptr)
+		return 0;
+	size_t lh = roo->lchild == nullptr ? 0 : roo->lchild->height;
+	size_t lr = roo->rchild == nullptr ? 0 : roo->rchild->height;
+	return lr - lh;
+}
+template<typename T>
+void AVLTree<T>::rebalance(AVLTreeNode<T> *roo)
+{
+	AVLTreeNode<T> *pre = roo;
+	int tmph,bf_pre,bf_trav;
+	bf_pre = bf_trav = 0;
+	tmph = Height(pre);
+	while(pre->height != tmph || abs(bf_pre) == 2 || bf_trav == 0)
+	{
+		UpdateHeight(pre);
+		if(abs(bf_pre) == 2)
+		{
+			if(bf_pre == 2 && (bf_trav == 1 || bf_trav == 0))
+				pre = rotatel(pre);
+			else if(bf_pre == -2 && (bf_trav == -1 || bf_trav == 0))
+				pre = rotater(pre);
+			else if(bf_pre == 2 && bf_trav == -1)
+				pre = rotaterl(pre);
+			else
+				pre = rotatelr(pre);
+		}
+		bf_trav = getbf(pre);
+		//for remove
+		if(bf_trav == 0)
+		{
+			if(pre == root);
+			else if(pre->parent->lchild == pre)
+				bf_trav = getbf(pre->parent->rchild);
+			else
+				bf_trav = getbf(pre->parent->lchild);
+		}
+		else if(abs(bf_trav) == 2)
+		{
+			bf_pre = bf_trav;
+			if(bf_trav == 2)
+				bf_trav = getbf(pre->rchild);
+			else
+				bf_trav = getbf(pre->lchild);
+			continue;
+		}
+		pre = pre->parent;
+		if(pre == nullptr)
+			break;
+		tmph = Height(pre);
+		bf_pre = getbf(pre);
+	}
 }
 
 template<typename T>
 bool AVLTree<T>::Insert(const T &vle)
 {
-	AVLTreeNode<T> *p = root;
-	AVLTreeNode<T> *pr = nullptr;//parent of p.
-	Stack<AVLTreeNode<T> *>s;//record of path of inserting.
-	while(p != nullptr)
+	AVLTreeNode<T> *pre,*trav;
+	pre = Search(vle);
+	trav = new AVLTreeNode<T>(vle);
+	trav->parent = pre;
+	if(pre == nullptr)
 	{
-		if(p->data == vle)//already exit in tree.
-			return false;
-		pr = p;
-		s.Push(p);
-		if(p->data > vle)
-			p = p->lchild;
-		else
-			p = p->rchild;
-	}
-	p = new AVLTreeNode<T>(vle);
-	if(pr == nullptr)
-	{
-		root = p;
+		root = trav;
+		root->parent = nullptr;
 		return true;
 	}
-	if(pr->data > p->data )
-		pr->lchild = p;
+	if(pre->data == vle)
+	{
+		delete trav;
+		return false;
+	}
+	if(trav->data > pre->data)
+		pre->rchild = trav;
 	else
-		pr->rchild = p;
-	while(!s.IsEmpty())
-	{
-		s.Pop(pr);
-		if(pr->lchild == p)
-			pr->bf--;
-		else
-			pr->bf++;
-		if(pr->bf == 0)
-			break;
-		else if(abs(pr->bf) == 1)
-			p = pr;
-		else
-		{
-			if(pr->bf*p->bf == 2 )//if p and pr have same sign
-			{
-				if(p->bf == 1)
-					rotatel(pr);
-				else
-					rotater(pr);
-			}
-			else
-			{
-				if(p->bf == 1)
-					rotatelr(pr);
-				else
-					rotaterl(pr);
-			}
-			break;
-		}
-	}
-	if(s.IsEmpty())
-		root = pr;
-	else//the pointer of parent of pr have changed,need to relink it.Use p to receive the parent.
-	{
-		s.Pop(p);
-		if(p->data > pr->data)
-			p->lchild = pr;
-		else
-			p->rchild = pr;
-	}
+		pre->lchild = trav;
+	rebalance(pre);
 	return true;
 }
 
 template<typename T>
+void AVLTree<T>::replace(AVLTreeNode<T> *trav,AVLTreeNode<T> *pre)
+{
+	if(trav != nullptr)
+	{
+		trav->parent = pre->parent;
+		if(pre->lchild != trav)
+			trav->lchild = pre->lchild;
+		if(pre->rchild != trav)
+			trav->rchild = pre->rchild;
+		UpdateHeight(trav);
+		if(trav->lchild != nullptr)
+			trav->lchild->parent = trav;
+		if(trav->rchild != nullptr)
+			trav->rchild->parent = trav;
+	}
+	if(root != pre)
+	{
+		if(pre->parent->lchild == pre)
+			pre->parent->lchild = trav;
+		else
+			pre->parent->rchild = trav;
+	}
+	else
+		root = trav;
+	delete pre;
+	pre = nullptr;
+}
+template<typename T>
 bool AVLTree<T>::Remove(const T &vle)
 {
-	AVLTreeNode<T> *p = root;
-	AVLTreeNode<T> *pr = nullptr;
-	AVLTreeNode<T> *q,*ppr;
-	int d = 0 ,dd = 0;
-	Stack<AVLTreeNode<T>*>s;
-	while(p != nullptr)
-	{
-		if(p->data == vle)
-			break;
-		pr = p;
-		s.Push(p);
-		if(p->data > vle)
-			p = p->lchild;
-		else
-			p = p->rchild;
-	}
-	if(p == nullptr)	
+	AVLTreeNode<T> *trav,*pre,*tmp;
+	trav = Search(vle);
+	if(trav == nullptr || trav->data != vle)
 		return false;
-	if(p->lchild != nullptr && p->rchild != nullptr)
+	pre = trav;
+	if(trav->lchild != nullptr && trav->rchild != nullptr)
 	{
-		pr = p;
-		s.Push(pr);
-		q = p->lchild;
-		while(q->rchild != nullptr)
-		{
-			pr = q;
-			s.Push(pr);
-			q = q->rchild;
-		}
-		p->data = q->data;
-		p = q;
-	}
-	if(p->lchild != nullptr)
-		q = p->lchild;
-	else
-		q = p->rchild;
-	if(pr == nullptr)
-		root = q;
-	else
-	{
-		if(pr->lchild == p)
-			pr->lchild = q;
+		trav = trav->lchild;
+		while(trav->rchild != nullptr)
+			trav = trav->rchild;
+		tmp = trav->parent;
+		if(tmp->lchild == trav)
+			tmp->lchild = nullptr;
 		else
-			pr->rchild = q;
-		while(!s.IsEmpty())
-		{
-			s.Pop(pr);
-			if(pr->rchild == q)
-				pr->bf--;
-			else
-				pr->bf++;
-			if(!s.IsEmpty())
-			{
-				s.Top(ppr);
-				dd = (ppr->lchild == pr)? -1 : 1;
-			}
-			else
-				dd = 0;
-			if(abs(pr->bf) == 1)
-				break;
-			if(pr->bf != 0)
-			{
-				if(pr->bf < 0)
-				{
-					d = -1;
-					q = pr->lchild;
-				}
-				else
-				{
-					d = 1;
-					q = pr->rchild;
-				}
-				if(q->bf == 0)
-				{
-					if(d == -1)
-					{
-						rotater(pr);
-						pr->bf = 1;
-						pr->lchild->bf = -1;
-					}
-					else
-					{
-						rotatel(pr);
-						pr->bf = -1;
-						pr->rchild->bf = 1;
-					}
-					break;
-				}
-				if(q->bf == d)
-				{
-					if(d == -1)
-						rotater(pr);
-					else
-						rotatel(pr);
-				}
-				else
-				{
-					if(d == -1)
-						rotatelr(pr);
-					else
-						rotaterl(pr);
-				}
-				if(dd == -1)
-					ppr->lchild = pr;
-				else
-					ppr->rchild = pr;
-
-			}
-			q = pr;	
-		}
-		if(s.IsEmpty())	
-			root = pr;
+			tmp->rchild = nullptr;
 	}
-	delete p;
+	else
+	{
+		if(trav->lchild != nullptr)
+			trav = trav->lchild;
+		else
+			trav = trav->rchild;
+		if(pre != root)
+			tmp = pre->parent;
+		else
+		{
+			delete root;
+			root = nullptr;
+			return true;
+		}
+	}
+	replace(trav,pre);
+	rebalance(tmp);
 	return true;
-}
+}	
 #endif

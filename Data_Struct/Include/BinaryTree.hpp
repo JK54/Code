@@ -38,6 +38,7 @@ class BinTreeNode
 		bool operator > (const BinTreeNode<T> *p){return data > p->data;}
 		bool operator==(const BinTreeNode<T> *p){return data == p->data;}
 		bool operator==(const BinTreeNode<T> &p){return data == p.data;}
+	
 		T data;
 		BinTreeNode<T> *lchild;
 		BinTreeNode<T> *rchild;

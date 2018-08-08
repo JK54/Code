@@ -283,7 +283,7 @@ void PreThreadTree<T>::CreateThread(BinTreeNode<T> *p)
 	ThreadNode<T> *pre = nullptr;
 	ThreadNode<T> *trav = this->root;
 	/* //using preorder traverse to build thread,it works,and the overload recursive method exist a fatal problem:when it come the First node of subtree,in this moment,current->lchild = pre,it will goes on an infinite loop:pre = current,CreateThread(pre,current)->CreteThread(current,pre).it need to be debugged. */
-	//the overload recursive solved,the key problem is plus 2 if statement,if the lchild and rchild is nullptr,we should not recurse it.And I thought the traverse is also helpful to understand the thread,keep it here.Think deeper,the two method is actually the one,differ in non-recursion and recursion.
+	//the overload recursive solved,the key problem is that if the lchild and rchild is nullptr,we should not recurse it.And I thought the traverse is also helpful to understand the thread,keep it here.
    /*  Stack<ThreadNode<T>*> s; */
 	// if(trav->rchild != nullptr)
 		// s.Push(trav->rchild);
