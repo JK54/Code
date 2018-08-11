@@ -275,6 +275,7 @@ void AVLTree<T>::rebalance(AVLTreeNode<T> *roo)
 	int tmph,bf_pre,bf_trav;
 	bf_pre = bf_trav = 0;
 	tmph = Height(pre);
+	//the last two condition are compatible for remove procedure,and the last make sure the loop run at least once.
 	while(pre->height != tmph || abs(bf_pre) == 2 || bf_trav == 0)
 	{
 		UpdateHeight(pre);
@@ -308,6 +309,7 @@ void AVLTree<T>::rebalance(AVLTreeNode<T> *roo)
 				bf_trav = getbf(pre->lchild);
 			continue;
 		}
+		//for remove ended
 		pre = pre->parent;
 		if(pre == nullptr)
 			break;
@@ -373,6 +375,8 @@ void AVLTree<T>::replace(AVLTreeNode<T> *trav,AVLTreeNode<T> *pre)
 	delete pre;
 	pre = nullptr;
 }
+
+//basic logic:find the node wanted to delete,and find the alternative node to replace the node,relink the pointer,if the node is root,then the root node should change.
 template<typename T>
 bool AVLTree<T>::Remove(const T &vle)
 {
@@ -387,10 +391,12 @@ bool AVLTree<T>::Remove(const T &vle)
 		while(trav->rchild != nullptr)
 			trav = trav->rchild;
 		tmp = trav->parent;
+		//wanted node is root and the deep of path of trav is 1.
 		if(pre == tmp)
 			tmp = trav;
 		else
 		{
+			//change the link relation between tmp(parent of trav) and its grandson,the grandson become the direct son of tmp.
 			tmp->rchild = trav->lchild;
 			if(trav->lchild != nullptr)
 				trav->lchild->parent = tmp;
@@ -402,23 +408,12 @@ bool AVLTree<T>::Remove(const T &vle)
 			trav = trav->lchild;
 		else
 			trav = trav->rchild;
-		if(pre != root)
-			tmp = pre->parent;
-		else
-		{
-			tmp = trav;
-			if(tmp == nullptr || (tmp->lchild == nullptr && tmp->rchild == nullptr))
-			{
-				delete root;
-				root = nullptr;
-				root = trav;
-				count--;
-				return true;
-			}
-		}
+		tmp = pre->parent;
 	}
 	replace(trav,pre);
-	rebalance(tmp);
+	//the situations of nullptr tmp:1.the wanted node is root and only has one branch child,then we dont need to rebalance the tree.2.the wanted node is the last node of tree.we jump it in these situations.
+	if(tmp != nullptr)
+		rebalance(tmp);
 	count--;
 	return true;
 }	

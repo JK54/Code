@@ -10,7 +10,7 @@ int main()
 #else 
 	std::ofstream ip("11.txt");
 #endif
-	unsigned short a[30];
+	unsigned short a[300];
 	int fd = open("/dev/urandom",O_RDONLY);
 	int num = static_cast<int>(sizeof(a)/sizeof(a[0]));
 	for(int i = 0;i < num;i++)

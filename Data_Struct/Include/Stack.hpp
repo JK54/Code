@@ -26,7 +26,7 @@ class Stack
 		~Stack();
 
 		bool Pop(T &p);
-		bool Push(T &x);
+		bool Push(const T &x);
 		bool Top(T &p);
 		bool IsEmpty(){if(top == base)return true;else return false;}
 		size_t Size(){return size;}
@@ -73,7 +73,7 @@ Stack<T>::~Stack()
 }
 
 template<typename T>
-bool Stack<T>::Push(T &x)
+bool Stack<T>::Push(const T &x)
 {
 	if(base == nullptr)
 	{
@@ -106,7 +106,7 @@ bool Stack<T>::Top(T &p)
 	if(IsEmpty())
 		return false;
 	p = top->data;
-	StackNode<T> *tmp = top->next;
+	// StackNode<T> *tmp = top->next;
 	return true;
 }
 
@@ -149,4 +149,5 @@ void Stack<T>::Traverse()
 	}
 	std::cout<<std::endl;
 }
+
 #endif
