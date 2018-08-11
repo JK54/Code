@@ -77,6 +77,7 @@ template<typename T>
 AVLTree<T>::~AVLTree()
 {
 	destroy(root);
+	root = nullptr;
 }
 
 template<typename T>

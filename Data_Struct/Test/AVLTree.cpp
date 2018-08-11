@@ -2,36 +2,34 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#define N 10000000
 int main()
 {
 	AVLTree<int> aaa;
-#if 0
-	std::ifstream op("11.txt");
-#else 
-	std::ofstream ip("11.txt");
-#endif
-	unsigned short a[300];
+/*
+ * #if 0
+ *     std::ifstream op("11.txt");
+ * #else 
+ *     std::ofstream ip("11.txt");
+ * #endif
+ */
+	int *a = new int[N];
 	int fd = open("/dev/urandom",O_RDONLY);
-	int num = static_cast<int>(sizeof(a)/sizeof(a[0]));
-	for(int i = 0;i < num;i++)
+	for(int i = 0;i < N;i++)
 	{
-#if 1 
-		read(fd,&a[i],sizeof(unsigned short));
-		a[i] = a[i] % (2 * num);
+		read(fd,&a[i],sizeof(int));
 		while(aaa.Search(a[i]))
-		{
-			read(fd,&a[i],sizeof(unsigned short));
-			a[i] = a[i] % (3 * num);
-		}
-		ip<<a[i]<<" ";
-		ip.flush();
-#else 
-		op>>a[i];
-#endif
+			read(fd,&a[i],sizeof(int));
+		/*
+		 * ip<<a[i]<<" ";
+		 * ip.flush();
+		 * op>>a[i];
+		 */
 		aaa.Insert(a[i]);
 	}
 	close(fd);
-	for(int i = num - 1; i >= 0;i--)
+	aaa.PrintCount();
+	for(int i = 0; i < N;i++)
 	{
    /*      std::cout<<"preorder : "; */
 		// aaa.TraversePreOrder(aaa.Root());
@@ -47,8 +45,10 @@ int main()
 		// aaa.TraverseInOrder(aaa.Root());
 		// std::cout<<std::endl;
 		// std::cout<<"still remain : ";
-		aaa.PrintCount();
+		// aaa.PrintCount();
 		/* std::cout<<std::endl; */
 	}
+	aaa.PrintCount();
+	delete [] a;
 	return 0;
 }

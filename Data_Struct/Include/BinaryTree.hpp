@@ -160,6 +160,7 @@ template<typename T>
 BinTree<T>::~BinTree()
 {
 	destroy(root);
+	root = nullptr;
 }
 
 //create tree
