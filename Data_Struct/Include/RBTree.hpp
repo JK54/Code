@@ -58,11 +58,15 @@ class RBTree
 		RBTreeNode<T>* next(RBTreeNode<T> *roo);
 		RBTreeNode<T>* grandparent(RBTreeNode<T> *roo);
 		RBTreeNode<T>* uncle(RBTreeNode<T> *roo);
+		inline RBTreeNode<T>* brother(RBTreeNode<T> *roo,RBTreeNode<T> *parent);
 		size_t blacklength(RBTreeNode<T> *roo);
 		inline bool redparent(RBTreeNode<T> *roo);
-		void replace(RBTreeNode<T> *curr,RBTreeNode<T> *pre);
+		//replace() relink all the relation from pre to trav,replace2() just copy the data from trav to pre.
+		void replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre);
+		// void replace2(RBTreeNode<T> *trav,RBTreeNode<T> *pre);
 		void rotatel(RBTreeNode<T> *roo);
 		void rotater(RBTreeNode<T> *roo);
+		inline bool getcolor(RBTreeNode<T> *roo);
 		void destroy(RBTreeNode<T> *roo);
 		//-------member-----------
 		RBTreeNode<T> *root;
@@ -166,6 +170,12 @@ RBTreeNode<T>* RBTree<T>::uncle(RBTreeNode<T> *roo)
 }
 
 template<typename T>
+inline RBTreeNode<T>* RBTree<T>::brother(RBTreeNode<T> *roo,RBTreeNode<T> *parent)
+{
+	return roo == root ? nullptr : parent->lchild == roo ? parent->rchild : parent->lchild;
+}
+
+template<typename T>
 size_t RBTree<T>::blacklength(RBTreeNode<T> *roo)
 {
 	size_t height = 0;
@@ -237,25 +247,30 @@ RBTreeNode<T>* RBTree<T>::next(RBTreeNode<T> *roo)
 }
 
 template<typename T>
-void RBTree<T>::replace(RBTreeNode<T> *curr,RBTreeNode<T> *pre)
+void RBTree<T>::replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre)
 {
-	curr->lchild = pre->lchild;
-	curr->rchild = pre->rchild;
-	curr->parent = pre->parent;
-	curr->color = pre->color;
-	if(pre->lchild != nullptr)
-		pre->lchild->parent = curr;
-	if(pre->rchild != nullptr)
-		pre->rchild->parent = curr;
+	if(trav != nullptr)
+	{
+		if(trav != pre->lchild)
+			trav->lchild = pre->lchild;
+		if(trav != pre->rchild)
+			trav->rchild = pre->rchild;
+		trav->parent = pre->parent;
+		//trav->color = pre->color;
+		if(trav->lchild != nullptr)
+			trav->lchild->parent = trav;
+		if(trav->rchild != nullptr)
+			trav->rchild->parent = trav;
+	}
 	if(pre->parent != nullptr)
 	{
 		if(pre->parent->lchild == pre)
-			pre->parent->lchild = curr;
+			pre->parent->lchild = trav;
 		else
-			pre->parent->rchild = curr;
+			pre->parent->rchild = trav;
 	}
 	else
-		root = curr;
+		root = trav;
 	delete pre;
 	pre = nullptr;
 }
@@ -429,11 +444,20 @@ bool RBTree<T>::Insert(const T &vle)
 }
 
 template<typename T>
+inline bool RBTree<T>::getcolor(RBTreeNode<T> *roo)
+{
+	if(roo != nullptr)
+		return roo->color;
+	return RB_BLACK;
+}
+
+template<typename T>
 bool RBTree<T>::Remove(const T &vle)
 {
-	RBTreeNode<T> *g,*p,*u,*trav,*tmp;
+	//g for grandparent,p for parent,u for uncle,b for brother.
+	RBTreeNode<T> *p,*b,*trav,*tmp;
+	bool tcolor,pcolor,bcolor,lbcolor,rbcolor;
 	trav = root;
-	p = nullptr;
 	//find position
 	while(trav != nullptr)
 	{
@@ -445,10 +469,123 @@ bool RBTree<T>::Remove(const T &vle)
 			trav = trav->rchild;
 	}
 	if(trav == nullptr)
-	{
-		// std::cout<<vle<<"don't exist in the tree"<<std::endl;
 		return false;
-	}
 	count--;
+	//find the alternative node,define that p point to wanted,trav ponit to the alternate.
+	p = trav;
+	//tranfer the full-child situation to the common situation,one non-null child at most.
+	if(trav->lchild != nullptr && trav->rchild != nullptr)
+	{
+		//seek from rchild-subtree.
+		trav = next(p);
+		p->data = trav->data;
+		p = trav;
+	}
+	if(trav->lchild != nullptr)
+		trav = trav->lchild;
+	//trav may be nullptr in the else-statement.
+	else
+		trav = trav->rchild;
+	pcolor = p->color;
+	if(trav == nullptr && p != root)
+		tmp = p->parent;
+	else
+		tmp = trav;
+	replace(trav,p);
+	//simple situation:
+	//1.the wanted is red
+	//2.the wanted is black,the child is red 
+	if(pcolor == RB_RED)
+		return true;
+	else if(pcolor == RB_BLACK && getcolor(trav) == RB_RED)
+	{
+		trav->color = RB_BLACK;
+		return true;
+	}
+	//both the wanted and child is black,disscussed in 6 cases.
+	else
+	{	
+		if(trav == nullptr)
+			p = tmp;
+		else
+			p = trav->parent;
+		//case 1:trav become root.
+		if(trav == root)
+			return true;
+		while(trav != root)
+		{
+			b = brother(trav,p);
+			pcolor = getcolor(p),bcolor = getcolor(b),lbcolor = getcolor(b->lchild),rbcolor = getcolor(b->rchild);
+			//case 3,b and lchild,rchild of b all are black.
+			// use getcolor in case of null node of child of b,considering the balance defition,b can not be empty.	
+			if(pcolor == RB_BLACK && bcolor == RB_BLACK && lbcolor == RB_BLACK && rbcolor == RB_BLACK)
+			{
+				b->color = RB_RED;
+				if(trav != nullptr)
+					trav = trav->parent;
+				else
+					trav = p;
+				p = trav->parent;
+				continue;
+			}
+			//case 2.the lchild,rchild of s must exist.because red node must have a black parent and black children.
+			if(bcolor == RB_RED)
+			{
+				if(trav == p->lchild)
+					rotatel(p);
+				else
+					rotater(p);
+				p->color = RB_RED;
+				b->color = RB_BLACK;
+				b = brother(trav,p);
+				bcolor = getcolor(b),lbcolor = getcolor(b->lchild),rbcolor = getcolor(b->rchild);
+			}
+			//case 4:
+			if(pcolor == RB_RED && bcolor == RB_BLACK && lbcolor == RB_BLACK && rbcolor == RB_BLACK)
+			{
+				p->color = RB_BLACK;
+				b->color = RB_RED;
+				break;
+			}
+			//case 5.pre-work for case 6.
+			if(bcolor == RB_BLACK)
+			{
+				if(trav == p->lchild && lbcolor == RB_RED && rbcolor == RB_BLACK)
+				{
+					b->color = RB_RED;
+					b->lchild->color = RB_BLACK;
+					rotater(b);
+					b = brother(trav,p);
+					rbcolor = RB_RED;
+				}
+				else if(trav == p->rchild && lbcolor == RB_BLACK && rbcolor == RB_RED)
+				{
+					b->color = RB_RED;
+					b->rchild->color = RB_BLACK;
+					rotatel(b);
+					b = brother(trav,p);
+					lbcolor = RB_RED;
+				}
+			}
+			//case 6
+			if(rbcolor == RB_RED || lbcolor == RB_RED)
+			{
+				b->color = p->color;
+				p->color = RB_BLACK;
+				if(trav == p->lchild)
+				{
+					rotatel(p);
+					b->rchild->color = RB_BLACK;
+				}
+				else
+				{
+					rotater(p);
+					b->lchild->color = RB_BLACK;
+				}
+				break;
+			}
+		}
+	}
+	return true;
 }
 #endif

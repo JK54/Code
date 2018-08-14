@@ -1,5 +1,7 @@
 //It is impossible to heritage from BSTree,because you can not avoid one fatal question:you can not point to base class object with a derived class pointer.For example,if AVLTree heritaged from BinTreeNode,consider the statement: AVLTreeNode = AVLTreeNode::BinTreeNode::child.it can't be avoided.while,you can also said,i can using AVLTreeNode = AVLTreeNode::child,but it is bullshit,which only uselessly occupys memory space,and costs much time to consider how to use base class and derived part carefully,and still can not solve the problem,the derived private member "bf" of AVLTreeNode will be split when using base part.
 
+//optimization direction:
+//1.replace():just transfer the value from the trav to pre,and delete trav node,then the most part of re-link work can be avoided.
 #ifndef _AVLTree_H
 #define _AVLTree_H
 
@@ -50,6 +52,7 @@ class AVLTree
 		int getbf(AVLTreeNode<T> *roo);
 		void rebalance(AVLTreeNode<T> *roo);
 		void replace(AVLTreeNode<T>*,AVLTreeNode<T>*);
+		void replace2(AVLTreeNode<T>*,AVLTreeNode<T>*);
 		size_t Height(AVLTreeNode<T> *roo);
 		AVLTreeNode<T>* rotatel(AVLTreeNode<T> *roo);
 		AVLTreeNode<T>* rotater(AVLTreeNode<T> *roo);
