@@ -11,7 +11,7 @@
 //https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91
 //Important properties are as below.
 
-//ps:the leaf node use nullptr to stand for,so we need to be careful for the null situation,or it may cause the error:visit the non-existed node.
+//ps:the leaf node represented by nullptr,so we need to be careful for the null situation,or it may cause the error:visit the non-existed node.
 //
 //properties(judged by IsRBT()):
 //1) A node is either red or black
