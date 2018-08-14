@@ -394,26 +394,14 @@ bool AVLTree<T>::Remove(const T &vle)
 		trav = trav->lchild;
 		while(trav->rchild != nullptr)
 			trav = trav->rchild;
-		tmp = trav->parent;
-		//wanted node is root and the deep of path of trav is 1.
-		if(pre == tmp)
-			tmp = trav;
-		else
-		{
-			//change the link relation between tmp(parent of trav) and its grandson,the grandson become the direct son of tmp.
-			tmp->rchild = trav->lchild;
-			if(trav->lchild != nullptr)
-				trav->lchild->parent = tmp;
-		}
+		pre->data = trav->data;
+		pre = trav;
 	}
+	if(trav->lchild != nullptr)
+		trav = trav->lchild;
 	else
-	{
-		if(trav->lchild != nullptr)
-			trav = trav->lchild;
-		else
-			trav = trav->rchild;
-		tmp = pre->parent;
-	}
+		trav = trav->rchild;
+	tmp = pre->parent;
 	replace(trav,pre);
 	//the situations of nullptr tmp:1.the wanted node is root and only has one branch child,then we dont need to rebalance the tree.2.the wanted node is the last node of tree.we jump it in these situations.
 	if(tmp != nullptr)

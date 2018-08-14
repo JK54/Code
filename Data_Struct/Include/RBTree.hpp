@@ -7,8 +7,12 @@
 #define RB_BLACK 1
 
 //BSTree naturally use inorder as the  order.
-//Read from wiki.Important properties are as below.
+//Read from wiki.
+//https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91
+//Important properties are as below.
 
+//ps:the leaf node use nullptr to stand for,so we need to be careful for the null situation,or it may cause the error:visit the non-existed node.
+//
 //properties(judged by IsRBT()):
 //1) A node is either red or black
 //2) The root is black
@@ -17,13 +21,87 @@
 //5) Every simple path from root to leaves contains the same number of black nodes.
 
 //Insert Case:
-//1) Newnode is the first node,or the color of root is changed to red,just paint it black.
-//2) Parent of newnode is black,then drop the rebalance as it already balanced.
-//3) If newnode has a red uncle and red parent,then draw them black,and draw the grandparent red,trace back until root or case 5.
-//4) Pre-work for case 5.newnode has a red parent((of course),and owns a black uncle or a empty uncle,rotate the newnode in a straight line with grandparent.
-//5) rotate from grandparent.change color.Whether the new parent of newnode is red or not,the rebalance prcedure is done,ignore it.
+//1) Case 1:Newnode is the first node,or the color of root is changed to red,just paint it black.
+//2) Case 2:Parent of newnode is black,then drop the rebalance as it already balanced.
+//3) Case 3:If newnode has a red uncle and red parent,then draw them black,and draw the grandparent red,trace back until root or case 5.
+//4) Case 4:Pre-work for case 5.newnode has a red parent((of course),and owns a black uncle or a empty uncle,rotate the newnode in a straight line with grandparent.
+//5) Case 5:rotate from grandparent.change color.Whether the new parent of newnode is red or not,the rebalance prcedure is done,ignore it.
 
 //Delete Case
+//Definition of pointer:p,trav,tmp,b.
+//p points changes before and after replace.before the replace(),p point to wanted node,after repalce(),p points to the parent of trav.
+//trav points to the no-null child(if exist).
+//tmp is a auxiliary pointer,help to deal with the null trav pointer situation.
+//b point to the brother of trav after using trav replaced p.
+//		relation of pointer:
+//				  p
+//				 / \
+//		       trav	b
+//				   / \
+//			      lb rb
+//Definition of color varables:pcolor,bcolor,tcolor,lbcolor,rbcolor.(the name suggest the definition,pcolor stand for p->color,b color stand for b->color,t stand for t,lbcolor stand for b->lchild->color,rbcolor stand for b->rchild->color),null node is black according to rbtree property.
+//the p pointer and b pointer changes in the sequence,so be careful.
+//there are two simple situation before entering caseN:
+//1) pcolor is red,using trav to replace it,over.
+//2) pcolor is black and tcolor is red,replace and paint trav black,over.
+//
+//if pcolor and tcolor both are black,into the caseN.
+//Now concentrate on the caseN while disscussed in logic order not in case order.The followings assumpt trav is the lchild of p,in fact,the rchild is the mirror of lchild.
+//the uppercase alphabet indicates black,the lowercase implys the red.
+//the worst case logn is considered in case3,is traces back until root in the worst situation,the second is case2->case5->case6.
+//the main idea of caseN:seek the alternative black swapper from brother to restore the loss of deletion of black node.the case2,case 5 considers as the pre-work,they dont influence the black length of b. 
+//1) Case 1:trav become the new root,the rebalance is done.
+//2) Case 3:all the 5 node are black.Paint b red.trav trace back to its parent,p trace back to the grandparent of trav(not the now trav while the previous),b of course be updated.jump to Case1.
+//				P                   	P
+//			   / \   \*paint b red     / \*   
+//			TRAV  B    ===========> TRAV  b  
+//				 / \                	 / \
+//              LB RB                   LB RB
+//
+//3) Case 2:bcolor is red and the others are black.rotatel from p(the rchild trav case using rotater)
+//,exchange the color of p and b.Update b pointer(LB now) and related color variables.
+//				P                   	  	B
+//			   / \   \*rotatel(p)   	   / \*   
+//			TRAV  b    ===========> 	  p   RB
+//				 / \  swapcolor(p,b)	 / \
+//              LB RB                 TRAV LB
+//
+//4) Case 4:pcolor is red and the others are black.swap the color of p and b,then over.
+//the reason:because the rbtree before deletion is balanced,and p(previous node in the current trav position) and trav both are black,
+//the deletion means that the length of black through trav(current trav) has minus 1,while the b is as the previous
+//swap the color of p and b,make the trav path restore to the origin length and has no influence in b lenth,so the rebalance is over.
+//
+//				p                   	P
+//			   / \   \*paint b red     / \*   
+//			TRAV  B    ===========> TRAV  b  
+//				 / \                	 / \
+//              LB RB                   LB RB
+//
+//5) Case 5:atually the pre-work for Case 6.Ingore the pcolor and tcolor.bcolor and rbcolor are black while lbcolor is red(trav is lchild)
+//rotater from b,and swap the color of b and lb.update b pointer(LB now) and colors.
+//                 rotater(B)
+//			B     ============>  LB                           
+//         / \*   swapcolor(lb,b) \*               
+//        lb RB                    b
+//                                  \
+//                                   RB
+//
+//6) Case 6:Ingnore pcolor and lb.if rbcolor is red,rotatel from p,assign b the origin color of p,paint p and lb black,over.
+//trav have one more black ancestor.all the path through trav(1,2) restore to the origin path.
+//discuss the situation path not through trav.
+//the new brother of trav(3,previous lchild of b),the length is unchanged.
+//the new uncle of trav(RB).the length(4,5) also remain the same.
+//the finally result is that:length of path through trav increase 1,the rest stay unchanged,the rebalance is done.
+//
+//			   p(P)                   	b(B)
+//			   / \   \*paint b red     / \*   
+//			TRAV  B    ===========>   P   RB
+//			1  2 3 \*                / 3 4 5
+//                 rb              TRAV    
+//                4  5            1   2
+
+
+
 template<typename T>
 struct RBTreeNode
 {
@@ -456,7 +534,7 @@ bool RBTree<T>::Remove(const T &vle)
 {
 	//g for grandparent,p for parent,u for uncle,b for brother.
 	RBTreeNode<T> *p,*b,*trav,*tmp;
-	bool tcolor,pcolor,bcolor,lbcolor,rbcolor;
+	bool pcolor,bcolor,lbcolor,rbcolor;
 	trav = root;
 	//find position
 	while(trav != nullptr)
