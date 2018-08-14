@@ -1,12 +1,19 @@
 unsolved problem:
 
 /Include:
-BinTree:if the inorder and postorder sequence have repeating elements,build all possible trees.
 
-AVLTree:the delete operation of AVLTree.
+Special question:
+1.BinTree:if the inorder and postorder sequence have repeating elements,build all possible trees.
 
-B+Tree:basic operation of the structures.
-RBTree:basic operation of the structures.
+Basic operation of the structures.
+1.Fibonacci_Heap.hpp.unsolved
+2.Treap.hpp.unsolved
+3.AA_Tree.hpp.unsolved
+4.Scapegoat_Tree.hpp.unsolved
+5.Segment_Tree.hpp.unsolved
+6.Splay_Tree.hpp.unsolved
+7.B-Tree.hpp.unsolved
+8.B+Tree.hpp.unsolved
 
 /Source
-Calculator:handle negative sign,more generally,unary operator
+1.Calculator.cpp:handle negative sign,more generally,unary operator
