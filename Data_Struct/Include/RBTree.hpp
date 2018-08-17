@@ -139,9 +139,7 @@ class RBTree
 		inline RBTreeNode<T>* brother(RBTreeNode<T> *roo,RBTreeNode<T> *parent);
 		size_t blacklength(RBTreeNode<T> *roo);
 		inline bool redparent(RBTreeNode<T> *roo);
-		//replace() relink all the relation from pre to trav,replace2() just copy the data from trav to pre.
 		void replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre);
-		// void replace2(RBTreeNode<T> *trav,RBTreeNode<T> *pre);
 		void rotatel(RBTreeNode<T> *roo);
 		void rotater(RBTreeNode<T> *roo);
 		inline bool getcolor(RBTreeNode<T> *roo);

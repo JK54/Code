@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#define N 10000
+#define N 1000000
 
 AVLTree<int> aaa;
 std::ofstream sta("avl.log");

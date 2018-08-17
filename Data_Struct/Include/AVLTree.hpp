@@ -1,7 +1,5 @@
 //It is impossible to heritage from BSTree,because you can not avoid one fatal question:you can not point to base class object with a derived class pointer.For example,if AVLTree heritaged from BinTreeNode,consider the statement: AVLTreeNode = AVLTreeNode::BinTreeNode::child.it can't be avoided.while,you can also said,i can using AVLTreeNode = AVLTreeNode::child,but it is bullshit,which only uselessly occupys memory space,and costs much time to consider how to use base class and derived part carefully,and still can not solve the problem,the derived private member "bf" of AVLTreeNode will be split when using base part.
 
-//optimization direction:
-//1.replace():just transfer the value from the trav to pre,and delete trav node,then the most part of re-link work can be avoided.
 #ifndef _AVLTree_H
 #define _AVLTree_H
 
@@ -45,16 +43,17 @@ class AVLTree
 		void TraversePreOrder(AVLTreeNode<T> *roo);
 		void TraverseInOrder(AVLTreeNode<T> *roo);
 		void TraverseLevelOrder(AVLTreeNode<T> *roo);
-		inline void UpdateHeight(AVLTreeNode<T> *roo);
+		void UpdateHeight(AVLTreeNode<T> *roo);
 		void PrintCount(){std::cout<<count<<std::endl;}
 	  private:
 		void rebalance(AVLTreeNode<T> *roo);
 		// void replace(AVLTreeNode<T>*,AVLTreeNode<T>*);
-		inline void replace_child(AVLTreeNode<T>*,AVLTreeNode<T>*,AVLTreeNode<T>*);
-		inline size_t Height(AVLTreeNode<T> *roo);
-		inline void setparent(AVLTreeNode<T> *,AVLTreeNode<T> *);
-		inline AVLTreeNode<T>* fix_l(AVLTreeNode<T> *roo);
-		inline AVLTreeNode<T>* fix_r(AVLTreeNode<T> *roo);
+		void replace_child(AVLTreeNode<T>*,AVLTreeNode<T>*,AVLTreeNode<T>*);
+		size_t Height(AVLTreeNode<T> *roo);
+		void setparent(AVLTreeNode<T> *,AVLTreeNode<T> *);
+		AVLTreeNode<T>* fix_l(AVLTreeNode<T> *roo);
+		AVLTreeNode<T>* fix_r(AVLTreeNode<T> *roo);
+		size_t max(size_t a,size_t b){return a > b ? a : b;}
 		AVLTreeNode<T>* rotatel(AVLTreeNode<T> *roo);
 		AVLTreeNode<T>* rotater(AVLTreeNode<T> *roo);
 		AVLTreeNode<T>* rotatelr(AVLTreeNode<T> *roo);
@@ -149,7 +148,7 @@ inline size_t AVLTree<T>::Height(AVLTreeNode<T> *roo)
 		return 0;
 	size_t lh = roo->lchild == nullptr ? 0 : roo->lchild->height;
 	size_t lr = roo->rchild == nullptr ? 0 : roo->rchild->height;
-	return std::max(lh,lr) + 1;
+	return max(lh,lr) + 1;
 }
 
 template<typename T>
@@ -347,7 +346,6 @@ inline void AVLTree<T>::replace_child(AVLTreeNode<T> *n,AVLTreeNode<T> *o,AVLTre
 		setparent(n,nullptr);
 	}
 }
-//basic logic:find the node wanted to delete,and find the alternative node to replace the node,relink the pointer,if the node is root,then the root node should change.
 template<typename T>
 bool AVLTree<T>::Remove(const T &vle)
 {

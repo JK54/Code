@@ -1,11 +1,13 @@
-#include "../Include/AVLTree.hpp"
+#include "../Include/avltree.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #define N 10000
+#include <iostream>
+#include <fstream>
 
-AVLTree<int> aaa;
+AVLTreeNode *root = nullptr;
 std::ofstream sta("avl.log");
 struct timeval s0,s1;
 double t1,t2,t3;
@@ -18,16 +20,16 @@ void test()
 	for(int i = 0;i < N;i++)
 	{
 		read(fd,&a[i],sizeof(int));
-		aaa.Insert(a[i]);
+		Insert(a[i],root);
 	}
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0);
 	for(int i = N - 1;i >= 0;i--)
-		aaa.Search(a[i]);
+		Search(a[i],root);
 	gettimeofday(&s0,NULL);
 	t2 = (1000.0*(s0.tv_sec - s1.tv_sec) + (s0.tv_usec - s1.tv_usec)/1000.0);
 	for(int i = 0; i < N;i++)
-		aaa.Remove(a[i]);
+		Remove(a[i],root);
 	gettimeofday(&s1,NULL);
 	t3 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0);
 }

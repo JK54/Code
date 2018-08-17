@@ -3,64 +3,49 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#define N 1000000
+#define N 50000000
+RBTree<int> aaa;
+std::ofstream sta("rbtree.log");
+double t1,t2,t3;
+struct timeval s0,s1;
+int *a = new int [N];
+int fd = open("/dev/urandom",O_RDONLY);
 
-int main()
+void test()
 {
-	RBTree<int> aaa;
-	std::ofstream sta("rbtree.log");
-	int t1,t2,t3;
-	struct timeval s0,s1;
-/*
- * #ifndef DEBUG
- *     std::ofstream op("11.txt");
- * #else
- *     std::ifstream ip("11.txt");
- * #endif
- */
-	int *a = new int [N];
-	int fd = open("/dev/urandom",O_RDONLY);
 	gettimeofday(&s0,NULL);
 	for(int i = 0;i < N;i++)
 	{
-// #ifndef DEBUG
 		read(fd,&a[i],sizeof(int));
 		while(aaa.Search(a[i]))
 			read(fd,&a[i],sizeof(int));
-/*
- *         op<<a[i]<<" ";
- * #else
- *         ip>>a[i];
- * #endif
- */
 		aaa.Insert(a[i]);
 	}
-/*
- * #ifndef DEBUG
- *     op.flush();
- * #endif
- */
-	close(fd);
 	gettimeofday(&s1,NULL);
-	t1 = s1.tv_sec - s0.tv_sec;
-	// std::cout<<aaa.IsRBT()<<std::endl;
-	aaa.PrintCount();
-	// aaa.Traverse();
+	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0)/1000.0;
 	for(int i = N -1;i >= 0;i--)
-	{
 		aaa.Search(a[i]);
-	}
 	gettimeofday(&s0,NULL);
-	t2 = s0.tv_sec - s1.tv_sec;
+	t2 = (1000.0*(s0.tv_sec - s1.tv_sec) + (s0.tv_usec - s1.tv_usec)/1000.0)/1000.0;
 	for(int i = 0;i < N;i++)
-	{
 		aaa.Remove(a[i]);
-		// std::cout<<aaa.IsRBT()<<std::endl;
-	}
 	gettimeofday(&s1,NULL);
-	t3 = s1.tv_sec - s0.tv_sec;
-	aaa.PrintCount();
-	sta<<"Insert time : "<<t1<<'\n'<<"Search time : "<<t2<<'\n'<<"Remove time : "<<t3<<std::endl;
+	t3 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0)/1000.0;
+}
+
+int main()
+{
+	double t[10];
+	double s = 0;
+	for(int i = 1;i <= 10;i++)
+	{
+		test();
+		t[i] = t1 + t2 + t3;
+		sta<<i<<'\n'<<"Insert time : "<<t1<<"s\n"<<"Search time : "<<t2<<"s\n"<<"Remove time : "<<t3<<"s\n"<<"Total time : "<<t[i]<<"s\n"<<std::endl;
+		s += t[i];
+	}
+	sta<<"All cost : "<<(static_cast<int>(s / 60)) <<"m"<<(static_cast<int>(s) % 60)<<"s"<<std::endl;
+	close(fd);
 	delete [] a;
 	return 0;
 }
