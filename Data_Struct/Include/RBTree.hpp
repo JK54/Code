@@ -458,6 +458,11 @@ bool RBTree<T>::Insert(const T &vle)
 		}
 	}
 	trav = new RBTreeNode<T>(vle);
+	if(trav == nullptr)
+	{
+		std::cerr<<"out of space"<<std::endl;
+		exit(1);
+	}
 	count++;
 	//if trav is the first node of rbtree.
 	if(p == nullptr)

@@ -6,26 +6,10 @@
 #include "sys_comm.h"
 
 
-//It's better to use array,because heap is a complete binary tree.
-template<typename T>
-class Heap;
-
-template<typename T>
-class MinHeap;
-
-template<typename T>
-class QueueNode;
-
-template<typename T>
-class Queue;
-
+//It's better to use array,because binary heap is a complete binary tree.
 template<typename T>
 class HeapNode
 {
-	friend class Heap<T>;
-	friend class MinHeap<T>;
-	friend class QueueNode<T>;
-	friend class Queue<T>;
 	public:
 	T data;
 	HeapNode<T> *lchild;
@@ -49,7 +33,7 @@ class Heap
 
 		bool IsEmpty();
 		void Insert(T &x);
-		bool Remove(T &x);//x as the the parameter to accept top of heap and delete top.
+	//	bool Remove(T &x);//x as the the parameter to accept top of heap and delete top.
 		void TraversePostOrder();
 		void TraverseLevelOrder();
 		virtual void siftDown() = 0;

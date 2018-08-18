@@ -5,7 +5,11 @@
 #include <cctype>
 #include <cstring>
 #include <cassert>
-//#include <cstdlib>//abs function
+#include <cstdlib>//abs function
+
+//system header
+#include <fcntl.h>//open()
+#include <unistd.h> //read()
 
 //io header
 #include <fstream>
@@ -37,6 +41,6 @@
 #include <memory>
 #include <new>
 
-#include <typeinfo> //typeid
+#include <typeinfo> //typeid,get name of data type.
 
 #endif
