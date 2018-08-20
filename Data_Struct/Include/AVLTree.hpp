@@ -39,25 +39,22 @@ class AVLTree
 		void CreateTree(T *data,int n);
 		bool Insert(const T &vle);
 		bool Remove(const T &vle);
-		bool Search(const T &vle);
+		AVLTreeNode<T>* Search(const T &vle);
 		void TraversePreOrder(AVLTreeNode<T> *roo);
 		void TraverseInOrder(AVLTreeNode<T> *roo);
 		void TraverseLevelOrder(AVLTreeNode<T> *roo);
-		void UpdateHeight(AVLTreeNode<T> *roo);
-		void PrintCount(){std::cout<<count<<std::endl;}
+		void UpdateHeight(AVLTreeNode<T> *&roo);
+		size_t Count(){return count;}
 	  private:
-		void rebalance(AVLTreeNode<T> *roo);
-		// void replace(AVLTreeNode<T>*,AVLTreeNode<T>*);
-		void replace_child(AVLTreeNode<T>*,AVLTreeNode<T>*,AVLTreeNode<T>*);
-		size_t Height(AVLTreeNode<T> *roo);
-		void setparent(AVLTreeNode<T> *,AVLTreeNode<T> *);
-		AVLTreeNode<T>* fix_l(AVLTreeNode<T> *roo);
-		AVLTreeNode<T>* fix_r(AVLTreeNode<T> *roo);
-		size_t max(size_t a,size_t b){return a > b ? a : b;}
-		AVLTreeNode<T>* rotatel(AVLTreeNode<T> *roo);
-		AVLTreeNode<T>* rotater(AVLTreeNode<T> *roo);
-		AVLTreeNode<T>* rotatelr(AVLTreeNode<T> *roo);
-		AVLTreeNode<T>* rotaterl(AVLTreeNode<T> *roo);
+		void rebalance(AVLTreeNode<T> *&roo);
+		void replace_child(AVLTreeNode<T>*&,AVLTreeNode<T>*&,AVLTreeNode<T>*&);
+		int Height(AVLTreeNode<T> *&roo);
+		int getbf(AVLTreeNode<T> *&roo);
+		int max(size_t a,size_t b){return a > b ? a : b;}
+		void rotatel(AVLTreeNode<T> *&roo);
+		void rotater(AVLTreeNode<T> *&roo);
+		void rotatelr(AVLTreeNode<T> *&roo);
+		void rotaterl(AVLTreeNode<T> *&roo);
 		void destroy(AVLTreeNode<T> *roo);
 		//member
 		AVLTreeNode<T> *root;
@@ -103,6 +100,7 @@ void AVLTree<T>::TraverseInOrder(AVLTreeNode<T> *roo)
 	std::cout<<roo->data<<" ";
 	TraverseInOrder(roo->rchild);
 }
+
 template<typename T>
 void AVLTree<T>::TraverseLevelOrder(AVLTreeNode<T> *roo)
 {
@@ -142,27 +140,22 @@ void AVLTree<T>::CreateTree(T *data,int n)
 }
 
 template<typename T>
-inline size_t AVLTree<T>::Height(AVLTreeNode<T> *roo)
+inline int AVLTree<T>::Height(AVLTreeNode<T> *&roo)
 {
-	if(roo == nullptr)
-		return 0;
-	size_t lh = roo->lchild == nullptr ? 0 : roo->lchild->height;
-	size_t lr = roo->rchild == nullptr ? 0 : roo->rchild->height;
-	return max(lh,lr) + 1;
+	return roo == nullptr ? 0 : roo->height;
 }
 
 template<typename T>
-inline void AVLTree<T>::UpdateHeight(AVLTreeNode<T> *roo)
+inline void AVLTree<T>::UpdateHeight(AVLTreeNode<T> *&roo)
 {
 	if(roo != nullptr)
-		roo->height = Height(roo);
+		 roo->height = max(Height(roo->lchild),Height(roo->rchild)) + 1;
 }
 
 template<typename T>
-bool AVLTree<T>::Search(const T &vle)
+inline AVLTreeNode<T>* AVLTree<T>::Search(const T &vle)
 {
-	AVLTreeNode<T> *trav;
-	trav = root;
+	AVLTreeNode<T> *trav = root;
 	while(trav != nullptr)
 	{
 		if(trav->data > vle)
@@ -170,50 +163,45 @@ bool AVLTree<T>::Search(const T &vle)
 		else if(trav->data < vle)
 			trav = trav->rchild;
 		else
-			return true;
+			return trav;
 	}
-	return false;
+	return trav;
 }
 
 template<typename T>
-inline void AVLTree<T>::setparent(AVLTreeNode<T> *roo,AVLTreeNode<T> *parent)
-{
-	if(roo != nullptr)
-		roo->parent = parent;
-}
-
-template<typename T>
-AVLTreeNode<T>* AVLTree<T>::rotatel(AVLTreeNode<T> *roo)
+inline void AVLTree<T>::rotatel(AVLTreeNode<T> *&roo)
 {
 	AVLTreeNode<T> *r;
 	r = roo->rchild;
 	replace_child(r,roo,roo->parent);
 	roo->parent = r;
 	roo->rchild = r->lchild;
-	setparent(roo->rchild,roo);
+	if(roo->rchild != nullptr)
+		roo->rchild->parent = roo;
 	r->lchild = roo;
 	UpdateHeight(roo);
 	UpdateHeight(r);
-	return r;
+	roo = r;
 }
 
 template<typename T>
-AVLTreeNode<T>* AVLTree<T>::rotater(AVLTreeNode<T> *roo)
+inline void AVLTree<T>::rotater(AVLTreeNode<T> *&roo)
 {
 	AVLTreeNode<T> *l;
 	l = roo->lchild;
 	replace_child(l,roo,roo->parent);
 	roo->parent = l;
 	roo->lchild = l->rchild;
-	setparent(roo->lchild,roo);
+	if(roo->lchild != nullptr)
+		roo->lchild->parent = roo;
 	l->rchild = roo;
 	UpdateHeight(roo);
 	UpdateHeight(l);
-	return l;
+	roo = l;
 }
 
 template<typename T>
-AVLTreeNode<T>* AVLTree<T>::rotatelr(AVLTreeNode<T> *roo)
+inline void AVLTree<T>::rotatelr(AVLTreeNode<T> *&roo)
 {
 	AVLTreeNode<T> *l,*lr;
 	l = roo->lchild;
@@ -221,20 +209,22 @@ AVLTreeNode<T>* AVLTree<T>::rotatelr(AVLTreeNode<T> *roo)
 	replace_child(lr,roo,roo->parent);
 	l->parent = lr;
 	l->rchild = lr->lchild;
-	setparent(l->rchild,l);
+	if(l->rchild != nullptr)
+		l->rchild->parent = l;
 	roo->parent = lr;
 	roo->lchild = lr->rchild;
-	setparent(roo->lchild,roo);
+	if(roo->lchild != nullptr)
+		roo->lchild->parent = roo;
 	lr->lchild = l;
 	lr->rchild = roo;
 	UpdateHeight(l);
 	UpdateHeight(roo);
 	UpdateHeight(lr);
-	return lr;
+	roo =  lr;
 }
 
 template<typename T>
-AVLTreeNode<T>* AVLTree<T>::rotaterl(AVLTreeNode<T> *roo)
+inline void AVLTree<T>::rotaterl(AVLTreeNode<T> *&roo)
 {
 	AVLTreeNode<T> *r,*rl;
 	r = roo->rchild;
@@ -242,57 +232,57 @@ AVLTreeNode<T>* AVLTree<T>::rotaterl(AVLTreeNode<T> *roo)
 	replace_child(rl,roo,roo->parent);
 	r->parent = rl;
 	r->lchild = rl->rchild;
-	setparent(r->lchild,r);
+	if(r->lchild != nullptr)
+		r->lchild->parent = r;
 	roo->parent = rl;
 	roo->rchild = rl->lchild;
-	setparent(roo->rchild,roo);
+	if(roo->rchild != nullptr)
+		roo->rchild->parent =roo;
 	rl->rchild = r;
 	rl->lchild = roo;
 	UpdateHeight(r);
 	UpdateHeight(roo);
 	UpdateHeight(rl);
-	return rl;
+	roo = rl;
 }
 
 template<typename T>
-inline AVLTreeNode<T>* AVLTree<T>::fix_l(AVLTreeNode<T> *roo)
+inline int AVLTree<T>::getbf(AVLTreeNode<T> *&roo)
 {
-	int lbf = Height(roo->lchild->rchild) - Height(roo->lchild->lchild);
-	if(lbf == 1)
-		return rotatelr(roo);
-	else
-		return rotater(roo);
+	return Height(roo->rchild) - Height(roo->lchild);
 }
 
 template<typename T>
-inline AVLTreeNode<T>* AVLTree<T>::fix_r(AVLTreeNode<T> *roo)
-{
-	int rbf = Height(roo->rchild->rchild) - Height(roo->rchild->lchild);
-	if(rbf == -1)
-		return rotaterl(roo);
-	else
-		return rotatel(roo);
-}
-
-template<typename T>
-void AVLTree<T>::rebalance(AVLTreeNode<T> *roo)
+inline void AVLTree<T>::rebalance(AVLTreeNode<T> *&roo)
 {
 	size_t lh,rh,height;
-	int bf;
+	int bf,cbf;
 	while(roo != nullptr)
 	{
-		height = Height(roo);
 		lh = Height(roo->lchild);
 		rh = Height(roo->rchild);
+		height = max(lh,rh) + 1;
 		bf = rh - lh;
 		if(height != roo->height)
 			UpdateHeight(roo);
 		else if(bf >= -1 && bf <= 1)
 			break;
 		if(bf == -2)
-			roo = fix_l(roo);
+		{
+			cbf = getbf(roo->lchild);
+			if(cbf == 1)
+				rotatelr(roo);
+			else
+				rotater(roo);
+		}
 		else if(bf == 2)
-			roo = fix_r(roo);
+		{
+			cbf = getbf(roo->rchild) ;
+			if(cbf == -1)
+				rotaterl(roo);
+			else
+				rotatel(roo);
+		}
 		roo = roo->parent;
 	}
 }
@@ -329,7 +319,7 @@ bool AVLTree<T>::Insert(const T &vle)
 }
 
 template<typename T>
-inline void AVLTree<T>::replace_child(AVLTreeNode<T> *n,AVLTreeNode<T> *o,AVLTreeNode<T> *p)
+inline void AVLTree<T>::replace_child(AVLTreeNode<T> *&n,AVLTreeNode<T> *&o,AVLTreeNode<T> *&p)
 {
 	if(p != nullptr)
 	{
@@ -343,7 +333,8 @@ inline void AVLTree<T>::replace_child(AVLTreeNode<T> *n,AVLTreeNode<T> *o,AVLTre
 	else
 	{
 		root = n;
-		setparent(n,nullptr);
+		if(root != nullptr)
+			root->parent = nullptr;
 	}
 }
 template<typename T>

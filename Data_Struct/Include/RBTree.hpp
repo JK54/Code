@@ -218,7 +218,7 @@ bool RBTree<T>::IsRBT()
 	return result;
 }
 template<typename T>
-RBTreeNode<T>* RBTree<T>::grandparent(RBTreeNode<T> *roo)
+inline RBTreeNode<T>* RBTree<T>::grandparent(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *gp;
 	if(roo == root || roo == nullptr)
@@ -229,7 +229,7 @@ RBTreeNode<T>* RBTree<T>::grandparent(RBTreeNode<T> *roo)
 }
 
 template<typename T>
-RBTreeNode<T>* RBTree<T>::uncle(RBTreeNode<T> *roo)
+inline RBTreeNode<T>* RBTree<T>::uncle(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *gp,*uncle;
 	gp = grandparent(roo);
@@ -263,7 +263,7 @@ size_t RBTree<T>::blacklength(RBTreeNode<T> *roo)
 	return height;
 }
 template<typename T>
-RBTreeNode<T>* RBTree<T>::first()
+inline RBTreeNode<T>* RBTree<T>::first()
 {
 	RBTreeNode<T> *roo;
 	roo = root;
@@ -273,7 +273,7 @@ RBTreeNode<T>* RBTree<T>::first()
 }
 
 template<typename T>
-RBTreeNode<T>* RBTree<T>::last()
+inline RBTreeNode<T>* RBTree<T>::last()
 {
 	RBTreeNode<T> *roo;
 	roo = root;
@@ -283,7 +283,7 @@ RBTreeNode<T>* RBTree<T>::last()
 }
 
 template<typename T>
-RBTreeNode<T>* RBTree<T>::pre(RBTreeNode<T> *roo)
+inline RBTreeNode<T>* RBTree<T>::pre(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *trav;
 	trav = roo;
@@ -303,7 +303,7 @@ RBTreeNode<T>* RBTree<T>::pre(RBTreeNode<T> *roo)
 }
 
 template<typename T>
-RBTreeNode<T>* RBTree<T>::next(RBTreeNode<T> *roo)
+inline RBTreeNode<T>* RBTree<T>::next(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *trav;
 	trav = roo;
@@ -352,7 +352,7 @@ void RBTree<T>::replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre)
 }
 
 template<typename T>
-void RBTree<T>::rotatel(RBTreeNode<T> *roo)
+inline void RBTree<T>::rotatel(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *n,*rn,*rln;
 	n = roo;
@@ -376,7 +376,7 @@ void RBTree<T>::rotatel(RBTreeNode<T> *roo)
 }
 
 template<typename T>
-void RBTree<T>::rotater(RBTreeNode<T> *roo)
+inline void RBTree<T>::rotater(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *n,*ln,*lrn;
 	n = roo;
@@ -453,7 +453,7 @@ bool RBTree<T>::Insert(const T &vle)
 			trav = trav->rchild;
 		else
 		{
-			std::cout<<"repeating elements"<<std::endl;
+			// std::cout<<"repeating elements"<<std::endl;
 			return false;
 		}
 	}

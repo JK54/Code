@@ -61,56 +61,45 @@ void BSTree<T>::CreateTreeByIncSeq(BinTreeNode<T> *&roo,int low,int high,T a[])
 template<typename T>
 bool BSTree<T>::Insert(const T &vle)
 {
-	BinTreeNode<T> *tmp = new BinTreeNode<T>(vle);
-	BinTreeNode<T> *roo = BinTree<T>::Root();
+	BinTreeNode<T> *roo = BinTree<T>::root;
+	BinTreeNode<T> *pre = nullptr;
 	while(roo != nullptr)
 	{
+		pre = roo;
 		if(roo->data > vle)
-		{
-			if(roo->lchild != nullptr)
-				roo = roo->lchild;
-			else
-				break;
-		}
+			roo = roo->lchild;
 		else if(roo->data < vle)
-		{
-			if(roo->rchild != nullptr)
-				roo = roo->rchild;
-			else
-				break;
-		}
+			roo = roo->rchild;
 		else
-		{
-			std::cerr<<"repeating element.."<<std::endl;
 			return false;
-		}
 	}
-	if(vle > roo->data)
-		roo->rchild = tmp;
+	roo = new BinTreeNode<T>(vle);
+	if(BinTree<T>::root == nullptr)
+	{
+		BinTree<T>::root = roo;
+		return true;
+	}
+	if(pre->data > vle)
+		pre->lchild = roo;
 	else
-		roo->lchild = tmp;
+		pre->rchild = roo;
 	return true;
 }
 
 	template<typename T>
 bool BSTree<T>::Search(const T &vle)
 {
-	if(BinTree<T>::root == nullptr)
+	BinTreeNode<T> *trav = BinTree<T>::root;
+	while(trav != nullptr)
 	{
-		std::cout<<"empty tree..."<<std::endl;
-		return false;
+		if(trav->data == vle)
+			return true;
+		else if(trav->data > vle)
+			trav = trav->lchild;
+		else 
+			trav = trav->rchild;
 	}
-	BinTreeNode<T> *tmp = BinTree<T>::root;
-	while(tmp->data != vle)
-	{
-		if(tmp->data > vle && tmp->lchild != nullptr)
-			tmp = tmp->lchild;
-		else if(tmp->data < vle && tmp->rchild != nullptr)
-			tmp = tmp->rchild;
-		else
-			return false;
-	}
-	return true;
+	return false;
 }
 
 	template<typename T>

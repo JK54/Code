@@ -10,7 +10,7 @@
 //system header
 #include <fcntl.h>//open()
 #include <unistd.h> //read()
-
+#include <sys/time.h>
 //io header
 #include <fstream>
 #include <iostream>
@@ -43,4 +43,5 @@
 
 #include <typeinfo> //typeid,get name of data type.
 
+#include <random>
 #endif

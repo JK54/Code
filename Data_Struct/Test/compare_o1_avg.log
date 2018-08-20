@@ -1,0 +1,129 @@
+----------------------------------------------------------------------------------------------------
+										AVLTree_Han(Disordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000572			0.000099			0.000265			0.000937			
+
+
+										AVLTree_LD(Disordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000756			0.000089			0.000400			0.001245			
+
+
+										RBTree_Han(Disordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000420			0.000096			0.000216			0.000731			
+
+
+										BSTree_Han(Disordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000372			0.000121			0.000019			0.000513			
+
+
+										Set(Disordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000680			0.000288			0.000493			0.001461			
+
+
+										AVLTree_Han(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000395			0.000081			0.000220			0.000696			
+
+
+										AVLTree_LD(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000623			0.000077			0.000152			0.000852			
+
+
+										RBTree_Han(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000223			0.000082			0.000188			0.000493			
+
+
+										BSTree_Han(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.002954			0.002962			0.000012			0.005928			
+
+
+										Set(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000478			0.000265			0.000349			0.001092			
+
+
+----------------------------------------------------------------------------------------------------
+										AVLTree_Han(Disordered)
+ wanted   nodes : 10000
+ inserted nodes : 9999
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.006356			0.001569			0.003269			0.011194			
+
+
+										AVLTree_LD(Disordered)
+ wanted   nodes : 10000
+ inserted nodes : 9999
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.007602			0.001446			0.005579			0.014627			
+
+
+										RBTree_Han(Disordered)
+ wanted   nodes : 10000
+ inserted nodes : 9999
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.004832			0.001542			0.002743			0.009117			
+
+
+										BSTree_Han(Disordered)
+ wanted   nodes : 10000
+ inserted nodes : 9999
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.004465			0.001833			0.000179			0.006477			
+
+
+										Set(Disordered)
+ wanted   nodes : 10000
+ inserted nodes : 9999
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.007976			0.003815			0.006132			0.017923			
+
+
+										AVLTree_Han(Ordered)
+ wanted   nodes : 10000
+ inserted nodes : 10000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.004164			0.001065			0.002387			0.007615			
+
+
+										AVLTree_LD(Ordered)
+ wanted   nodes : 10000
+ inserted nodes : 10000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.007612			0.001004			0.002046			0.010663			
+
+
+										RBTree_Han(Ordered)
+ wanted   nodes : 10000
+ inserted nodes : 10000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.002815			0.001091			0.002111			0.006017			
+
+
+										BSTree_Han(Ordered)
