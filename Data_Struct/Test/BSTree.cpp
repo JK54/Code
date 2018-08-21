@@ -7,11 +7,11 @@ using namespace std;
 int main()
 {
 	int fd = open("/dev/urandom",O_RDONLY);
-	unsigned int arr2[1399999];
+	unsigned int arr2[50005];
 	read(fd,&arr2[0],sizeof(int));
 	// BSTree<int> aaa(arr2[0]);
 	BSTree<int> aaa(0);
-	for(int i = 1 ;i < 1399999;i++)
+	for(int i = 1 ;i < 50005;i++)
 	{
 		/*
 		 * read(fd,&arr2[i],sizeof(int));
@@ -22,7 +22,7 @@ int main()
 		 */
 		aaa.Insert(i);
 	}
-	for(int i = 0;i < 1399999;i++)
+	for(int i = 0;i < 50005;i++)
 		aaa.Remove(i);
 	cout<<endl;
 	close(fd);

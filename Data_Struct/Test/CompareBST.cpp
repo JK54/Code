@@ -3,19 +3,19 @@
 #include "../Include/BSTree.hpp"
 #include "Avl.cpp"
 #define CW 99
-#define TYPE int
+#define TYPE unsigned int
 
 AVLTree<TYPE> avl_h;
 AVLtree avl_l;
 RBTree<TYPE> rbtree_h;
 BSTree<TYPE> bstree_h;
 set<TYPE> set0;
-#ifdef DO1
-	std::ofstream sta("compare_o1_raw.log");
-	std::ofstream stb("compare_o1_avg.log");
+#ifdef DDO3
+	std::ofstream sta("./Statistics/compare_o3_raw.log");
+	std::ofstream stb("./Statistics/compare_o3_avg.log");
 #else
-	std::ofstream sta("compare_o3_raw.log");
-	std::ofstream stb("compare_o3_avg.log");
+	std::ofstream sta("./Statistics/compare_o1_raw.log");
+	std::ofstream stb("./Statistics/compare_o1_avg.log");
 #endif
 struct timeval s0,s1;
 double t1,t2,t3;
@@ -25,14 +25,19 @@ TYPE *a = new TYPE[50000000];
 long Coo;
 void spwan(int x)
 {
-	int fd = open("/dev/urandom",O_RDONLY);
-	std::ofstream rd("rand.txt");
-	TYPE data;
+	std::ios::sync_with_stdio(false);
 	gettimeofday(&s0,NULL);
-	for(TYPE i = 0;i < CW * x;i++)
+	std::string name = "./Tmp/randii.txt";
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	for(int i = 0;i < CW;i++)
 	{
-		read(fd,&data,sizeof(TYPE));
-		rd<<data<<" ";
+		name[10] = (i + 1) / 10 + '0';
+		name[11] = (i + 1) % 10 + '0';
+		std::ofstream rd(name);
+		for(int j = 0;j < x;j++)
+			rd<<mt()<<" ";
+		rd.close();
 	}
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
@@ -44,31 +49,31 @@ void test_avl_han(bool ordered,int x,std::istream &fd)
 	gettimeofday(&s0,NULL);
 	if(!ordered)
 	{
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 		{
 			fd>>a[i];
 			avl_h.Insert(a[i]);
 		}
 	}
 	else
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 			avl_h.Insert(i);
 	Coo += avl_h.Count();
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			avl_h.Search(a[i]);
 	else
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			avl_h.Search(i);
 	gettimeofday(&s0,NULL);
 	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 			avl_h.Remove(a[i]);
 	else
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			avl_h.Remove(i);
 	gettimeofday(&s1,NULL);
 	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
@@ -80,30 +85,30 @@ void test_avl_ld(bool ordered,int x,std::istream &fd)
 	gettimeofday(&s0,NULL);
 	if(!ordered)
 	{
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 		{
 			fd>>a[i];
 			avl_l.insert(a[i]);
 		}
 	}
 	else
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 			avl_l.insert(i);
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			avl_l.search(a[i]);
 	else
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			avl_l.search(i);
 	gettimeofday(&s0,NULL);
 	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 			avl_l.erase(a[i]);
 	else
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			avl_l.erase(i);
 	gettimeofday(&s1,NULL);
 	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
@@ -115,30 +120,30 @@ void test_rbtree_han(bool ordered,int x,std::istream &fd)
 	gettimeofday(&s0,NULL);
 	if(!ordered)
 	{
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 		{
 			fd>>a[i];
 			rbtree_h.Insert(a[i]);
 		}
 	}
 	else
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 			rbtree_h.Insert(i);
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			rbtree_h.Search(a[i]);
 	else
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			rbtree_h.Search(i);
 	gettimeofday(&s0,NULL);
 	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 			rbtree_h.Remove(a[i]);
 	else
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			rbtree_h.Remove(i);
 	gettimeofday(&s1,NULL);
 	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
@@ -149,30 +154,30 @@ void test_bstree_han(bool ordered,int x,std::istream &fd)
 	gettimeofday(&s0,NULL);
 	if(!ordered)
 	{
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 		{
 			fd>>a[i];
 			bstree_h.Insert(a[i]);
 		}
 	}
 	else
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 			bstree_h.Insert(i);
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			bstree_h.Search(a[i]);
 	else
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			bstree_h.Search(i);
 	gettimeofday(&s0,NULL);
 	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 			bstree_h.Remove(a[i]);
 	else
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			bstree_h.Remove(i);
 	gettimeofday(&s1,NULL);
 	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
@@ -183,47 +188,47 @@ void test_set(bool ordered,int x,std::istream &fd)
 	gettimeofday(&s0,NULL);
 	if(!ordered)
 	{
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 		{
 			fd>>a[i];
 			set0.insert(a[i]);
 		}
 	}
 	else
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 			set0.insert(i);
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			set0.find(a[i]);
 	else
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			set0.find(i);
 	gettimeofday(&s0,NULL);
 	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(TYPE i = 0;i < x;i++)
+		for(int i = 0;i < x;i++)
 			set0.erase(a[i]);
 	else
-		for(TYPE i = x - 1;i >= 0;i--)
+		for(int i = x - 1;i >= 0;i--)
 			set0.erase(i);
 	gettimeofday(&s1,NULL);
 	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 }
 
-double add_row(double data[][3],TYPE row)
+double add_row(double data[][3],int row)
 {
 	double result = 0;
-	for(TYPE i = 0;i < 3;i++)
+	for(int i = 0;i < 3;i++)
 		result += data[row][i];
 	return result;
 }
 
-double add_col(double data[][3],TYPE col,TYPE n)
+double add_col(double data[][3],int col,int n)
 {
 	double result = 0;
-	for(TYPE i = 0;i < n;i++)
+	for(int i = 0;i < n;i++)
 		result += data[i][col];
 	return result;
 }
@@ -231,22 +236,24 @@ double add_col(double data[][3],TYPE col,TYPE n)
 void test(void f(bool,int,std::istream &),int x,bool ordered)
 {
 	std::ios::sync_with_stdio(false);
-	std::ifstream input("rand.txt");
-	for(TYPE i = 0;i < CW;i++)
+	std::string name = "./Tmp/randii.txt";
+	for(int i = 0;i < CW;i++)
 	{
+		name[10] = (i + 1) / 10 + '0';
+		name[11] = (i + 1) % 10 + '0';
+		std::ifstream input(name);
 		f(ordered,x,input);
 		t[i][0] = t1;
 		t[i][1] = t2;
 		t[i][2] = t3;
 	}
-	input.close();
 	sta<<" wanted   nodes : "<<x<<std::endl;
 	sta<<" inserted nodes : "<<static_cast<int>(Coo/CW)<<std::endl;
 	sta<<"\t\t"<<"Insert time(s)"<<"\t\t"<<"Search time(s)"<<"\t\t"<<"Remove time(s)"<<"\t\t"<<"Total  time(s)"<<std::endl;
 	stb<<" wanted   nodes : "<<x<<std::endl;
 	stb<<" inserted nodes : "<<static_cast<int>(Coo/CW)<<std::endl;
 	stb<<"\t\t"<<"Insert time(s)"<<"\t\t"<<"Search time(s)"<<"\t\t"<<"Remove time(s)"<<"\t\t"<<"Total  time(s)"<<std::endl;
-	for(TYPE i = 0;i < CW;i++)
+	for(int i = 0;i < CW;i++)
 		sta<<std::fixed<<std::setprecision(6)<<" "<<(i + 1)<<"\t\t"<<t[i][0]<<"\t\t\t"<<t[i][1]<<"\t\t\t"<<t[i][2]<<"\t\t\t"<<add_row(t,i)<<std::endl;
 	sta<<std::endl;
 	in = add_col(t,0,CW);
@@ -260,12 +267,12 @@ void test(void f(bool,int,std::istream &),int x,bool ordered)
 
 void test_u(int x)
 {
+	std::ios::sync_with_stdio(false);
 	Coo = 0;
 	spwan(x);
 	sta<<"-----------------------------------------------------------------------------------------------------"<<std::endl;
 	stb<<"----------------------------------------------------------------------------------------------------"<<std::endl;
 	sta<<"Generate rand time : "<<t1<<" s"<<std::endl;
-	std::ios::sync_with_stdio(false);
 	sta<<"\t\t\t\t\t\t\t\t\t\tAVLTree_Han(Disordered)"<<std::endl;
 	stb<<"\t\t\t\t\t\t\t\t\t\tAVLTree_Han(Disordered)"<<std::endl;
 	test(test_avl_han,x,0);
@@ -303,10 +310,10 @@ int main()
 {
 	test_u(1000);
 	test_u(10000);
-	test_u(100000);
-	test_u(1000000);
-	test_u(10000000);
-	test_u(50000000);
+	// test_u(100000);
+	// test_u(1000000);
+	// test_u(10000000);
+	/* test_u(50000000); */
 	delete [] a;
 	return 0;
 }
