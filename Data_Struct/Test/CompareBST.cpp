@@ -154,37 +154,40 @@ void test_rbtree_han(bool ordered,int x,std::istream &fd)
 }
 void test_bstree_han(bool ordered,int x,std::istream &fd)
 {
-	std::ios::sync_with_stdio(false);
-	gettimeofday(&s0,NULL);
-	if(!ordered)
+	if(x <= 5000000)
 	{
-		for(int i = 0;i < x;i++)
+		std::ios::sync_with_stdio(false);
+		gettimeofday(&s0,NULL);
+		if(!ordered)
 		{
-			fd>>a[i];
-			bstree_h.Insert(a[i]);
+			for(int i = 0;i < x;i++)
+			{
+				fd>>a[i];
+				bstree_h.Insert(a[i]);
+			}
 		}
+		else
+			for(int i = 0;i < x;i++)
+				bstree_h.Insert(i);
+		gettimeofday(&s1,NULL);
+		t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
+		if(!ordered)
+			for(int i = x - 1;i >= 0;i--)
+				bstree_h.Search(a[i]);
+		else
+			for(int i = x - 1;i >= 0;i--)
+				bstree_h.Search(i);
+		gettimeofday(&s0,NULL);
+		t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
+		if(!ordered)
+			for(int i = 0;i < x;i++)
+				bstree_h.Remove(a[i]);
+		else
+			for(int i = x - 1;i >= 0;i--)
+				bstree_h.Remove(i);
+		gettimeofday(&s1,NULL);
+		t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 	}
-	else
-		for(int i = 0;i < x;i++)
-			bstree_h.Insert(i);
-	gettimeofday(&s1,NULL);
-	t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-	if(!ordered)
-		for(int i = x - 1;i >= 0;i--)
-			bstree_h.Search(a[i]);
-	else
-		for(int i = x - 1;i >= 0;i--)
-			bstree_h.Search(i);
-	gettimeofday(&s0,NULL);
-	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
-	if(!ordered)
-		for(int i = 0;i < x;i++)
-			bstree_h.Remove(a[i]);
-	else
-		for(int i = x - 1;i >= 0;i--)
-			bstree_h.Remove(i);
-	gettimeofday(&s1,NULL);
-	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 }
 void test_set(bool ordered,int x,std::istream &fd)
 {
@@ -254,6 +257,7 @@ void test(void f(bool,int,std::istream &),int x,bool ordered)
 		t[i][0] = t1;
 		t[i][1] = t2;
 		t[i][2] = t3;
+		input.close();
 	}
 	sta<<" wanted   nodes : "<<x<<std::endl;
 	sta<<" inserted nodes : "<<static_cast<int>(Coo/CW)<<std::endl;
@@ -318,10 +322,14 @@ int main()
 {
 	test_u(1000);
 	test_u(10000);
-	// test_u(100000);
-	// test_u(1000000);
-	// test_u(10000000);
-	/* test_u(50000000); */
+	test_u(100000);
+	test_u(1000000);
+	test_u(5000000);
+	test_u(10000000);
+	test_u(20000000);
+	test_u(30000000);
+	test_u(40000000);
+	test_u(50000000);
 	delete [] a;
 	return 0;
 }
