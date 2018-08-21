@@ -1,0 +1,71 @@
+----------------------------------------------------------------------------------------------------
+										AVLTree_Han(Disordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000225			0.000001			0.000086			0.000313			
+
+
+										AVLTree_LD(Disordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000219			0.000001			0.000117			0.000337			
+
+
+										RBTree_Han(Disordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000209			0.000001			0.000080			0.000289			
+
+
+										BSTree_Han(Disordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000247			0.000001			0.000005			0.000254			
+
+
+										Set(Disordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000206			0.000001			0.000109			0.000316			
+
+
+										AVLTree_Han(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000050			0.000001			0.000042			0.000092			
+
+
+										AVLTree_LD(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000069			0.000001			0.000031			0.000101			
+
+
+										RBTree_Han(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000050			0.000001			0.000050			0.000100			
+
+
+										BSTree_Han(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.001137			0.000001			0.000006			0.001144			
+
+
+										Set(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000078			0.000001			0.000045			0.000124			
+
+
