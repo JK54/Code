@@ -27,7 +27,11 @@ void spwan(int x)
 {
 	std::ios::sync_with_stdio(false);
 	gettimeofday(&s0,NULL);
+#ifdef DDO3
 	std::string name = "./Tmp/randii.txt";
+#else
+	std::string name = "./Tmp/1/raii.txt";
+#endif
 	std::random_device rd;
 	std::mt19937 mt(rd());
 	for(int i = 0;i < CW;i++)
@@ -236,7 +240,11 @@ double add_col(double data[][3],int col,int n)
 void test(void f(bool,int,std::istream &),int x,bool ordered)
 {
 	std::ios::sync_with_stdio(false);
+#ifdef DDO3
 	std::string name = "./Tmp/randii.txt";
+#else
+	std::string name = "./Tmp/1/raii.txt";
+#endif
 	for(int i = 0;i < CW;i++)
 	{
 		name[10] = (i + 1) / 10 + '0';

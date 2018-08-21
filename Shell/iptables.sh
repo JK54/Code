@@ -24,8 +24,8 @@
 ##############
 # 对公网开放的服务端口
 ##############
-SERVICE_TCP_PORTS="22,21,20,25,80,443,27733"
-SERVICE_UDP_PORTS="53"
+SERVICE_TCP_PORTS="22,21,20,25,80,443,27733,1080"
+SERVICE_UDP_PORTS="53,1080"
 
 ##############
 # 清空原来的iptables设置
@@ -116,4 +116,4 @@ iptables -A INPUT -p tcp --tcp-flags ACK,FIN FIN     -j STEALTH_SCAN
 iptables -A INPUT -p tcp --tcp-flags ACK,PSH PSH     -j STEALTH_SCAN
 iptables -A INPUT -p tcp --tcp-flags ACK,URG URG     -j STEALTH_SCAN
 
-service iptables save
+iptables-save

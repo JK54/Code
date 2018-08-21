@@ -566,13 +566,13 @@ void DataList<T>::TournamentSort()
 		Winner.Insert(0);
 	for(i = 0;i < n;i++)
 		Player.Insert(Vector[i]);
-	//the isodd flag the control the way to find brother(competitor) and parent(winner)
+	//the isodd flag control the way to find brother(competitor) and parent(winner)
 	//The sort process ends when the root node equals to maxvalue
 	while(1)
 	{
 	//play begin at the last extorior node every time.
 	//the hidden thread is the node number must bigger than 1,otherwise it will be buggy.
-		if(n %2 == 0)
+		if(n % 2 == 0)
 		{
 			for(i = n - 1;i >= 1;i -= 2)
 			{
