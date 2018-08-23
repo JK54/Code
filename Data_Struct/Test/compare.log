@@ -1,0 +1,9 @@
+										AvlTree_Han
+									50000 nodes
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ 1			0.022815			0.000000			0.007970			0.030785
+
+ Total 		0.022815			0.000000			0.007970			0.030785
+ Avg 		0.022815			0.000000			0.007970			0.030785			
+
+

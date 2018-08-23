@@ -349,7 +349,8 @@ void MinFibHeap<T>::Delete(FibNode<T> *roo,const T &boundary)
 	this->del(roo,min,boundary,true);
 }
 //-----------------------MinFibHeap End------------------------------//
-	
+
+//-----------------------MaxFibHeap----------------------------------//
 template<typename T>
 void MaxFibHeap<T>::Insert(const T &vle)
 {

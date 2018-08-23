@@ -69,8 +69,6 @@ void AVLTree<T>::destroy(AVLTreeNode<T> *roo)
 	destroy(roo->lchild);
 	destroy(roo->rchild);
 	delete roo;
-	roo = nullptr;
-	count = 0;
 }
 	
 template<typename T>
@@ -78,6 +76,7 @@ AVLTree<T>::~AVLTree()
 {
 	destroy(root);
 	root = nullptr;
+	count = 0;
 }
 
 template<typename T>

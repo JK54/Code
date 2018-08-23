@@ -7,7 +7,7 @@ Special question:
 
 Basic operation of the structures.
 1.Fibonacci_Heap.hpp.unsolved(done)
-2.Treap.hpp.unsolved
+2.Treap.hpp.unsolved(done)
 3.AA_Tree.hpp.unsolved
 4.Scapegoat_Tree.hpp.unsolved
 5.Segment_Tree.hpp.unsolved

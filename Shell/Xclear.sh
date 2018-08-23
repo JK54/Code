@@ -15,6 +15,8 @@ function xclear()
 	find ~/Code -name "a.out"|xargs -I {} rm {}
 	echo "deleting o.."
 	find ~/Code  -name "*.o"|xargs -I {} rm {}
+	echo "deleting tmp.."
+	find ~/Code/Data_Struct/Test/Tmp/ "*.*"|xargs rm 
 }
 
 disp

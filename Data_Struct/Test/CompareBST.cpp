@@ -11,11 +11,11 @@ RBTree<TYPE> rbtree_h;
 BSTree<TYPE> bstree_h;
 set<TYPE> set0;
 #ifdef DDO3
-	std::ofstream sta("./Statistics/compare_o3_raw.log");
-	std::ofstream stb("./Statistics/compare_o3_avg.log");
+	std::ofstream sta("./Statistics/avl_o3_raw.log");
+	std::ofstream stb("./Statistics/avl_o3_avg.log");
 #else
-	std::ofstream sta("./Statistics/compare_o1_raw.log");
-	std::ofstream stb("./Statistics/compare_o1_avg.log");
+	std::ofstream sta("./Statistics/avl_o1_raw.log");
+	std::ofstream stb("./Statistics/avl_o1_avg.log");
 #endif
 struct timeval s0,s1;
 double t1,t2,t3;
@@ -154,40 +154,37 @@ void test_rbtree_han(bool ordered,int x,std::istream &fd)
 }
 void test_bstree_han(bool ordered,int x,std::istream &fd)
 {
-	if(x <= 5000000)
+	std::ios::sync_with_stdio(false);
+	gettimeofday(&s0,NULL);
+	if(!ordered)
 	{
-		std::ios::sync_with_stdio(false);
-		gettimeofday(&s0,NULL);
-		if(!ordered)
+		for(int i = 0;i < x;i++)
 		{
-			for(int i = 0;i < x;i++)
-			{
-				fd>>a[i];
-				bstree_h.Insert(a[i]);
-			}
+			fd>>a[i];
+			bstree_h.Insert(a[i]);
 		}
-		else
-			for(int i = 0;i < x;i++)
-				bstree_h.Insert(i);
-		gettimeofday(&s1,NULL);
-		t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-		if(!ordered)
-			for(int i = x - 1;i >= 0;i--)
-				bstree_h.Search(a[i]);
-		else
-			for(int i = x - 1;i >= 0;i--)
-				bstree_h.Search(i);
-		gettimeofday(&s0,NULL);
-		t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
-		if(!ordered)
-			for(int i = 0;i < x;i++)
-				bstree_h.Remove(a[i]);
-		else
-			for(int i = x - 1;i >= 0;i--)
-				bstree_h.Remove(i);
-		gettimeofday(&s1,NULL);
-		t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 	}
+	else
+		for(int i = 0;i < x;i++)
+			bstree_h.Insert(i);
+	gettimeofday(&s1,NULL);
+	t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
+	if(!ordered)
+		for(int i = x - 1;i >= 0;i--)
+			bstree_h.Search(a[i]);
+	else
+		for(int i = x - 1;i >= 0;i--)
+			bstree_h.Search(i);
+	gettimeofday(&s0,NULL);
+	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
+	if(!ordered)
+		for(int i = 0;i < x;i++)
+			bstree_h.Remove(a[i]);
+	else
+		for(int i = x - 1;i >= 0;i--)
+			bstree_h.Remove(i);
+	gettimeofday(&s1,NULL);
+	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 }
 void test_set(bool ordered,int x,std::istream &fd)
 {
@@ -310,9 +307,12 @@ void test_u(int x)
 	sta<<"\t\t\t\t\t\t\t\t\t\tRBTree_Han(Ordered)"<<std::endl;
 	stb<<"\t\t\t\t\t\t\t\t\t\tRBTree_Han(Ordered)"<<std::endl;
 	test(test_rbtree_han,x,1);
-	sta<<"\t\t\t\t\t\t\t\t\t\tBSTree_Han(Ordered)"<<std::endl;
-	stb<<"\t\t\t\t\t\t\t\t\t\tBSTree_Han(Ordered)"<<std::endl;
-	test(test_bstree_han,x,1);
+	if(x <= 100000)
+	{
+		sta<<"\t\t\t\t\t\t\t\t\t\tBSTree_Han(Ordered)"<<std::endl;
+		stb<<"\t\t\t\t\t\t\t\t\t\tBSTree_Han(Ordered)"<<std::endl;
+		test(test_bstree_han,x,1);
+	}
 	sta<<"\t\t\t\t\t\t\t\t\t\tSet(Ordered)"<<std::endl;
 	stb<<"\t\t\t\t\t\t\t\t\t\tSet(Ordered)"<<std::endl;
 	test(test_set,x,1);
@@ -330,6 +330,7 @@ int main()
 	test_u(30000000);
 	test_u(40000000);
 	test_u(50000000);
+	test_u(100000000);
 	delete [] a;
 	return 0;
 }

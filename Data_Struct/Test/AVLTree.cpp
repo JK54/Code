@@ -6,8 +6,8 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#define N 500000
-#define CW 10
+#define N 50000
+#define CW 1
 
 AVLTree<int> aaa;
 std::ofstream sta("compare.log");
@@ -21,18 +21,19 @@ void test()
 	gettimeofday(&s0,NULL);
 	for(int i = 0;i < N;i++)
 	{
-		read(fd,&a[i],sizeof(int));
-		aaa.Insert(a[i]);
+		// read(fd,&a[i],sizeof(int));
+		// aaa.Insert(a[i]);
+		aaa.Insert(i);
 	}
-	aaa.PrintCount();
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-	for(int i = N - 1;i >= 0;i--)
-		aaa.Search(a[i]);
+	// for(int i = N - 1;i >= 0;i--)
+		// aaa.Search(a[i]);
 	gettimeofday(&s0,NULL);
 	t2 = (1000.0*(s0.tv_sec - s1.tv_sec) + (s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
 	for(int i = 0; i < N;i++)
-		aaa.Remove(a[i]);
+		// aaa.Remove(a[i]);
+		aaa.Remove(i);
 	gettimeofday(&s1,NULL);
 	t3 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 }
