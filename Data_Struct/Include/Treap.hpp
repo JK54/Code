@@ -28,7 +28,7 @@ class Treap
 {
 	public:
 		Treap():root(nullptr),count(0){}
-		~Treap(){destory(root);}
+		~Treap(){destroy(root);}
 		void Insert(const T &vle);
 		void Remove(const T &vle);
 		void Remove_As_Heap(TreapNode<T> *&roo);
@@ -40,19 +40,19 @@ class Treap
 		void rotatel(TreapNode<T> *&roo);
 		void rotater(TreapNode<T> *&roo);
 		void change_child(TreapNode<T> *&,TreapNode<T> *&,TreapNode<T> *&);
-		void destory(TreapNode<T> *roo);
+		void destroy(TreapNode<T> *roo);
 		
 		TreapNode<T> *root;
 		size_t count;
 };
 
 template<typename T>
-void Treap<T>::destory(TreapNode<T> *roo)
+void Treap<T>::destroy(TreapNode<T> *roo)
 {
 	if(roo == nullptr)
 		return;
-	destory(roo->lchild);
-	destory(roo->rchild);
+	destroy(roo->lchild);
+	destroy(roo->rchild);
 	delete roo;
 }
 

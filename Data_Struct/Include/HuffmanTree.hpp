@@ -22,22 +22,22 @@ class Huffman
 {
 	public:
 		Huffman():root(nullptr){};
-		~Huffman(){destory(root);}
+		~Huffman(){destroy(root);}
 		void Hu_Tucker(const T a[],const K b[],int n);
 		void Traverse(HuNode<T,K> *);
 		HuNode<T,K>* Root(){return root;}
 	private:
 		HuNode<T,K> *root;
-		void destory(HuNode<T,K> *);
+		void destroy(HuNode<T,K> *);
 };
 
 template<typename T,typename K>
-void Huffman<T,K>::destory(HuNode<T,K> *p)
+void Huffman<T,K>::destroy(HuNode<T,K> *p)
 {
 	if(p == nullptr)
 		return;
-	destory(p->lchild);
-	destory(p->rchild);
+	destroy(p->lchild);
+	destroy(p->rchild);
 	delete p;
 	p = nullptr;
 }

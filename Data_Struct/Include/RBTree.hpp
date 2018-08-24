@@ -139,7 +139,6 @@ class RBTree
 		inline RBTreeNode<T>* brother(RBTreeNode<T> *roo,RBTreeNode<T> *parent);
 		size_t blacklength(RBTreeNode<T> *roo);
 		inline bool redparent(RBTreeNode<T> *roo);
-		void replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre);
 		void rotatel(RBTreeNode<T> *roo);
 		void rotater(RBTreeNode<T> *roo);
 		inline bool getcolor(RBTreeNode<T> *roo);
@@ -320,35 +319,6 @@ inline RBTreeNode<T>* RBTree<T>::next(RBTreeNode<T> *roo)
 		trav = trav->parent;
 	}
 	return trav;
-}
-
-template<typename T>
-void RBTree<T>::replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre)
-{
-	if(trav != nullptr)
-	{
-		if(trav != pre->lchild)
-			trav->lchild = pre->lchild;
-		if(trav != pre->rchild)
-			trav->rchild = pre->rchild;
-		trav->parent = pre->parent;
-		//trav->color = pre->color;
-		if(trav->lchild != nullptr)
-			trav->lchild->parent = trav;
-		if(trav->rchild != nullptr)
-			trav->rchild->parent = trav;
-	}
-	if(pre->parent != nullptr)
-	{
-		if(pre->parent->lchild == pre)
-			pre->parent->lchild = trav;
-		else
-			pre->parent->rchild = trav;
-	}
-	else
-		root = trav;
-	delete pre;
-	pre = nullptr;
 }
 
 template<typename T>
@@ -669,4 +639,5 @@ bool RBTree<T>::Remove(const T &vle)
 	}
 	return true;
 }
+
 #endif
