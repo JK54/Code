@@ -28,17 +28,15 @@ void spawn(int x)
 	std::mt19937 mt(rd());
 	char *dir = (char*)std::to_string(x).c_str();
 	if(opendir(dir) == NULL)
-	{
 		mkdir(dir,0777);
-		for(int i = 0;i < CW;i++)
-		{
-			std::string name;
-			name = "./" + std::to_string(x) + "/rand" + std::to_string((i/10)) + std::to_string((i % 10)) + ".txt";
-			std::ofstream rd(name);
-			for(int j = 0;j < x;j++)
-			rd<<mt()<<" ";
-			rd.close();
-		}
+	for(int i = 0;i < CW;i++)
+	{
+		std::string name;
+		name = "./" + std::to_string(x) + "/rand" + std::to_string((i/10)) + std::to_string((i % 10)) + ".txt";
+		std::ofstream rd(name);
+		for(int j = 0;j < x;j++)
+		rd<<mt()<<" ";
+		rd.close();
 	}
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
@@ -153,7 +151,7 @@ void test(void f(bool,int,std::istream &,K,int &),K jojo,int x,bool ordered)
 	stb<<" inserted nodes : "<<static_cast<int>(count/CW)<<std::endl;
 	stb<<"\t\t"<<"Insert time(s)"<<"\t\t"<<"Search time(s)"<<"\t\t"<<"Remove time(s)"<<"\t\t"<<"Total  time(s)"<<std::endl;
 	for(int i = 0;i < CW;i++)
-		sta<<std::fixed<<std::setprecision(6)<<" "<<(i + 1)<<"\t\t"<<t[i][0]<<"\t\t\t"<<t[i][1]<<"\t\t\t"<<t[i][2]<<"\t\t\t"<<add_row(t,i)<<std::endl;
+		sta<<std::fixed<<std::setprecision(6)<<" "<<i <<"\t\t"<<t[i][0]<<"\t\t\t"<<t[i][1]<<"\t\t\t"<<t[i][2]<<"\t\t\t"<<add_row(t,i)<<std::endl;
 	sta<<std::endl;
 	in = add_col(t,0,CW);
 	s = add_col(t,1,CW);
@@ -170,7 +168,7 @@ int main()
 	int size = sizeof(num)/sizeof(num[0]);
 	a.reserve(num[size - 1]);
 	// std::cout<<typeid(set0).name()<<std::endl;
-	for(int i = 0; i < 2;i++)
+	for(int i = 0; i < size;i++)
 	{
 #ifdef AVL_H
 		test(test_singel,avl_h,num[i],false);

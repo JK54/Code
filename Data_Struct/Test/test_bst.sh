@@ -14,3 +14,6 @@ clang++ -std=c++11 -g -pedantic-errors -O3 -D DDO3 -D BST -o ./Tmp/bst_h_o3 ./Co
 clang++ -std=c++11 -g -pedantic-errors -O1 -D BST -o ./Tmp/bst_h_o1 ./CompareBST.cpp
 clang++ -std=c++11 -g -pedantic-errors -O3 -D DDO3 -D SET -o ./Tmp/set_h_o3 ./CompareBST.cpp
 clang++ -std=c++11 -g -pedantic-errors -O1 -D SET -o ./Tmp/set_h_o1 ./CompareBST.cpp
+
+echo "./avl_h_o1;./avl_h_o3;./avl_l_o1;./avl_l_o3;./rbt_h_o1;./rbt_h_o3;./set_h_o1;./set_h_o3;./bst_h_o1;./bst_h_o3"
+echo "tmux"
