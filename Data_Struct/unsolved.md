@@ -8,10 +8,9 @@ Special question:
 Basic operation of the structures.
 1.Fibonacci_Heap.hpp.unsolved(done)
 2.Treap.hpp.unsolved(done)
-3.AA_Tree.hpp.unsolved
 4.Scapegoat_Tree.hpp.unsolved
 5.Segment_Tree.hpp.unsolved
-6.Splay_Tree.hpp.unsolved
+6.Splay_Tree.hpp.unsolved(done)
 7.B-Tree.hpp.unsolved
 8.B+Tree.hpp.unsolved
 

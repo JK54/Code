@@ -60,12 +60,12 @@ class BinTree
 	BinTree();
 	BinTree(T x);
 	BinTree(BinTreeNode<T> *roo);
-	virtual ~BinTree();
-	BinTree(const BinTree<T> &s);
+	~BinTree();
+	// BinTree(const BinTree<T> &s);
 
 	bool operator==(const BinTree<T> &s);
 	bool operator!=(const BinTree<T> &s);//in fact,the opposite value of "==".
-	BinTree<T>& operator=(const BinTree<T> &s);
+	// BinTree<T>& operator=(const BinTree<T> &s);
 
 	//get root node and modify endmark
 	BinTreeNode<T>*& Root(){return root;}
@@ -90,6 +90,7 @@ class BinTree
 
 	//use traverse to complete
 	size_t Height(BinTreeNode<T> *roo);
+	size_t Height();
 	size_t Depth(BinTreeNode<T> *roo);
 	size_t Size();
 	void Copy(BinTree<T> &p);
@@ -100,6 +101,7 @@ class BinTree
 	size_t Countn0(BinTreeNode<T> *);
 	size_t Countn1(BinTreeNode<T> *);
 	size_t Countn2(BinTreeNode<T> *);
+	void Countn2(BinTreeNode<T> *,int &n);
 	void RemoveLeaf(BinTreeNode<T> *&roo);
 	void Max(BinTreeNode<T> *&,BinTreeNode<T> *,T &);
 	void Reflect(BinTreeNode<T> *&);
@@ -127,7 +129,7 @@ T BinTree<T>::endm;
 template<typename T>
 BinTree<T>::BinTree()
 {
-	root = new BinTreeNode<T>;
+	root =  nullptr;
 }
 
 	template<typename T>
@@ -437,6 +439,46 @@ size_t BinTree<T>::Height(BinTreeNode<T> *roo)
 }
 
 template<typename T>
+size_t BinTree<T>::Height()
+{
+	if(root == nullptr)
+		return 0;
+	size_t h = 0,tmp = 1;
+	Stack<BinTreeNode<T>*> S;
+	Stack<size_t> H,TMP;
+	BinTreeNode<T> *p = root;
+	S.Push(p);
+	H.Push(tmp);
+	while(!S.IsEmpty())
+	{
+		S.Pop(p);
+		TMP.Pop(tmp);
+		if(p->lchild != nullptr || p->rchild != nullptr)
+		{
+			tmp++;
+			if(p->rchild != nullptr)
+			{
+				S.Push(p->rchild);
+				TMP.Push(tmp);
+			}
+			if(p->lchild != nullptr)
+			{
+				S.Push(p->lchild);
+				TMP.Push(tmp);
+			}
+		}
+		else	
+			H.Push(tmp);
+	}
+	while(!H.IsEmpty())
+	{
+		H.Pop(tmp);
+		if(h < tmp)
+			h = tmp;
+	}
+	return h;
+}
+template<typename T>
 size_t BinTree<T>::Depth(BinTreeNode<T> *roo)
 {
 	if(roo != nullptr)
@@ -583,9 +625,20 @@ size_t BinTree<T>::Countn2(BinTreeNode<T> *trav)
 	if(trav == nullptr)
 		return 0;
 	if(trav->lchild != nullptr && trav->rchild != nullptr)
-	return 1 + Countn2(trav->lchild) + Countn2(trav->rchild);
+		return 1 + Countn2(trav->lchild) + Countn2(trav->rchild);
 	else
 		return  Countn2(trav->lchild) + Countn2(trav->rchild);
+}
+
+template<typename T>
+void BinTree<T>::Countn2(BinTreeNode<T> *trav,int &n)
+{
+	if(trav == nullptr)
+		return;
+	if(trav->lchild != nullptr && trav->rchild != nullptr)
+		n++;
+	Countn2(trav->lchild,n);
+	Countn2(trav->rchild,n);
 }
 
 template<typename T>
@@ -835,23 +888,38 @@ bool BinTree<T>::IsCBT()
 template<typename T>
 bool BinTree<T>::IsCBT(BinTreeNode<T> *roo)
 {
-	//reason of double Size():rear pointer is twice as fast as front,if using single Size(),rear will catch front in the second round that the cause the loop ended early,because the child of leaf will enqueue even though they are nullptr.
-	int size = Size();
+	int size = 2 * Size();
 	int front = 0,rear = 0;
 	BinTreeNode<T> *trav;
 	BinTreeNode<T> **queue = new BinTreeNode<T>*[size];
+	for(int i = 0;i < size;i++)
+		queue[i] = nullptr;
 	queue[rear++] = roo;
 	while(front != rear)
 	{
 		trav = queue[front];
+		queue[front] = nullptr;
 		front = (front + 1) % size;
 		if(trav == nullptr)
-			return false;
-		rear = (rear + 1) %size;
-		queue[rear]= trav->lchild;
-		rear = (rear + 1) %size;
-		queue[rear] = trav->rchild;
+		{
+			while(front != rear)
+			{
+				trav = queue[front];
+				queue[front] = nullptr;
+				front = (front + 1) % size;
+				if(trav != nullptr)
+					return false;
+			}
+		}
+		else
+		{
+			queue[rear]= trav->lchild;
+			rear = (rear + 1) %size;
+			queue[rear] = trav->rchild;
+			rear = (rear + 1) %size;
+		}
 	}
+	delete [] queue;
 	return true;
 }
 

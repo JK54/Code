@@ -1,8 +1,11 @@
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include "../Include/AVLTree.hpp"
 #include "../Include/RBTree.hpp"
 #include "../Include/BSTree.hpp"
-#include "Avl.cpp"
-#define CW 99
+#include "../Include/Avl.cpp"
+#define CW 100
 #define TYPE unsigned int
 
 AVLTree<TYPE> avl_h;
@@ -10,213 +13,71 @@ AVLtree avl_l;
 RBTree<TYPE> rbtree_h;
 BSTree<TYPE> bstree_h;
 set<TYPE> set0;
-#ifdef DDO3
-	std::ofstream sta("./Statistics/avl_o3_raw.log");
-	std::ofstream stb("./Statistics/avl_o3_avg.log");
-#else
-	std::ofstream sta("./Statistics/avl_o1_raw.log");
-	std::ofstream stb("./Statistics/avl_o1_avg.log");
-#endif
 struct timeval s0,s1;
 double t1,t2,t3;
 double t[CW][3];
 double total = 0,in = 0,s = 0,r = 0;
-TYPE *a = new TYPE[50000000];
-long Coo;
-void spwan(int x)
+vector<TYPE> a;
+
+//generate random sequence
+void spawn(int x)
 {
 	std::ios::sync_with_stdio(false);
 	gettimeofday(&s0,NULL);
-#ifdef DDO3
-	std::string name = "./Tmp/randii.txt";
-#else
-	std::string name = "./Tmp/1/raii.txt";
-#endif
 	std::random_device rd;
 	std::mt19937 mt(rd());
-	for(int i = 0;i < CW;i++)
+	char *dir = (char*)std::to_string(x).c_str();
+	if(opendir(dir) == NULL)
 	{
-		name[10] = (i + 1) / 10 + '0';
-		name[11] = (i + 1) % 10 + '0';
-		std::ofstream rd(name);
-		for(int j = 0;j < x;j++)
+		mkdir(dir,0777);
+		for(int i = 0;i < CW;i++)
+		{
+			std::string name;
+			name = "./" + std::to_string(x) + "/rand" + std::to_string((i/10)) + std::to_string((i % 10)) + ".txt";
+			std::ofstream rd(name);
+			for(int j = 0;j < x;j++)
 			rd<<mt()<<" ";
-		rd.close();
+			rd.close();
+		}
 	}
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 }
 
-void test_avl_han(bool ordered,int x,std::istream &fd)
+template<typename T>
+void test_singel(bool ordered,int boundary,std::istream &fd,T jojo,int &count)
 {
 	std::ios::sync_with_stdio(false);
 	gettimeofday(&s0,NULL);
 	if(!ordered)
 	{
-		for(int i = 0;i < x;i++)
+		for(int i = 0;i < boundary;i++)
 		{
 			fd>>a[i];
-			avl_h.Insert(a[i]);
+			jojo.insert(a[i]);
 		}
 	}
 	else
-		for(int i = 0;i < x;i++)
-			avl_h.Insert(i);
-	Coo += avl_h.Count();
+		for(int i = 0;i < boundary;i++)
+			jojo.insert(i);
+	//if the type is not set
+	count += jojo.size();
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(int i = x - 1;i >= 0;i--)
-			avl_h.Search(a[i]);
+		for(int i = boundary - 1;i >= 0;i--)
+			jojo.find(a[i]);
 	else
-		for(int i = x - 1;i >= 0;i--)
-			avl_h.Search(i);
+		for(int i = boundary - 1;i >= 0;i--)
+			jojo.find(i);
 	gettimeofday(&s0,NULL);
 	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
-		for(int i = 0;i < x;i++)
-			avl_h.Remove(a[i]);
+		for(int i = 0;i < boundary;i++)
+			jojo.erase(a[i]);
 	else
-		for(int i = x - 1;i >= 0;i--)
-			avl_h.Remove(i);
-	gettimeofday(&s1,NULL);
-	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-}
-
-void test_avl_ld(bool ordered,int x,std::istream &fd)
-{
-	std::ios::sync_with_stdio(false);
-	gettimeofday(&s0,NULL);
-	if(!ordered)
-	{
-		for(int i = 0;i < x;i++)
-		{
-			fd>>a[i];
-			avl_l.insert(a[i]);
-		}
-	}
-	else
-		for(int i = 0;i < x;i++)
-			avl_l.insert(i);
-	gettimeofday(&s1,NULL);
-	t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-	if(!ordered)
-		for(int i = x - 1;i >= 0;i--)
-			avl_l.search(a[i]);
-	else
-		for(int i = x - 1;i >= 0;i--)
-			avl_l.search(i);
-	gettimeofday(&s0,NULL);
-	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
-	if(!ordered)
-		for(int i = 0;i < x;i++)
-			avl_l.erase(a[i]);
-	else
-		for(int i = x - 1;i >= 0;i--)
-			avl_l.erase(i);
-	gettimeofday(&s1,NULL);
-	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-}
-
-void test_rbtree_han(bool ordered,int x,std::istream &fd)
-{
-	std::ios::sync_with_stdio(false);
-	gettimeofday(&s0,NULL);
-	if(!ordered)
-	{
-		for(int i = 0;i < x;i++)
-		{
-			fd>>a[i];
-			rbtree_h.Insert(a[i]);
-		}
-	}
-	else
-		for(int i = 0;i < x;i++)
-			rbtree_h.Insert(i);
-	gettimeofday(&s1,NULL);
-	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-	if(!ordered)
-		for(int i = x - 1;i >= 0;i--)
-			rbtree_h.Search(a[i]);
-	else
-		for(int i = x - 1;i >= 0;i--)
-			rbtree_h.Search(i);
-	gettimeofday(&s0,NULL);
-	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
-	if(!ordered)
-		for(int i = 0;i < x;i++)
-			rbtree_h.Remove(a[i]);
-	else
-		for(int i = x - 1;i >= 0;i--)
-			rbtree_h.Remove(i);
-	gettimeofday(&s1,NULL);
-	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-}
-void test_bstree_han(bool ordered,int x,std::istream &fd)
-{
-	std::ios::sync_with_stdio(false);
-	gettimeofday(&s0,NULL);
-	if(!ordered)
-	{
-		for(int i = 0;i < x;i++)
-		{
-			fd>>a[i];
-			bstree_h.Insert(a[i]);
-		}
-	}
-	else
-		for(int i = 0;i < x;i++)
-			bstree_h.Insert(i);
-	gettimeofday(&s1,NULL);
-	t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-	if(!ordered)
-		for(int i = x - 1;i >= 0;i--)
-			bstree_h.Search(a[i]);
-	else
-		for(int i = x - 1;i >= 0;i--)
-			bstree_h.Search(i);
-	gettimeofday(&s0,NULL);
-	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
-	if(!ordered)
-		for(int i = 0;i < x;i++)
-			bstree_h.Remove(a[i]);
-	else
-		for(int i = x - 1;i >= 0;i--)
-			bstree_h.Remove(i);
-	gettimeofday(&s1,NULL);
-	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-}
-void test_set(bool ordered,int x,std::istream &fd)
-{
-	std::ios::sync_with_stdio(false);
-	gettimeofday(&s0,NULL);
-	if(!ordered)
-	{
-		for(int i = 0;i < x;i++)
-		{
-			fd>>a[i];
-			set0.insert(a[i]);
-		}
-	}
-	else
-		for(int i = 0;i < x;i++)
-			set0.insert(i);
-	gettimeofday(&s1,NULL);
-	t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-	if(!ordered)
-		for(int i = x - 1;i >= 0;i--)
-			set0.find(a[i]);
-	else
-		for(int i = x - 1;i >= 0;i--)
-			set0.find(i);
-	gettimeofday(&s0,NULL);
-	t2 = (1000.0*static_cast<double>(s0.tv_sec - s1.tv_sec) + static_cast<double>(s0.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
-	if(!ordered)
-		for(int i = 0;i < x;i++)
-			set0.erase(a[i]);
-	else
-		for(int i = x - 1;i >= 0;i--)
-			set0.erase(i);
+		for(int i = boundary - 1;i >= 0;i--)
+			jojo.erase(i);
 	gettimeofday(&s1,NULL);
 	t3 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 }
@@ -237,30 +98,59 @@ double add_col(double data[][3],int col,int n)
 	return result;
 }
 
-void test(void f(bool,int,std::istream &),int x,bool ordered)
+template<typename K>
+void test(void f(bool,int,std::istream &,K,int &),K jojo,int x,bool ordered)
 {
+	int count;
 	std::ios::sync_with_stdio(false);
+	std::string tile,file1,file2;
+	tile = typeid(jojo).name();
+	file1 = "../Statistics/" + tile + "_raw";
+	file2 = "../Statistics/" + tile + "_avg";
 #ifdef DDO3
-	std::string name = "./Tmp/randii.txt";
+	file1 += "_o3.log";
+	file2 += "_o3.log";
+	std::ofstream sta(file1,std::ios::app);
+	std::ofstream stb(file2,std::ios::app);
 #else
-	std::string name = "./Tmp/1/raii.txt";
+	file1 += "_o1.log";
+	file2 += "_o1.log";
+	std::ofstream sta(file1,std::ios::app);
+	std::ofstream stb(file2,std::ios::app);
 #endif
+	std::ios::sync_with_stdio(false);
+	count = 0;
+	spawn(x);
+			sta<<"-----------------------------------------------------------------------------------------------------"<<std::endl;
+	stb<<"----------------------------------------------------------------------------------------------------"<<std::endl;
+	sta<<"Generate rand time : "<<t1<<" s"<<std::endl;
+	sta<<"\t\t\t\t\t\t\t\t\t\t"<<tile;
+	stb<<"\t\t\t\t\t\t\t\t\t\t"<<tile;
+	if(ordered == false)
+	{
+		sta<<"(DisOrdered)"<<std::endl;
+		stb<<"(DisOrdered)"<<std::endl;
+	}
+	else
+	{
+		sta<<"(Ordered)"<<std::endl;
+		stb<<"(Ordered)"<<std::endl;
+	}
 	for(int i = 0;i < CW;i++)
 	{
-		name[10] = (i + 1) / 10 + '0';
-		name[11] = (i + 1) % 10 + '0';
+		std::string name = "./" + std::to_string(x) + "/rand" + std::to_string((i/10)) + std::to_string((i % 10)) + ".txt";
 		std::ifstream input(name);
-		f(ordered,x,input);
+		f(ordered,x,input,jojo,count);
 		t[i][0] = t1;
 		t[i][1] = t2;
 		t[i][2] = t3;
 		input.close();
 	}
 	sta<<" wanted   nodes : "<<x<<std::endl;
-	sta<<" inserted nodes : "<<static_cast<int>(Coo/CW)<<std::endl;
+	sta<<" inserted nodes : "<<static_cast<int>(count/CW)<<std::endl;
 	sta<<"\t\t"<<"Insert time(s)"<<"\t\t"<<"Search time(s)"<<"\t\t"<<"Remove time(s)"<<"\t\t"<<"Total  time(s)"<<std::endl;
 	stb<<" wanted   nodes : "<<x<<std::endl;
-	stb<<" inserted nodes : "<<static_cast<int>(Coo/CW)<<std::endl;
+	stb<<" inserted nodes : "<<static_cast<int>(count/CW)<<std::endl;
 	stb<<"\t\t"<<"Insert time(s)"<<"\t\t"<<"Search time(s)"<<"\t\t"<<"Remove time(s)"<<"\t\t"<<"Total  time(s)"<<std::endl;
 	for(int i = 0;i < CW;i++)
 		sta<<std::fixed<<std::setprecision(6)<<" "<<(i + 1)<<"\t\t"<<t[i][0]<<"\t\t\t"<<t[i][1]<<"\t\t\t"<<t[i][2]<<"\t\t\t"<<add_row(t,i)<<std::endl;
@@ -274,63 +164,30 @@ void test(void f(bool,int,std::istream &),int x,bool ordered)
 	stb<<std::fixed<<std::setprecision(6)<<" Avg "<<"\t"<<static_cast<double>(in/CW)<<"\t\t\t"<<static_cast<double>(s/CW)<<"\t\t\t"<<static_cast<double>(r/CW)<<"\t\t\t"<<static_cast<double>(total/CW)<<"\t\t\t"<<"\n\n"<<std::endl;
 }
 
-void test_u(int x)
-{
-	std::ios::sync_with_stdio(false);
-	Coo = 0;
-	spwan(x);
-	sta<<"-----------------------------------------------------------------------------------------------------"<<std::endl;
-	stb<<"----------------------------------------------------------------------------------------------------"<<std::endl;
-	sta<<"Generate rand time : "<<t1<<" s"<<std::endl;
-	sta<<"\t\t\t\t\t\t\t\t\t\tAVLTree_Han(Disordered)"<<std::endl;
-	stb<<"\t\t\t\t\t\t\t\t\t\tAVLTree_Han(Disordered)"<<std::endl;
-	test(test_avl_han,x,0);
-	sta<<"\t\t\t\t\t\t\t\t\t\tAVLTree_LD(Disordered)"<<std::endl;
-	stb<<"\t\t\t\t\t\t\t\t\t\tAVLTree_LD(Disordered)"<<std::endl;
-	test(test_avl_ld,x,0);
-	sta<<"\t\t\t\t\t\t\t\t\t\tRBTree_Han(Disordered)"<<std::endl;
-	stb<<"\t\t\t\t\t\t\t\t\t\tRBTree_Han(Disordered)"<<std::endl;
-	test(test_rbtree_han,x,0);
-	sta<<"\t\t\t\t\t\t\t\t\t\tBSTree_Han(Disordered)"<<std::endl;
-	stb<<"\t\t\t\t\t\t\t\t\t\tBSTree_Han(Disordered)"<<std::endl;
-	test(test_bstree_han,x,0);
-	sta<<"\t\t\t\t\t\t\t\t\t\tSet(Disordered)"<<std::endl;
-	stb<<"\t\t\t\t\t\t\t\t\t\tSet(Disordered)"<<std::endl;
-	test(test_set,x,0);
-	Coo = 0;
-	sta<<"\t\t\t\t\t\t\t\t\t\tAVLTree_Han(Ordered)"<<std::endl;
-	stb<<"\t\t\t\t\t\t\t\t\t\tAVLTree_Han(Ordered)"<<std::endl;
-	test(test_avl_han,x,1);
-	sta<<"\t\t\t\t\t\t\t\t\t\tAVLTree_LD(Ordered)"<<std::endl;
-	stb<<"\t\t\t\t\t\t\t\t\t\tAVLTree_LD(Ordered)"<<std::endl;
-	test(test_avl_ld,x,1);
-	sta<<"\t\t\t\t\t\t\t\t\t\tRBTree_Han(Ordered)"<<std::endl;
-	stb<<"\t\t\t\t\t\t\t\t\t\tRBTree_Han(Ordered)"<<std::endl;
-	test(test_rbtree_han,x,1);
-	if(x <= 100000)
-	{
-		sta<<"\t\t\t\t\t\t\t\t\t\tBSTree_Han(Ordered)"<<std::endl;
-		stb<<"\t\t\t\t\t\t\t\t\t\tBSTree_Han(Ordered)"<<std::endl;
-		test(test_bstree_han,x,1);
-	}
-	sta<<"\t\t\t\t\t\t\t\t\t\tSet(Ordered)"<<std::endl;
-	stb<<"\t\t\t\t\t\t\t\t\t\tSet(Ordered)"<<std::endl;
-	test(test_set,x,1);
-}
-
 int main()
 {
-	test_u(1000);
-	test_u(10000);
-	test_u(100000);
-	test_u(1000000);
-	test_u(5000000);
-	test_u(10000000);
-	test_u(20000000);
-	test_u(30000000);
-	test_u(40000000);
-	test_u(50000000);
-	test_u(100000000);
-	delete [] a;
+	int num[] = {1000,10000,50000,100000,500000,1000000,5000000,10000000,20000000,50000000};
+	int size = sizeof(num)/sizeof(num[0]);
+	a.reserve(num[size - 1]);
+	// std::cout<<typeid(set0).name()<<std::endl;
+	for(int i = 0; i < 2;i++)
+	{
+#ifdef AVL_H
+		test(test_singel,avl_h,num[i],false);
+		test(test_singel,avl_h,num[i],true);
+#elif  AVL_L
+		test(test_singel,avl_l,num[i],false);
+		test(test_singel,avl_l,num[i],true);
+#elif  RBT
+		test(test_singel,rbtree_h,num[i],false);
+		test(test_singel,rbtree_h,num[i],true);
+#elif  BST
+		test(test_singel,bstree_h,num[i],false);
+		test(test_singel,bstree_h,num[i],true);
+#elif  SET
+		test(test_singel,set0,num[i],false);
+		test(test_singel,set0,num[i],true);
+#endif
+	}
 	return 0;
 }

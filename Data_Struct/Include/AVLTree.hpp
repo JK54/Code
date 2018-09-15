@@ -37,6 +37,9 @@ class AVLTree
 		AVLTreeNode<T>* Root(){return root;}
 		void CreateTree(std::istream &is);
 		void CreateTree(T *data,int n);
+		void insert(const T&vle){Insert(vle);}
+		void erase(const T &vle){Remove(vle);}
+		void find(const T &vle){Search(vle);}
 		bool Insert(const T &vle);
 		bool Remove(const T &vle);
 		AVLTreeNode<T>* Search(const T &vle);
@@ -44,6 +47,7 @@ class AVLTree
 		void TraverseInOrder(AVLTreeNode<T> *roo);
 		void TraverseLevelOrder(AVLTreeNode<T> *roo);
 		void UpdateHeight(AVLTreeNode<T> *&roo);
+		size_t size(){return count;}
 		size_t Count(){return count;}
 	  private:
 		void rebalance(AVLTreeNode<T> *&roo);

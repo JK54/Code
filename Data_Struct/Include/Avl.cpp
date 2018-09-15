@@ -8,268 +8,184 @@
 #include <string>
 #include <vector>
 #include<ctime>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#define N 1000000
+
 using namespace std;
 
 struct AVLNode {
+	AVLNode(int x) :data(x) {};
 	int data;
-	int height;
-	AVLNode *Lchild;
-	AVLNode *Rchild;
+	int height = 1;
+	AVLNode *Lchild = 0;
+	AVLNode *Rchild = 0;
 };
 
-int getHeight(AVLNode *p) {
+class AVLtree {
+public:
+	AVLtree() :root(0), count(0) {};
+	~AVLtree() { destroy(root); }
+	AVLNode *Search(int x);
+	void find(int x){Search(x);}
+	bool insert(int x) { return insert(root, x); }
+	bool erase(int x) { return erase(root, x); }
+	void PreOrder() { PreOrder(root); }
+	int size() { return count; }
+private:
+	AVLNode * root;
+	int count;
+	bool insert(AVLNode *&T, int x);
+	bool erase(AVLNode *&T, int x);
+	int getHeight(AVLNode *p);
+	void updateHeight(AVLNode *p);
+	int bf(AVLNode *p);
+	void L(AVLNode *&T);
+	void R(AVLNode *&T);
+	void RL(AVLNode *&T);
+	void LR(AVLNode *&T);
+	void Rebalance(AVLNode *&T);
+	void PreOrder(AVLNode *p);
+	void destroy(AVLNode *&T) {
+		if (!T)
+			return;
+		destroy(T->Lchild);
+		destroy(T->Rchild);
+		delete(T);
+		T = nullptr;
+	}
+};
+
+int AVLtree::getHeight(AVLNode *p) {
 	if (!p)
 		return 0;
 	else
 		return p->height;
 }
-
-int getBalanceFactor(AVLNode *p) {
-	return getHeight(p->Lchild) - getHeight(p->Rchild);
-}
-
-void updateHeight(AVLNode *p) {
+void AVLtree::updateHeight(AVLNode *p) {
+	if (!p)
+		return;
 	p->height = max(getHeight(p->Lchild), getHeight(p->Rchild)) + 1;
 }
-
-AVLNode *search(AVLNode *T, int x) {
-	if (!T)
-		return nullptr;
-	if (x == T->data)
-		return T;
-	if (x<T->data)
-		return search(T->Lchild, x);
-	return search(T->Rchild, x);
+int AVLtree::bf(AVLNode *p) {
+	return getHeight(p->Lchild) - getHeight(p->Rchild);
 }
-
-void L(AVLNode *&T) {
+void AVLtree::L(AVLNode *&T) {
 	AVLNode *p = T->Rchild;
-	AVLNode *q = T;
+	T->Rchild = p->Lchild;
+	p->Lchild = T;
+	updateHeight(T);
+	updateHeight(p);
 	T = p;
-	q->Rchild = p->Lchild;
-	p->Lchild = q;
-	updateHeight(q);
+}
+void AVLtree::R(AVLNode *&T) {
+	AVLNode *p = T->Lchild;
+	T->Lchild = p->Rchild;
+	p->Rchild = T;
+	updateHeight(T);
 	updateHeight(p);
-	// AVLNode *temp = T->Rchild;
-	// T->Rchild = temp->Lchild;
-	// temp->Lchild = T;
-	// updateHeight(T);
-	// updateHeight(temp);
-	// T = temp;
+	T = p;
 }
-
-void R(AVLNode *&T) {
-	AVLNode *lc = T->Lchild;
-	AVLNode *p = T;
-	T = lc;
-	p->Lchild = lc->Rchild;
-	lc->Rchild = p;
-	updateHeight(p);
-	updateHeight(lc);
-	// AVLNode *temp = T->Lchild;
-	// T->Lchild = temp->Rchild;
-	// temp->Rchild = T;
-	// updateHeight(T);
-	// updateHeight(temp);
-	// T = temp;
+void AVLtree::LR(AVLNode *&T) {
+	L(T->Lchild);
+	R(T);
 }
-
-void insert(AVLNode *&T, int v) {
-	if (!T) {
-		T = new AVLNode;
-		T->height = 1;
-		T->data = v;
-		T->Lchild = nullptr;
-		T->Rchild = nullptr;
-		return;
-	}
-
-	if (v<T->data) {
-		insert(T->Lchild, v);
-		updateHeight(T);
-		 if(getBalanceFactor(T)==2){
-		     if(getBalanceFactor(T->Lchild)==1)
-		         R(T);
-		     else{
-		         L(T->Lchild);
-		         R(T);
-		     }
-		 }
-	}
-	else if (v>T->data) {
-		insert(T->Rchild, v);
-		updateHeight(T);
-		 if(getBalanceFactor(T)==-2){
-		     if(getBalanceFactor(T->Rchild)==-1)
-		         L(T);
-		     else{
-		         R(T->Rchild);
-		         L(T);
-		     }
-		 }
-	}
+void AVLtree::RL(AVLNode *&T) {
+	R(T->Rchild);
+	L(T);
 }
-
-void del(AVLNode *&T, int x) {
-	if (!T)
-		return;
-	if (T->data<x) {
-		del(T->Rchild, x);
-		updateHeight(T);
-		if (getBalanceFactor(T) == 2) {
-			if (getBalanceFactor(T->Lchild) !=-1 )
-				R(T);
-			else {
-				L(T->Lchild);
-				R(T);
-			}
-		}
-		return;
-	}
-	else if (T->data>x) {
-		del(T->Lchild, x);
-		updateHeight(T);
-		if (getBalanceFactor(T) == -2) {
-			if (getBalanceFactor(T->Rchild) !=1)
-				L(T);
-			else {
-				R(T->Rchild);
-				L(T);
-			}
-		}
-		return;
-	}
-	else {
-		if (!T->Lchild) {
-			T = T->Rchild;
-			return;
-		}
-		else if (!T->Rchild) {
-			T = T->Lchild;
-			return;
-		}
-		AVLNode *p = T->Lchild, *pre = T;
-		while (p->Rchild) {
-			pre = p;
-			p = p->Rchild;
-		}
-		T->data = p->data;
-		del(T->Lchild, T->data);
-		updateHeight(T);
-		if (getBalanceFactor(T) == -2) {
-			if (getBalanceFactor(T->Rchild) != 1)
-				L(T);
-			else {
-				R(T->Rchild);
-				L(T);
-			}
-		}
-		return;
-	}
-}
-
-
-AVLNode *Creat(vector<int> iv) {
-	AVLNode *T = nullptr;
-	for (auto c : iv) {
-		insert(T, c);
-	}
-	return T;
-}
-
-AVLNode *Creat() {
-	AVLNode *T = nullptr;
-	srand(time(0));
-
-	for (int i = 0; i < 50000;++i) {
-		int x = rand();
-		insert(T, x);
-	}
-	return T;
-}
-
-void Inorder(AVLNode *T) {
-	if (!T)
-		return;
-
-	Inorder(T->Lchild);
-	cout << T->data << " ";
-
-	Inorder(T->Rchild);
-}
-
-void Print(AVLNode *T) {
-	if (!T)
-		return;
-	cout << char('a' - 1 + T->data);
-	if (!T->Lchild && !T->Rchild)
-		return;
-	cout << "(";
-	Print(T->Lchild);
-	cout << ",";
-	Print(T->Rchild);
-	cout << ")";
-}
-
-bool Search(AVLNode *T,int vle)
-{
-	AVLNode *trav;
-	trav = T;
-	while(trav != nullptr)
-	{
-		if(trav->data == vle)
-			return true;
-		else if(trav->data > vle)
-			trav = trav->Lchild;
+void AVLtree::Rebalance(AVLNode *&T) {
+	if (bf(T) == 2) {
+		if (bf(T->Lchild) == -1)
+			LR(T);
 		else
-			trav = trav->Rchild;
+			R(T);
 	}
-	return false;
+	else if (bf(T) == -2) {
+		if (bf(T->Rchild) == 1)
+			RL(T);
+		else
+			L(T);
+	}
+}
+void AVLtree::PreOrder(AVLNode *p) {
+	if (!p)
+		return;
+	PreOrder(p->Lchild);
+	cout << p->data << "(" << p->height << ")";
+	PreOrder(p->Rchild);
+}
+AVLNode *AVLtree::Search(int x) {
+	AVLNode *p = root;
+	while (p) {
+		if (p->data > x)
+			p = p->Lchild;
+		else if (p->data < x)
+			p = p->Rchild;
+		else
+			return p;
+	}
+	return p;
 }
 
-double t1,t2,t3;
-struct timeval s0,s1;
-int fd = open("/dev/urandom",O_RDONLY);
-std::ofstream op("avl_l.log");
-void test() {
-	vector<int> iv;
-	iv.reserve(N);
-	AVLNode *T = nullptr;
-	gettimeofday(&s0,NULL);
-	for (int i = 0; i < N; ++i) 
-	{
-		read(fd,&iv[i],sizeof(int));
-		insert(T,iv[i]);
+bool AVLtree::insert(AVLNode *&T, int x) {
+	if (!T) {
+		T = new AVLNode(x);
+		++count;
+		return 1;
 	}
-	gettimeofday(&s1,NULL);
-	t1 = ((1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0));
-	for(int i = 0; i < N;i++)
-		Search(T,iv[i]);
-	gettimeofday(&s0,NULL);
-	t2 = ((1000.0*(s0.tv_sec - s1.tv_sec) + (s0.tv_usec - s1.tv_usec)/1000.0));
-	for (int i = 0; i < N; ++i)
-		del(T, iv[i]);
-	gettimeofday(&s1,NULL);
-	t3 = ((1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0));
+	if (T->data == x)
+		return 0;
+	bool b;
+	if (T->data < x)
+		b = insert(T->Rchild, x);
+	else
+		b = insert(T->Lchild, x);
+	if (b&&T->height != max(getHeight(T->Lchild), getHeight(T->Rchild)) + 1) {
+		updateHeight(T);
+		if (abs(bf(T)) > 1)
+			Rebalance(T);
+	}
+	return b;
 }
 
-int main()
-{
-	double t[10];
-	double s = 0;
-	for(int i = 1;i <= 10;i++)
-	{
-		test();
-		t[i] = t1 + t2 + t3;
-		op<<i<<'\n'<<"Insert time : "<<t1<<"ms\n"<<"Search time : "<<t2<<"ms\n"<<"Remove time : "<<t3<<"ms\n"<<"Total  time : "<<t[i]<<"ms\n"<<std::endl;
-		s += t[i];
+bool AVLtree::erase(AVLNode* &T, int x) {
+	if (!T)
+		return 0;
+	if (T->data == x) {
+		if (!T->Lchild) {
+			AVLNode *p = T;
+			T = T->Rchild;
+			delete p;
+			--count;
+			return 1;
+		}
+		if (!T->Rchild) {
+			AVLNode *p = T;
+			T = T->Lchild;
+			delete p;
+			--count;
+			return 1;
+		}
+		AVLNode *p = T->Lchild;
+		while (p->Rchild)
+			p = p->Rchild;
+		T->data = p->data;
+		erase(T->Lchild, T->data);
+		if (T->height != max(getHeight(T->Lchild), getHeight(T->Rchild)) + 1) {
+			updateHeight(T);
+			if (abs(bf(T)) > 1)
+				Rebalance(T);
+		}
+		return 1;
 	}
-	op<<"All cost : "<<(static_cast<int>(s / 1000)) <<"s"<<(static_cast<int>(s) % 1000)<<"ms"<<std::endl;
-	close(fd);
-	return 0;
+	bool b;
+	if (T->data < x)
+		b = erase(T->Rchild, x);
+	else
+		b = erase(T->Lchild, x);
+	if (b&&T->height != max(getHeight(T->Lchild), getHeight(T->Rchild)) + 1) {
+		updateHeight(T);
+		if (abs(bf(T)) > 1)
+			Rebalance(T);
+	}
+	return b;
 }
+

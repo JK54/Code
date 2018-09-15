@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#define N 50000000
+#define N 1000
 RBTree<int> aaa;
 std::ofstream sta("rbtree.log");
 double t1,t2,t3;

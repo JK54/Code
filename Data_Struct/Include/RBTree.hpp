@@ -11,7 +11,7 @@
 //https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91
 //Important properties are as below.
 
-//ps:the leaf node represented by nullptr,so we need to be careful for the null situation,or it may cause the error:visit the non-existed node.
+//ps:the leaf node use nullptr to stand for,so we need to be careful for the null situation,or it may cause the error:visit the non-existed node.
 //
 //properties(judged by IsRBT()):
 //1) A node is either red or black
@@ -124,11 +124,14 @@ class RBTree
 		void CreatTree(std::istream &is);
 		bool IsRBT();
 		void Traverse();
+		void insert(const T&vle){Insert(vle);}
+        void erase(const T &vle){Remove(vle);}
+        void find(const T &vle){Search(vle);}
 		bool Search(const T &vle);
 		bool Insert(const T &vle);
 		bool Remove(const T &vle);
 		RBTreeNode<T> *Root(){return root;};
-		void PrintCount(){std::cout<<count<<std::endl;};
+		int size(){return count;};
 	private:
 		RBTreeNode<T>* first();
 		RBTreeNode<T>* last();
@@ -139,6 +142,9 @@ class RBTree
 		inline RBTreeNode<T>* brother(RBTreeNode<T> *roo,RBTreeNode<T> *parent);
 		size_t blacklength(RBTreeNode<T> *roo);
 		inline bool redparent(RBTreeNode<T> *roo);
+		//replace() relink all the relation from pre to trav,replace2() just copy the data from trav to pre.
+		void replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre);
+		// void replace2(RBTreeNode<T> *trav,RBTreeNode<T> *pre);
 		void rotatel(RBTreeNode<T> *roo);
 		void rotater(RBTreeNode<T> *roo);
 		inline bool getcolor(RBTreeNode<T> *roo);
@@ -217,7 +223,7 @@ bool RBTree<T>::IsRBT()
 	return result;
 }
 template<typename T>
-inline RBTreeNode<T>* RBTree<T>::grandparent(RBTreeNode<T> *roo)
+RBTreeNode<T>* RBTree<T>::grandparent(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *gp;
 	if(roo == root || roo == nullptr)
@@ -228,7 +234,7 @@ inline RBTreeNode<T>* RBTree<T>::grandparent(RBTreeNode<T> *roo)
 }
 
 template<typename T>
-inline RBTreeNode<T>* RBTree<T>::uncle(RBTreeNode<T> *roo)
+RBTreeNode<T>* RBTree<T>::uncle(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *gp,*uncle;
 	gp = grandparent(roo);
@@ -262,7 +268,7 @@ size_t RBTree<T>::blacklength(RBTreeNode<T> *roo)
 	return height;
 }
 template<typename T>
-inline RBTreeNode<T>* RBTree<T>::first()
+RBTreeNode<T>* RBTree<T>::first()
 {
 	RBTreeNode<T> *roo;
 	roo = root;
@@ -272,7 +278,7 @@ inline RBTreeNode<T>* RBTree<T>::first()
 }
 
 template<typename T>
-inline RBTreeNode<T>* RBTree<T>::last()
+RBTreeNode<T>* RBTree<T>::last()
 {
 	RBTreeNode<T> *roo;
 	roo = root;
@@ -282,7 +288,7 @@ inline RBTreeNode<T>* RBTree<T>::last()
 }
 
 template<typename T>
-inline RBTreeNode<T>* RBTree<T>::pre(RBTreeNode<T> *roo)
+RBTreeNode<T>* RBTree<T>::pre(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *trav;
 	trav = roo;
@@ -302,7 +308,7 @@ inline RBTreeNode<T>* RBTree<T>::pre(RBTreeNode<T> *roo)
 }
 
 template<typename T>
-inline RBTreeNode<T>* RBTree<T>::next(RBTreeNode<T> *roo)
+RBTreeNode<T>* RBTree<T>::next(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *trav;
 	trav = roo;
@@ -322,7 +328,36 @@ inline RBTreeNode<T>* RBTree<T>::next(RBTreeNode<T> *roo)
 }
 
 template<typename T>
-inline void RBTree<T>::rotatel(RBTreeNode<T> *roo)
+void RBTree<T>::replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre)
+{
+	if(trav != nullptr)
+	{
+		if(trav != pre->lchild)
+			trav->lchild = pre->lchild;
+		if(trav != pre->rchild)
+			trav->rchild = pre->rchild;
+		trav->parent = pre->parent;
+		//trav->color = pre->color;
+		if(trav->lchild != nullptr)
+			trav->lchild->parent = trav;
+		if(trav->rchild != nullptr)
+			trav->rchild->parent = trav;
+	}
+	if(pre->parent != nullptr)
+	{
+		if(pre->parent->lchild == pre)
+			pre->parent->lchild = trav;
+		else
+			pre->parent->rchild = trav;
+	}
+	else
+		root = trav;
+	delete pre;
+	pre = nullptr;
+}
+
+template<typename T>
+void RBTree<T>::rotatel(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *n,*rn,*rln;
 	n = roo;
@@ -346,7 +381,7 @@ inline void RBTree<T>::rotatel(RBTreeNode<T> *roo)
 }
 
 template<typename T>
-inline void RBTree<T>::rotater(RBTreeNode<T> *roo)
+void RBTree<T>::rotater(RBTreeNode<T> *roo)
 {
 	RBTreeNode<T> *n,*ln,*lrn;
 	n = roo;
@@ -428,11 +463,6 @@ bool RBTree<T>::Insert(const T &vle)
 		}
 	}
 	trav = new RBTreeNode<T>(vle);
-	if(trav == nullptr)
-	{
-		std::cerr<<"out of space"<<std::endl;
-		exit(1);
-	}
 	count++;
 	//if trav is the first node of rbtree.
 	if(p == nullptr)
@@ -639,5 +669,4 @@ bool RBTree<T>::Remove(const T &vle)
 	}
 	return true;
 }
-
 #endif

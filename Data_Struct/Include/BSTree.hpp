@@ -8,10 +8,10 @@ template<typename T>
 class BSTree:public BinTree<T>
 {
 	public:
-		BSTree():BinTree<T>(){}
-		BSTree(T x):BinTree<T>(x){}
-		virtual ~BSTree() = default;
-
+		BSTree():count(0),BinTree<T>(){}
+		BSTree(T x):count(1),BinTree<T>(x){}
+		~BSTree(){this->~BinTree<T>();}
+		
 		void CreateTree(std::istream &is);
 		void CreateTree(const T a[],int n);
 		void CreateTreeByIncSeq(BinTreeNode<T> *&,int low,int high,T a[]);
@@ -24,6 +24,14 @@ class BSTree:public BinTree<T>
 		bool Remove(const T &vle);
 		void RemoveMax();
 		void RemoveLessThanX(BinTreeNode<T> *roo,const T &vle);
+		void insert(const T&vle){Insert(vle);}
+        void erase(const T &vle){Remove(vle);}
+        void find(const T &vle){Search(vle);}
+		int size(){return count;}
+		int Count(){return count;}
+
+	private:
+		int count;
 };
 //--------------------------------------BSTree------------------------------------------
 
@@ -61,7 +69,7 @@ void BSTree<T>::CreateTreeByIncSeq(BinTreeNode<T> *&roo,int low,int high,T a[])
 template<typename T>
 bool BSTree<T>::Insert(const T &vle)
 {
-	BinTreeNode<T> *roo = BinTree<T>::root;
+	BinTreeNode<T> *roo = this->root;
 	BinTreeNode<T> *pre = nullptr;
 	while(roo != nullptr)
 	{
@@ -73,10 +81,11 @@ bool BSTree<T>::Insert(const T &vle)
 		else
 			return false;
 	}
+	count++;
 	roo = new BinTreeNode<T>(vle);
-	if(BinTree<T>::root == nullptr)
+	if(this->root == nullptr)
 	{
-		BinTree<T>::root = roo;
+		this->root = roo;
 		return true;
 	}
 	if(pre->data > vle)
@@ -89,7 +98,7 @@ bool BSTree<T>::Insert(const T &vle)
 	template<typename T>
 bool BSTree<T>::Search(const T &vle)
 {
-	BinTreeNode<T> *trav = BinTree<T>::root;
+	BinTreeNode<T> *trav = this->root;
 	while(trav != nullptr)
 	{
 		if(trav->data == vle)
@@ -102,22 +111,12 @@ bool BSTree<T>::Search(const T &vle)
 	return false;
 }
 
-	template<typename T>
-bool BSTree<T>::Remove_NR(const T &vle)
-{
-	Stack<BinTreeNode<T>*> s;
-	BinTreeNode<T> *tmp= BinTree<T>::root;
-	if(Search(vle) == false)
-		return false;
-	return true;
-}
-
 template<typename T>
 bool BSTree<T>::Remove(const T &vle)
 {
 	BinTreeNode<T> *pre,*trav,*wanted,*tmp;
 	pre = nullptr;
-	trav = BinTree<T>::root;
+	trav = this->root;
 	while(trav != nullptr)
 	{
 		pre = trav;
@@ -131,6 +130,7 @@ bool BSTree<T>::Remove(const T &vle)
 	if(trav == nullptr)
 		return false;
 	wanted = trav;
+	count--;
 	if(trav->lchild != nullptr && trav->rchild != nullptr)
 	{
 		tmp = trav;
@@ -152,7 +152,7 @@ bool BSTree<T>::Remove(const T &vle)
 	else
 		trav = trav->lchild;
 	if(wanted == pre)
-		BinTree<T>::root = trav;
+		this->root = trav;
 	else
 	{
 		if(pre->lchild == wanted)
