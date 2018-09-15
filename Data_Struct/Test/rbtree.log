@@ -1,0 +1,61 @@
+1
+Insert time : 0.145993s
+Search time : 0.017774s
+Remove time : 0.025205s
+Total time : 0.188972s
+
+2
+Insert time : 0.14078s
+Search time : 0.019491s
+Remove time : 0.025212s
+Total time : 0.185483s
+
+3
+Insert time : 0.149381s
+Search time : 0.020614s
+Remove time : 0.02621s
+Total time : 0.196205s
+
+4
+Insert time : 0.141998s
+Search time : 0.020276s
+Remove time : 0.025828s
+Total time : 0.188102s
+
+5
+Insert time : 0.141219s
+Search time : 0.020222s
+Remove time : 0.025888s
+Total time : 0.187329s
+
+6
+Insert time : 0.142533s
+Search time : 0.020222s
+Remove time : 0.025836s
+Total time : 0.188591s
+
+7
+Insert time : 0.144156s
+Search time : 0.02025s
+Remove time : 0.025811s
+Total time : 0.190217s
+
+8
+Insert time : 0.141031s
+Search time : 0.030955s
+Remove time : 0.030136s
+Total time : 0.202122s
+
+9
+Insert time : 0.141516s
+Search time : 0.02024s
+Remove time : 0.025749s
+Total time : 0.187505s
+
+10
+Insert time : 0.142198s
+Search time : 0.020192s
+Remove time : 0.025776s
+Total time : 0.188166s
+
+All cost : 0m1s

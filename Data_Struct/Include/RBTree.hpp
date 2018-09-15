@@ -332,16 +332,16 @@ void RBTree<T>::replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre)
 {
 	if(trav != nullptr)
 	{
-		if(trav != pre->lchild)
-			trav->lchild = pre->lchild;
-		if(trav != pre->rchild)
-			trav->rchild = pre->rchild;
+	   /*  if(trav != pre->lchild) */
+			// trav->lchild = pre->lchild;
+		// if(trav != pre->rchild)
+			/* trav->rchild = pre->rchild; */
 		trav->parent = pre->parent;
 		//trav->color = pre->color;
-		if(trav->lchild != nullptr)
-			trav->lchild->parent = trav;
-		if(trav->rchild != nullptr)
-			trav->rchild->parent = trav;
+	   /*  if(trav->lchild != nullptr) */
+			// trav->lchild->parent = trav;
+		// if(trav->rchild != nullptr)
+			/* trav->rchild->parent = trav; */
 	}
 	if(pre->parent != nullptr)
 	{
