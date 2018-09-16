@@ -28,15 +28,17 @@ void spawn(int x)
 	std::mt19937 mt(rd());
 	char *dir = (char*)std::to_string(x).c_str();
 	if(opendir(dir) == NULL)
-		mkdir(dir,0777);
-	for(int i = 0;i < CW;i++)
 	{
-		std::string name;
-		name = "./" + std::to_string(x) + "/rand" + std::to_string((i/10)) + std::to_string((i % 10)) + ".txt";
-		std::ofstream rd(name);
-		for(int j = 0;j < x;j++)
-		rd<<mt()<<" ";
-		rd.close();
+		mkdir(dir,0777);
+		for(int i = 0;i < CW;i++)
+		{
+			std::string name;
+			name = "./" + std::to_string(x) + "/rand" + std::to_string((i/10)) + std::to_string((i % 10)) + ".txt";
+			std::ofstream rd(name);
+			for(int j = 0;j < x;j++)
+			rd<<mt()<<" ";
+			rd.close();
+		}
 	}
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
@@ -118,10 +120,14 @@ void test(void f(bool,int,std::istream &,K,int &),K jojo,int x,bool ordered)
 #endif
 	std::ios::sync_with_stdio(false);
 	count = 0;
-	spawn(x);
+	if(ordered == false)
+		spawn(x);
 			sta<<"-----------------------------------------------------------------------------------------------------"<<std::endl;
 	stb<<"----------------------------------------------------------------------------------------------------"<<std::endl;
-	sta<<"Generate rand time : "<<t1<<" s"<<std::endl;
+	if(ordered == false)
+		sta<<"Generate rand time : "<<t1<<" s"<<std::endl;
+	else
+		sta<<"Generate rand time : "<<"0 s"<<std::endl;
 	sta<<"\t\t\t\t\t\t\t\t\t\t"<<tile;
 	stb<<"\t\t\t\t\t\t\t\t\t\t"<<tile;
 	if(ordered == false)

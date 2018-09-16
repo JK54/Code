@@ -1,6 +1,8 @@
 #ifndef _THREAD_TREE_H
 #define _THREAD_TREE_H
 
+#define ISCHILD 0
+#define ISTHREAD 1
 #include "sys_comm.h"
 #include "BinaryTree.hpp"
 #include "Stack.hpp"
@@ -15,8 +17,8 @@ class ThreadNode
 		T data;
 		int ltag,rtag;
 		ThreadNode<T> *lchild,*rchild;
-		ThreadNode():ltag(0),rtag(0),lchild(nullptr),rchild(nullptr){}
-		ThreadNode(T item):data(item),ltag(0),rtag(0),lchild(nullptr),rchild(nullptr){}
+		ThreadNode():ltag(ISCHILD),rtag(ISCHILD),lchild(nullptr),rchild(nullptr){}
+		ThreadNode(T item):data(item),ltag(ISCHILD),rtag(ISCHILD),lchild(nullptr),rchild(nullptr){}
 		ThreadNode(const BinTreeNode<T> *Bn);
 		ThreadNode<T>* operator=(const ThreadNode<T> *p);
 };
@@ -94,11 +96,14 @@ class InThreadTree:public ThreadTree<T>
 		virtual	ThreadNode<T>* Prior(ThreadNode<T> *current) override;
 		virtual ThreadNode<T> *Parent(ThreadNode<T> *current) override;
 		
-		ThreadNode<T>* PriorPreOrder(ThreadNode<T> *roo);
-		ThreadNode<T>* NextPreOrder(ThreadNode<T> *roo);
 		void CompareInsert(ThreadNode<T> *roo,const T &vle);
 	protected:
 		virtual void createthread(ThreadNode<T> *current,ThreadNode<T> *&pre) override;
+		ThreadNode<T>* priorpreorder(ThreadNode<T> *roo);
+		ThreadNode<T>* nextpreorder(ThreadNode<T> *roo);
+		ThreadNode<T>* firstpostorder(ThreadNode<T> *roo);
+		ThreadNode<T>* priorpostorder(ThreadNode<T> *roo);
+		ThreadNode<T>* nextpostorder(ThreadNode<T> *roo);
 };
 
 template <typename T>
@@ -128,13 +133,13 @@ ThreadNode<T>::ThreadNode(const BinTreeNode<T> *Bn)
 {
 	data = Bn->data;
 	if(Bn->lchild == nullptr)
-		ltag = 1;
+		ltag = ISTHREAD;
 	else
-		ltag = 0;
+		ltag = ISCHILD;
 	if(Bn->rchild == nullptr)
-		rtag = 1;
+		rtag = ISTHREAD;
 	else
-		rtag = 0;
+		rtag = ISCHILD;
 }
 
 template<typename T>
@@ -170,9 +175,9 @@ ThreadTree<T>::~ThreadTree()
 	while(!s.IsEmpty())
 	{
 		s.Pop(tmp);
-		if(tmp->rtag == 0)
+		if(tmp->rtag == ISCHILD)
 			s.Push(tmp->rchild);
-		if(tmp->ltag == 0)
+		if(tmp->ltag == ISCHILD)
 			s.Push(tmp->lchild);
 		delete tmp;
 		tmp = nullptr;
@@ -200,7 +205,7 @@ ThreadNode<T>* ThreadTree<T>::parent(ThreadNode<T> *t,ThreadNode<T> *p)
 {
 	if(t == nullptr)
 		return nullptr;
-	if((p->lchild == t &&p->ltag == 0) || (p->rchild == t && p->rtag == 0))
+	if((p->lchild == t &&p->ltag == ISCHILD) || (p->rchild == t && p->rtag == ISCHILD))
 		return p;
 	if(ThreadNode<T> *q = parent(t,p->lchild))
 		return q;
@@ -219,9 +224,9 @@ ThreadNode<T>* PreThreadTree<T>::First(ThreadNode<T> *current)
 template<typename T>
 ThreadNode<T>* PreThreadTree<T>::Last(ThreadNode<T> *current)
 {
-	if(current != nullptr && current->rtag == 0)
+	if(current != nullptr && current->rtag == ISCHILD)
 		return Last(current->rchild);
-	else if((current != nullptr && current->ltag == 0))
+	else if((current != nullptr && current->ltag == ISCHILD))
 		return Last(current->lchild);
 	else
 		return current;
@@ -229,7 +234,7 @@ ThreadNode<T>* PreThreadTree<T>::Last(ThreadNode<T> *current)
 template<typename T>
 ThreadNode<T>* PreThreadTree<T>::Next(ThreadNode<T> *current)
 {
-	if(current->ltag == 0)
+	if(current->ltag == ISCHILD)
 		return current->lchild;
 	else
 		return current->rchild;
@@ -239,7 +244,7 @@ ThreadNode<T>* PreThreadTree<T>::Prior(ThreadNode<T> *current)
 {
 	if(current != nullptr)
 	{
-		if(current->ltag == 1)
+		if(current->ltag == ISTHREAD)
 			return current->lchild;
 		else
 		{
@@ -266,9 +271,9 @@ ThreadNode<T>* PreThreadTree<T>::Parent(ThreadNode<T> *current)
 		return nullptr;
 	}
 	ThreadNode<T> *p = current;
-	while(!((p->lchild == current && p->ltag == 0) || (p->rchild == current && p->rtag == 0)))
+	while(!((p->lchild == current && p->ltag == ISCHILD) || (p->rchild == current && p->rtag == ISCHILD)))
 	{
-		if(p->ltag == 1)
+		if(p->ltag == ISTHREAD)
 			p = p->lchild;
 		else
 			p = this->parent(p,this->root);
@@ -283,7 +288,7 @@ void PreThreadTree<T>::CreateThread(BinTreeNode<T> *p)
 	ThreadNode<T> *pre = nullptr;
 	ThreadNode<T> *trav = this->root;
 	/* //using preorder traverse to build thread,it works,and the overload recursive method exist a fatal problem:when it come the First node of subtree,in this moment,current->lchild = pre,it will goes on an infinite loop:pre = current,CreateThread(pre,current)->CreteThread(current,pre).it need to be debugged. */
-	//the overload recursive solved,the key problem is that if the lchild and rchild is nullptr,we should not recurse it.And I thought the traverse is also helpful to understand the thread,keep it here.
+	//the overload recursive solved,the key problem is that if the lchild and rchild are nullptr,we should not recurse it.And I thought the traverse is also helpful to understand the thread,keep it here.
    /*  Stack<ThreadNode<T>*> s; */
 	// if(trav->rchild != nullptr)
 		// s.Push(trav->rchild);
@@ -305,6 +310,7 @@ void PreThreadTree<T>::CreateThread(BinTreeNode<T> *p)
 	createthread(trav,pre);
 }
 
+//only deal with thread pointer.
 template<typename T>
 void PreThreadTree<T>::createthread(ThreadNode<T> *current,ThreadNode<T> *&pre)
 {
@@ -316,10 +322,10 @@ void PreThreadTree<T>::createthread(ThreadNode<T> *current,ThreadNode<T> *&pre)
 	if(pre != nullptr && pre->rchild == nullptr)
 		pre->rchild = current;
 	pre = current;
-	//need to prevent the direction turn to previous
-	if(current->ltag == 0)
+	//need to prevent the direction turn to previous,unless it will cause infinite loop.
+	if(current->ltag == ISCHILD)
 		createthread(current->lchild,pre);
-	if(current->rtag == 0)
+	if(current->rtag == ISCHILD)
 		createthread(current->rchild,pre);
 }
 
@@ -329,7 +335,7 @@ void PreThreadTree<T>::TraversePreOrder(ThreadNode<T> *roo)
 	if(roo == nullptr)
 	{
 		std::cout<<"traverse begin at nullptr"<<std::endl;
-		exit(1);
+		return;
 	}
 	ThreadNode<T> *p = First(roo);
 	while(p != nullptr)
@@ -339,30 +345,17 @@ void PreThreadTree<T>::TraversePreOrder(ThreadNode<T> *roo)
 	}
 }
 
+//the thread to root may be cutted,I can not think out a way to inordertraverse directly.
 template<typename T>
 void PreThreadTree<T>::TraverseInOrder(ThreadNode<T> *roo)
 {
-   /*  ThreadNode<T> *trav = roo; */
-	// ThreadNode<T> *pre = nullptr;
-	// ThreadNode<T> *last = roo;
-	// //search for first node inorder
-	// while(trav->ltag == 0)
-		// trav = trav->lchild;
-	// while(last->rtag == 0)
-		// last = last->rchild;
-	// while(trav != last)
-	// {
-		// this->visit(trav);
-		// if(trav->rtag == 1)
-			// trav = Parent(trav);
-		// else if(trav->rtag == 0 && trav != pre)
-		// {
-			// pre = trav;
-			// trav = trav->rchild;
-			// while(trav->ltag == 0)
-				// trav = trav->lchild;
-		// }
-	/* } */
+	ThreadNode<T> *trav,*first,*last;
+	first = roo;
+	while(first->lchild != nullptr && first->ltag == ISCHILD)
+		first = first->lchild;
+	last = roo;
+	while(last->rchild != nullptr && last->rtag == ISCHILD)
+		last = last->rchild;
 }
 template<typename T>
 void PreThreadTree<T>::TraversePostOrder(ThreadNode<T> *roo)
@@ -373,7 +366,7 @@ void PreThreadTree<T>::TraversePostOrder(ThreadNode<T> *roo)
 ThreadNode<T>* InThreadTree<T>::First(ThreadNode<T> *current)
 {
 	ThreadNode<T> *p = current;
-	while(p->ltag == 0)
+	while(p->ltag == ISCHILD)
 		p = p->lchild;
 	return p;
 }
@@ -382,7 +375,7 @@ ThreadNode<T>* InThreadTree<T>::First(ThreadNode<T> *current)
 ThreadNode<T>* InThreadTree<T>::Last(ThreadNode<T> *current)
 {
 	ThreadNode<T> *p = current;
-	while(p->rtag == 0)
+	while(p->rtag == ISCHILD)
 		p = p->rchild;
 	return p;
 }
@@ -390,7 +383,7 @@ ThreadNode<T>* InThreadTree<T>::Last(ThreadNode<T> *current)
 ThreadNode<T>* InThreadTree<T>::Next(ThreadNode<T> *current)
 {
 	ThreadNode<T> *p = current->rchild;
-	if(current->rtag == 0)
+	if(current->rtag == ISCHILD)
 		return First(p);
 	else
 		return p;
@@ -399,25 +392,25 @@ ThreadNode<T>* InThreadTree<T>::Next(ThreadNode<T> *current)
 ThreadNode<T>* InThreadTree<T>::Prior(ThreadNode<T> *current)
 {
 	ThreadNode<T> *p = current->lchild;
-	if(current->ltag == 0)
+	if(current->ltag == ISCHILD)
 		return Last(p);
 	else
 		return p;
 }
 
-	template<typename T>
+//there are 2 situation:
+//1.leap to the most left child,and jump to right.It does not be always successful when the most left treenode of current node is the first node of the threadtree.
+//2.leap to the most right child,jump tp left.as above,the most right might be last node
+//so we need two way to find the Parent.
+//In a nutshell,considering the inorder sequence:LNR,the node may be L or R,so we need two directions.
+template<typename T>
 ThreadNode<T>* InThreadTree<T>::Parent(ThreadNode<T> *current)
 {
 	if(current == ThreadTree<T>::root)
 		return nullptr;
 	ThreadNode<T> *p = current;
-	while(p->ltag == 0)
+	while(p->ltag == ISCHILD)
 		p= p->lchild;
-	//there are 2 situation:
-	//1.leap to the most left child,and jump to right.It does not be always successful when the most left treenode of current node is the first node of the threadtree.
-	//2.leap to the most right child,jump tp left.as above,the most right might be last node
-	//so we need two way to find the Parent.
-	//In a nutshell,considering the in order sequence:LNR,the node may be L or R,so we need two directions.
 	if(p->lchild != nullptr)
 	{
 		p = p->lchild;
@@ -427,7 +420,7 @@ ThreadNode<T>* InThreadTree<T>::Parent(ThreadNode<T> *current)
 	if(p == nullptr || p->lchild == nullptr)
 	{
 		p = current;
-		while(p->rtag == 0)
+		while(p->rtag == ISCHILD)
 			p = p->rchild;
 		p = p->rchild;
 		while(p != nullptr && p->lchild != current && p->rchild != current)
@@ -436,8 +429,8 @@ ThreadNode<T>* InThreadTree<T>::Parent(ThreadNode<T> *current)
 	return p;
 
 }
-//why preorder need to if statement ,but inoder don't need it?
-//the sequence cause the different.it will blocked by the first judgement.
+//Q:Why preorder need if statement when coming to children,but inoder don't need it?
+//A:The sequence of statements causes the difference.it will be blocked by the first judgement.
 template<typename T>
 void InThreadTree<T>::createthread(ThreadNode<T> *current,ThreadNode<T> *&pre)
 {
@@ -473,18 +466,7 @@ void InThreadTree<T>::TraversePreOrder(ThreadNode<T> *current)
 		while(p != nullptr)
 		{
 			this->visit(p);
-			if( p->ltag == 0)
-				p = p->lchild;
-			else if(p->rtag == 0)
-				p = p->rchild;
-			else
-			{
-				//when the leaf node comes to its ancestor which own lchild,change to the lchild.
-				while(p != nullptr && p->rtag == 1)
-					p = p->rchild;
-				if( p != nullptr)
-					p = p->rchild;
-			}
+			p = nextpreorder(p);
 		}
 	}
 }
@@ -510,35 +492,19 @@ void InThreadTree<T>::TraversePostOrder(ThreadNode<T> *current)
 		return;
 	else
 	{
-		ThreadNode<T> *p = current;
+		ThreadNode<T> *p;
 		ThreadNode<T> *q;
-		while(p->ltag == 0 || p->rtag == 0)
-			if(p->ltag == 0)
-				p = p->lchild;
-			else if( p->rtag == 0)
-				p = p->rchild;
-		this->visit(p);
-		while((q = Parent(p)) != nullptr)
+		//seek for the first node postordered.
+		p = firstpostorder(current);
+		while(p != nullptr)
 		{
-			//if p is rchild of q,then it's time to visit "ThreadTree<T>::root"(q);Or the Parent don't have a rchild,it also need to visit q.
-			if (q->rchild == p || q->rtag == 1)
-				p = q;
-			// p is not the rchild of q
-			else
-			{
-				p = q->rchild;
-				while(p->ltag == 0 || p->rtag == 0)
-					if(p->ltag == 0)
-						p = p->lchild;
-					else if( p->rtag == 0)
-						p = p->rchild;
-			}
 			this->visit(p);
+			p = nextpostorder(p);
 		}
 	}
 }
 template<typename T>
-ThreadNode<T>* InThreadTree<T>::PriorPreOrder(ThreadNode<T> *roo)
+ThreadNode<T>* InThreadTree<T>::priorpreorder(ThreadNode<T> *roo)
 {
 	if(roo == ThreadTree<T>::root)
 	{
@@ -552,28 +518,29 @@ ThreadNode<T>* InThreadTree<T>::PriorPreOrder(ThreadNode<T> *roo)
 	else
 	{
 		tmp = p->lchild;
-		while(tmp->ltag == 0 || tmp->rtag == 0)
+		//difference between the preorder and postorder:pre traverse intends to find the last rchild(if exists) of the l-brothertree,while post prefers the first node(not lchild or rchild specially) of l-brothertree.
+		while(tmp->ltag == ISCHILD || tmp->rtag == ISCHILD)
 		{
-			while(tmp->rtag == 0)
+			while(tmp->rtag == ISCHILD)
 				tmp = tmp->rchild;
-			while(tmp->ltag == 0)
+			while(tmp->ltag == ISCHILD)
 				tmp = tmp->lchild;
 		}
 	}
 	return tmp;
 }
 template<typename T>
-ThreadNode<T>* InThreadTree<T>::NextPreOrder(ThreadNode<T> *roo)
+ThreadNode<T>* InThreadTree<T>::nextpreorder(ThreadNode<T> *roo)
 {
 	ThreadNode<T> *tmp;
-	if(roo->ltag == 0)
+	if(roo->ltag == ISCHILD)
 		tmp = roo->lchild;
-	else if(roo->rtag == 0)
+	else if(roo->rtag == ISCHILD)
 		tmp = roo->rchild;
 	else
 	{
 		tmp = roo;
-		while(tmp != nullptr && tmp->rtag == 1)
+		while(tmp != nullptr && tmp->rtag == ISTHREAD)
 			tmp = tmp->rchild;
 		if(tmp != nullptr)
 			tmp = tmp->rchild;
@@ -582,11 +549,72 @@ ThreadNode<T>* InThreadTree<T>::NextPreOrder(ThreadNode<T> *roo)
 }
 
 template<typename T>
+ThreadNode<T>* InThreadTree<T>::firstpostorder(ThreadNode<T> *roo)
+{
+	if(roo == nullptr)	
+		return nullptr;
+	ThreadNode<T> *tmp = roo;
+	while(tmp->ltag == ISCHILD || tmp->rtag == ISCHILD)
+	{
+		if(tmp->ltag == ISCHILD)
+			tmp = tmp->lchild;
+		else
+			tmp = tmp->rchild;
+	}
+	return tmp; 
+}
+
+template<typename T> 
+ThreadNode<T>* InThreadTree<T>::priorpostorder(ThreadNode<T> *roo)
+{
+	if(roo == nullptr)
+		return nullptr;
+	ThreadNode<T> *tmp;
+	if(roo->rtag == ISCHILD)
+		tmp = roo->rchild;
+	else if(roo->ltag == ISCHILD)
+		tmp = roo->lchild;
+	else
+	{
+		if(roo->lchild == nullptr)
+			tmp = nullptr;
+		else
+		{
+			ThreadNode<T> *p = Parent(tmp);
+			while(p != nullptr && tmp != p->rchild)
+			{
+				tmp = p;
+				p = Parent(p);
+			}
+			if(p != nullptr)
+				tmp = p->lchild;
+			else
+				tmp = nullptr;
+		}
+	}
+	return tmp;
+}
+
+template<typename T> 
+ThreadNode<T>* InThreadTree<T>::nextpostorder(ThreadNode<T> *roo)
+{
+	if(roo == this->root)
+		return nullptr;
+	ThreadNode<T> *tmp,*parent;
+	tmp = roo;
+	parent = Parent(roo);
+	if(parent->rchild == tmp)
+		tmp = parent;
+	else
+		tmp = parent->rtag != ISTHREAD ? firstpostorder(parent->rchild) : parent;
+	return tmp;
+}
+template<typename T>
 void InThreadTree<T>::CompareInsert(ThreadNode<T> *roo,const T &vle)
 {
 	ThreadNode<T> *tmp = new ThreadNode<T>(vle);
 	ThreadNode<T> *lc = roo->lchild;
-	if(roo->ltag == 1)
+	if(roo->ltag == ISTHREAD)
 	{
 		tmp->rchild = roo;
 		tmp->rchild = roo->lchild;
@@ -596,26 +624,26 @@ void InThreadTree<T>::CompareInsert(ThreadNode<T> *roo,const T &vle)
 		if(tmp->data < lc->data)
 		{
 			tmp->rchild = lc;
-			tmp->rtag = 0;
+			tmp->rtag = ISCHILD;
 			tmp->ltag = lc->ltag;
 			tmp->lchild = lc->lchild;
-			while(lc->ltag == 0)
+			while(lc->ltag == ISCHILD)
 				lc = lc->lchild;
 			lc->lchild = tmp;
 		}
 		else
 		{
 			tmp->lchild = lc;
-			tmp->ltag = 0;
+			tmp->ltag = ISCHILD;
 			tmp->rchild = roo;
-			tmp->rtag = 1;
-			while(lc->rtag == 0)
+			tmp->rtag = ISTHREAD;
+			while(lc->rtag == ISCHILD)
 				lc = lc->rchild;
 			lc->rchild = tmp;
 		}
 	}
 	roo->lchild = tmp;
-	roo->ltag = 0;
+	roo->ltag = ISCHILD;
 }
 //-----------------------InThreadTree end-------------------------------
 
@@ -625,9 +653,9 @@ ThreadNode<T>* PostThreadTree<T>::First(ThreadNode<T> *roo)
 {
 	if(roo == nullptr)
 		return nullptr;
-   if(roo->ltag == 0)
+   if(roo->ltag == ISCHILD)
   	 	return First(roo->lchild);
-   else if(roo->rtag == 0)
+   else if(roo->rtag == ISCHILD)
    		return First(roo->rchild);
    else
    		return roo;
@@ -646,10 +674,10 @@ ThreadNode<T>* PostThreadTree<T>::Next(ThreadNode<T> *roo)
 	if(roo == this->root)
 		return nullptr;
 	ThreadNode<T> *tmp = roo->rchild;
-	if(roo->rtag == 0)
+	if(roo->rtag == ISCHILD)
 	{
 		tmp = Parent(roo);
-		if(tmp->lchild == roo && tmp->rtag == 0)
+		if(tmp->lchild == roo && tmp->rtag == ISCHILD)
 			tmp = First(tmp->rchild);
 	}
 	return tmp;
@@ -659,11 +687,11 @@ template<typename T>
 ThreadNode<T>* PostThreadTree<T>::Prior(ThreadNode<T> *roo)
 {
 	if(roo == nullptr)
-		exit(1);
+		return nullptr;
 	//if roo is the first node,it return nullptr naturally,extra judge is unncessary.
 	ThreadNode<T> *tmp = roo->lchild;
-	if(roo->ltag == 0 && roo->rtag == 0)
-			tmp = roo->rchild;
+	if(roo->ltag == ISCHILD && roo->rtag == ISCHILD)
+		tmp = roo->rchild;
 	return tmp;
 }
 
@@ -676,9 +704,9 @@ ThreadNode<T>* PostThreadTree<T>::Parent(ThreadNode<T> *roo)
 		return nullptr;
 	}
 	ThreadNode<T> *tmp = roo;
-	while(!((tmp->lchild == roo && tmp->ltag == 0) || (tmp->rchild == roo && tmp->ltag == 0)))
+	while(!((tmp->lchild == roo && tmp->ltag == ISCHILD) || (tmp->rchild == roo && tmp->ltag == ISCHILD)))
 	{
-		if(tmp->rtag == 1)
+		if(tmp->rtag == ISTHREAD)
 			tmp = tmp->rchild;
 		else
 			tmp = this->parent(tmp,this->root);

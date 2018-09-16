@@ -166,7 +166,7 @@ void Tree<T>::CreateTree(TreeNode<T> *roo,std::istream &is)
 	{
 		T vle;
 		is>>vle;
-		//because root don't have a nextbrother object,so deal with root node before the loop.
+		//because root don't have a nextbrother ,so deal with root node before the loop.
 		TreeNode<T> *tmp = new TreeNode<T>(vle);
 		roo->firstchild = tmp;
 		Stack<TreeNode<T>*>s;
@@ -259,6 +259,7 @@ void Tree<T>::PrintBranch(TreeNode<T> *roo)
 	TreeNode<T> *ro;
 	if(roo == nullptr)
 		return;
+	//the same as the nifix expression,deal with bracket before entering the sub.
 	if(roo->firstchild != nullptr)
 	{
 		std::cout<<"("<<roo->data<<","<<roo->firstchild->data<<") ";
@@ -307,7 +308,8 @@ Forest<T>::~Forest()
 	qtree.~Queue();
 	destroybintree(root);
 }
-	template<typename T>
+
+template<typename T>
 bool Forest<T>::RemoveTree(const T &vle)
 {
 	if(qtree.IsEmpty())
@@ -374,7 +376,7 @@ void Forest<T>::BFS()
 	Tree<T> *tree,*firsttree;
 	TreeNode<T>* tmp;
 	Queue<TreeNode<T>*> qnode;
-	//enqueue the root node of trees.the tree queue can not directly used to traverse.
+	//enqueue the root node of trees.the tree queue can not directly used to traverse.the purpose of pop it first to make the endsmark.
 	qtree.Dequeue(firsttree);
 	qnode.Enqueue(firsttree->Root());
 	qtree.Enqueue(firsttree);

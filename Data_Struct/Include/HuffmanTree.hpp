@@ -2,7 +2,7 @@
 #define _HUFFMAN_H
 
 #include "LinearList_linked_list.hpp"
-
+#include "Stack.hpp"
 template<typename T,typename K>
 class HuNode
 {
@@ -23,8 +23,12 @@ class Huffman
 	public:
 		Huffman():root(nullptr){};
 		~Huffman(){destroy(root);}
-		void Hu_Tucker(const T a[],const K b[],int n);
-		void Traverse(HuNode<T,K> *);
+		void CreateTree(const T a[],const K b[],int n);
+		int WPL();
+		void TraversePreOrder(HuNode<T,K> *);
+		void TraverseInOrder(HuNode<T,K> *);
+		void TraversePostOrder(HuNode<T,K> *);
+		void Size(HuNode<T,K> *p,int &n);
 		HuNode<T,K>* Root(){return root;}
 	private:
 		HuNode<T,K> *root;
@@ -42,43 +46,140 @@ void Huffman<T,K>::destroy(HuNode<T,K> *p)
 	p = nullptr;
 }
 
+//Hu-Tucker
 template<typename T,typename K>
-void Huffman<T,K>::Hu_Tucker(const T vle[],const K we[],int n)
+void Huffman<T,K>::CreateTree(const T vle[],const K we[],int n)
 {
-	//use a array is also ok,and higher efficient.LinkedList takes more space complexity.
-	HuNode<T,K> *tmp,*tmp2;
-	//forest list
-	LinkedList<HuNode<T,K>*> list;
-	LNode<HuNode<T,K>*> *k1,*k2,*t1,*t2;
+	HuNode<T,K> *tmp,*tmp1,*tmp2,*min1,*min2;
+	int imin1,imin2,num;
+	HuNode<T,K> **list = new HuNode<T,K>* [n];
 	for(int i = 0;i < n;i++)	
 	{
 		tmp = new HuNode<T,K>(vle[i],we[i]);
-		list.push_back(tmp);
+		list[i] = tmp;
 	}
-	while(list.Length() > 1)
+	for(num = n;num > 1;num--)
 	{
-		k1 = list.Head();
-		k2 = k1->next;
-		for(t1 = list.Head(),t2 = k1->next;t2 != nullptr;t1 = t1->next,t2 = t2->next)	
+		if(list[0]->weight > list[1]->weight)
 		{
-			if(t1->data->weight + t2->data->weight < k1->data->weight + k2->data->weight)
-				k1 = t1,k2 = t2;
+			imin1 = 1;
+			imin2 = 0;
 		}
-		list.Delete(k1->data,tmp);
-		list.Delete(k2->data,tmp2);
-		tmp = new HuNode<T,K>(tmp->data + tmp2->data,tmp->weight + tmp2->weight,tmp,tmp2);
-		list.push_back(tmp);
-		// list.push_forward(tmp);
+		else
+		{
+			imin1 = 0;
+			imin2 = 1;
+		}
+		min1 = list[imin1];
+		min2 = list[imin2];
+		for(int i = 2;i < num;i++)
+		{
+			if(list[i]->weight <= min1->weight)
+			{
+				min2 = list[imin1];
+				imin2 = imin1;
+				min1 = list[i];
+				imin1 = i;
+			}
+			else if(list[i]->weight > min1->weight && list[i]->weight <= min2->weight)
+			{
+				min2 = list[i];
+				imin2 = i;
+			}
+		}
+		tmp = new HuNode<T,K>(min1->data + min2->data,min1->weight + min2->weight,min1,min2);
+		if(imin1 < imin2)
+		{
+			list[imin1] = tmp;
+			for(int i = imin2;i < num - 1;i++)
+				list[i] = list[i + 1];
+		}
+		else
+		{
+			list[imin2] = tmp;
+			for(int i = imin1;i < num - 1;i++)
+				list[i] = list[i + 1];
+		}
 	}
-	list.pop_forward(root);
+	if(root != nullptr)
+		destroy(root);
+	root = list[0];
+	delete [] list;
 }
 template<typename T,typename K>
-void Huffman<T,K>::Traverse(HuNode<T,K> *p)
+void Huffman<T,K>::TraversePreOrder(HuNode<T,K> *p)
 {
 	if(p == nullptr)
 		return;
-	Traverse(p->lchild);
-	Traverse(p->rchild);
 	std::cout<<p->data<<" ";
+	TraversePreOrder(p->lchild);
+	TraversePreOrder(p->rchild);
+}
+template<typename T,typename K>
+void Huffman<T,K>::TraverseInOrder(HuNode<T,K> *p)
+{
+	if(p == nullptr)
+		return;
+	TraverseInOrder(p->lchild);
+	std::cout<<p->data<<" ";
+	TraverseInOrder(p->rchild);
+}
+template<typename T,typename K>
+void Huffman<T,K>::TraversePostOrder(HuNode<T,K> *p)
+{
+	if(p == nullptr)
+		return;
+	TraversePostOrder(p->lchild);
+	TraversePostOrder(p->rchild);
+	std::cout<<p->data<<" ";
+}
+
+template<typename T,typename K>
+void Huffman<T,K>::Size(HuNode<T,K> *p,int &n)
+{
+	if(p == nullptr)
+		return;
+	n++;
+	Size(p->lchild,n);
+	Size(p->rchild,n);
+}
+
+template<typename T,typename K>
+int Huffman<T,K>::WPL()
+{
+	HuNode<T,K> *pre = nullptr,*trav = root;
+	int size;
+	Size(root,size);
+	HuNode<T,K> **path = new HuNode<T,K>* [size];
+	int top = -1;
+	int wpl = 0;
+	while(trav != nullptr)
+	{
+		path[++top] = trav;
+		trav = trav->lchild;
+	}
+	while(top != -1)
+	{
+		//gettop
+		trav = path[top];
+		if(trav->rchild == nullptr || trav->rchild == pre)
+		{
+			if(trav->lchild == nullptr && trav->rchild == nullptr)
+				wpl += trav->weight * top;
+			pre = trav;
+			top--;
+		}
+		else
+		{
+			trav = trav->rchild;
+			while(trav != nullptr)
+			{
+				path[++top] = trav;
+				trav = trav->lchild;
+			}
+		}
+	}
+	delete [] path;
+	return wpl;
 }
 #endif
