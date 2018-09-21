@@ -162,8 +162,7 @@ class UndiGraph:public WGraph<T,K>
 		bool IsTree();
 		bool IsInLoop(UndiGraph<T,K> tmp,const int &v1,const int &v2);
 		K CountWeight();
-		//here abandon the weight value,if necessary,modify the tree node type to receive the weight.
-		void CreateForest(Forest<T> &result);
+		// void CreateForest(Forest<T> &result);
 		//----------------Minimum-Cost Spanning Tree------
 		UndiGraph<T,K> Kruskal();
 		void Prim(UndiGraph<T,K> &);
@@ -179,6 +178,7 @@ class UndiGraph:public WGraph<T,K>
 
 		bool removeedge(const int &v1,const int &v2);
 		void dfs(const int &,bool *,const int &);
+		void dfs(const int &,bool *);
 		void udfs(const int &);
 		void bfs(const T &);
 		int minedge(const int &,bool *);
@@ -228,15 +228,20 @@ class DiGraph:public WGraph<T,K>
 		virtual bool InsertEdge(const int &v1,const int &v2,const K &weight) override;
 		virtual bool RemoveVertex(const int &i) override;
 		virtual bool RemoveEdge(const int &v1,const int &v2) override;
+		void PrintAdj();
+		void DFS(const T &);
+		void DFS();
 		void Dijkstra(const int &v0);
 		void NDijkstra();
 		void Floyd();
 		void TopologicalSort();
+		void Topo();
 		void CriticalPath();
 	private:
 		T *NodeTable;
 		K **AdjMatrix;
-		void PrintAdj();
+		void topo(const int &,bool *,int *toposort,int &order);
+		void dfs(const int &,bool *);
 };
 //---------------------common function-------------------------------------
 template<typename T,typename K>
@@ -561,10 +566,14 @@ void UndiGraph<T,K>::DFS(const T &v)
 	bool *visited = new bool[this->currentvertex];
 	for(int i = 0;i < this->currentvertex;i++)
 		visited[i] = false;
-	dfs(GetVertexPos(v),visited,0);
+	dfs(GetVertexPos(v),visited);
+	for(int i = 0;i < this->currentvertex;i++)
+		if(visited[i] == false)
+			dfs(i,visited);
 	std::cout<<std::endl;
 	delete [] visited;
 }
+
 template<typename T,typename K>
 void UndiGraph<T,K>::DFS()
 {
@@ -588,12 +597,26 @@ void UndiGraph<T,K>::dfs(const int &v,bool visited[],const int &flag)
 }
 
 template<typename T,typename K>
+void UndiGraph<T,K>::dfs(const int &v,bool visited[])
+{
+	visited[v] = true;
+	int w = GetFirstNeighbor(v);
+	while(w != -1)
+	{
+		if(visited[w] == false)
+			dfs(w,visited);
+		w = GetNextNeighbor(v,w);
+	}
+}
+
+template<typename T,typename K>
 void UndiGraph<T,K>::udfs(const int &v)
 {
 	bool *visited = new bool[this->currentvertex];
 	Stack<int> sq;
 	int tp,trav = v;
 	std::memset(visited,false,sizeof(bool)*this->currentvertex);
+	//designate the first node or it can be one loop while not two.
 	sq.Push(trav);
 	visited[trav] = true;
 	while(!sq.IsEmpty())
@@ -612,6 +635,28 @@ void UndiGraph<T,K>::udfs(const int &v)
 			tp = GetNextNeighbor(trav,tp);
 		}
 	}
+	for(int i = 0;i < this->currentvertex;i++)
+		if(visited[i] == false)
+		{
+			visited[i] = true;
+			while(!sq.IsEmpty())
+			{
+				// sq.Traverse();
+				sq.Pop(trav);
+				std::cout<<NodeTable[i].data<<" ";
+				tp = GetFirstNeighbor(i);
+				while(tp != -1)
+				{
+					if(visited[tp] == false)
+					{
+						sq.Push(tp);
+						visited[tp] = true;
+					}
+					tp = GetNextNeighbor(i,tp);
+				}
+			}	
+		}
+	delete [] visited;
 }
 
 template<typename T,typename K>
@@ -648,11 +693,14 @@ K UndiGraph<T,K>::CountWeight()
 				result += GetWeight(i,j);
 	return result;
 }
-template<typename T,typename K>
-void UndiGraph<T,K>::CreateForest(Forest<T> &result)
-{
 
-}
+/*
+ * template<typename T,typename K>
+ * void UndiGraph<T,K>::CreateForest(Forest<T> &result)
+ * {
+ * 
+ * }
+ */
 
 //----------------MST----------------------------------
 
@@ -853,85 +901,6 @@ void UndiGraph<T,K>::Rosenstiehl(UndiGraph<T,K> &result)
 	delete [] visited;
 }
 
-/* template<typename T,typename K> */
-// void UndiGraph<T,K>::Dijkstra(UndiGraph<T,K> &result)
-// {
-	// bool *S = new bool [this->currentvertex];
-	// K *dist = new K [this->currentvertex];
-	// int *path = new int [this->currentvertex];
-	// int *tmp = new int [this->currentvertex];
-	// int i,j,k,u,v0;
-	// K w,min;
-	// T tmpa,tmpb;
-	// int pa,pb;
-	// v0 = 0;
-	// result.currentedge = result.currentvertex = 0;
-	// for(i = 0;i < this->currentvertex;i++)
-	// {
-		// dist[i] = GetWeight(v0,i);
-		// S[i] = false;
-		// if(i != v0 && dist[i] < this->maxweight)
-			// path[i] = v0;
-		// else
-			// path[i] = -1;
-	// }
-	// S[v0] = true;
-	// dist[v0] = 0;
-	// for(i = 0;i < this->currentvertex - 1;i++)
-	// {
-		// min = this->maxweight;
-		// u = v0;
-		// for(j = 0;j < this->currentvertex;j++)
-			// if(S[j] == false && dist[j] < min)
-				// u = j,min = dist[j];
-		// S[u] = true;
-		// for(k = 0;k < this->currentvertex;k++)
-		// {
-			// w = GetWeight(u,k);
-			// if(S[k] == false && w < this->maxweight && dist[u] + w < dist[k])
-			// {
-				// dist[k] = dist[u] + w;
-				// path[k] = u;
-			// }
-		// }
-	// }
-	// for(i = 0;i < this->currentvertex;i++)
-	// {
-		// if(i != v0)
-		// {
-			// for(j = i,k = 0;path[j] != v0;j = path[j])
-				// tmp[k++] = j;
-			// tmp[k] = j;
-			// tmp[++k] = v0;
-			// while(k > 0)
-			// {
-				// tmpa = NodeTable[tmp[k]].data;
-				// tmpb = NodeTable[tmp[k - 1]].data;
-				// pa = result.GetVertexPos(tmpa);
-				// pb = result.GetVertexPos(tmpb);
-				// if(result.GetWeight(pa,pb) == this->maxweight)
-				// {
-					// if(pa == -1)
-					// {
-						// result.InsertVertex(tmpa);
-						// pa = result.GetVertexPos(tmpa);
-					// }
-					// if(pb == -1)
-					// {
-						// result.InsertVertex(tmpb);
-						// pb = result.GetVertexPos(tmpb);
-					// }
-					// result.InsertEdge(pa,pb,GetWeight(k,k - 1));
-				// }
-				// k--;
-			// }
-		// }
-	// }
-	// delete [] S;
-	// delete [] dist;
-	// delete [] path;
-	// delete [] tmp;
-/* } */
 //---------------SP-------------------------------
 template<typename T,typename K>
 void UndiGraph<T,K>::Dijkstra(const int &v0)
@@ -1204,13 +1173,14 @@ bool DiGraph<T,K>::RemoveVertex(const int &v1)
 template<typename T,typename K>
 void DiGraph<T,K>::Dijkstra(const int &v0)
 {
+	//S for the mark the path of vertex already found,dist for recording the shortest distance,path for recording the shortest path,tmp for traverse.
 	bool *S = new bool [this->currentvertex];
 	K *dist = new K [this->currentvertex];
 	int *path = new int [this->currentvertex];
 	int *tmp = new int [this->currentvertex];
 	int i,j,k,u;
 	K w,min;
-	//init
+	//init the array.if there is a direct road from v0 to i,then fill with it at the begining,else -1.
 	for(i = 0;i < this->currentvertex;i++)
 	{
 		dist[i] = GetWeight(v0,i);
@@ -1227,10 +1197,12 @@ void DiGraph<T,K>::Dijkstra(const int &v0)
 	{
 		min = this->maxweight;
 		u = v0;
+		//check direct path
 		for(j = 0;j < this->currentvertex;j++)
 			if(S[j] == false && dist[j] < min)
 				u = j,min = dist[j];
 		S[u] = true;
+		//check indirect path
 		for(k = 0;k < this->currentvertex;k++)
 		{
 			w = GetWeight(u,k);
@@ -1346,7 +1318,7 @@ void DiGraph<T,K>::TopologicalSort()
 	int i,j,k,count,trav;
 	DiGraph<T,K> tmp;
 	tmp = *this;
-	//init stack
+	//init stack,push the 0 in-degree vertex.
 	for(i = 0;i < this->currentvertex;i++)
 	{
 		for(j = 0,k = 0;j < this->currentvertex;j++)
@@ -1366,11 +1338,14 @@ void DiGraph<T,K>::TopologicalSort()
 		sn.Pop(trav);
 		std::cout<<NodeTable[trav]<<" ";
 		count++;
+		//update stack after pop the vertex.
 		for(j = 0;j < this->currentvertex;j++)
 		{
 			if(trav != j && AdjMatrix[trav][j] != this->maxweight)
 			{
+				//delete the edge connected with the deleted vertex.
 				tmp.AdjMatrix[trav][j] = this->maxweight;
+				//re-count the 0 in-degree vertexs.if there is a loop in the graph,then it must stop at the the remnant,the count will be less than vertxnum.
 				for(i = 0,k = 0;i < this->currentvertex;i++)
 					if(i != j)
 						if(tmp.AdjMatrix[i][j] != this->maxweight)
@@ -1395,8 +1370,10 @@ void DiGraph<T,K>::CriticalPath()
 	n = this->currentvertex;
 	Ve = new K [n];
 	Vl = new K [n];
+	//init Ve,Vl.
 	for(i = 0;i < n;i++)
 		Ve[i] = 0,Vl[i] = 0;
+	//count Ve.
 	for(i = 0;i < n;i++)
 	{
 		j = GetFirstNeighbor(i);
@@ -1408,6 +1385,7 @@ void DiGraph<T,K>::CriticalPath()
 			j = GetNextNeighbor(i,j);
 		}
 	}
+	//print the martix.
 	PrintAdj();
 	for(i = 0;i < n;i++)
 		std::cout<<Ve[i]<<" ";
@@ -1446,4 +1424,87 @@ void DiGraph<T,K>::CriticalPath()
 	delete [] Ve;
 }
 
+template<typename T,typename K>
+void DiGraph<T,K>::topo(const int &v,bool visited[],int *toposort,int &order)
+{
+	visited[v] = true;
+	for(int w = GetFirstNeighbor(v);w != -1;w = GetNextNeighbor(v,w))
+		if(visited[w] == false)
+			topo(w,visited,toposort,order);
+	toposort[order--] = v;
+	std::cout<<(order + 2)<<NodeTable[v]<<" ";
+}
+
+template<typename T,typename K>
+void DiGraph<T,K>::Topo()
+{
+	int *path,time,order,v,start;
+	bool *visited;
+	visited = new bool [this->currentvertex];
+	path = new int [this->currentvertex];
+	std::memset(path,-1,sizeof(int) * this->currentvertex);
+	std::memset(visited,false,sizeof(bool) * this->currentvertex);
+	time = 0;
+	order = this->currentvertex - 1;
+	//loop for startvertex
+	for(v = 0,start = -1;v < this->currentvertex && start == -1;v++)
+	{
+		start = v;
+		for(int i = 0;i < this->currentvertex;i++)
+			if(AdjMatrix[i][start] != 0 && AdjMatrix[i][start] != this->maxweight)
+				start = -1;
+	}
+	if(start == -1)
+	{
+		std::cout<<"Loop!"<<std::endl;
+		return;
+	}
+	//main process
+	topo(start,visited,path,order);
+	std::cout<<std::endl;
+	// topo(start,visited,finishtime,time,path,order);
+	//ouput
+	for(int i = 0;i < this->currentvertex;i++)
+		std::cout<<NodeTable[path[i]]<<" ";
+	std::cout<<std::endl;
+	delete [] visited;
+	delete [] path;
+}
+
+template<typename T,typename K>
+void DiGraph<T,K>::DFS(const T &v)
+{
+	bool *visited = new bool[this->currentvertex];
+	for(int i = 0;i < this->currentvertex;i++)
+		visited[i] = false;
+	dfs(GetVertexPos(v),visited);
+	for(int i = 0;i < this->currentvertex;i++)
+		if(visited[i] == false)
+			dfs(i,visited);
+	std::cout<<std::endl;
+	delete [] visited;
+}
+
+/*
+ * template<typename T,typename K>
+ * void DiGraph<T,K>::DFS()
+ * {
+ *     dfs(0,);
+ *     std::cout<<std::endl;
+ * }
+ */
+
+template<typename T,typename K>
+void DiGraph<T,K>::dfs(const int &v,bool visited[])
+{
+	visited[v] = true;
+	std::cout<<NodeTable[v]<<" ";
+	int w = GetFirstNeighbor(v);
+	while(w != -1)
+	{
+		if(visited[w] == false)
+			dfs(w,visited);
+		w = GetNextNeighbor(v,w);
+	}
+}
 #endif
