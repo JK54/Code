@@ -10,7 +10,7 @@ class BSTree:public BinTree<T>
 	public:
 		BSTree():count(0),BinTree<T>(){}
 		BSTree(T x):count(1),BinTree<T>(x){}
-		~BSTree(){this->~BinTree<T>();}
+		~BSTree(){this->destroy(this->root);}
 		
 		void CreateTree(std::istream &is);
 		void CreateTree(const T a[],int n);
@@ -18,9 +18,8 @@ class BSTree:public BinTree<T>
 		void OutPutInOrder(BinTreeNode<T> *roo,T a[]);
 		bool Insert(const T &vle);
 		bool IsSearchSeq(const T a[],int n);
-		bool Remove_NR(const T &vle);
 		bool Search(const T &vle);
-		bool Remove(const T &vle,BinTreeNode<T> *&roo);//only support for the BSTree,not for AVLTree.
+		bool Remove(const T &vle,BinTreeNode<T> *&roo);
 		bool Remove(const T &vle);
 		void RemoveMax();
 		void RemoveLessThanX(BinTreeNode<T> *roo,const T &vle);
@@ -114,54 +113,48 @@ bool BSTree<T>::Search(const T &vle)
 template<typename T>
 bool BSTree<T>::Remove(const T &vle)
 {
-	BinTreeNode<T> *pre,*trav,*wanted,*tmp;
+	BinTreeNode<T> *pre,*wanted,*trav;
 	pre = nullptr;
-	trav = this->root;
-	while(trav != nullptr)
+	wanted = this->root;
+	while(wanted != nullptr)
 	{
-		pre = trav;
-		if(trav->data > vle)
-			trav = trav->lchild;
-		else if(trav->data < vle)
-			trav = trav->rchild;
-		else
+		if(wanted->data == vle)
 			break;
+		pre = wanted;
+		if(wanted->data > vle)
+			wanted = wanted->lchild;
+		else
+			wanted = wanted->rchild;
 	}
-	if(trav == nullptr)
+	if(wanted == nullptr)
 		return false;
-	wanted = trav;
 	count--;
-	if(trav->lchild != nullptr && trav->rchild != nullptr)
+	if(wanted->lchild != nullptr && wanted->rchild != nullptr)
 	{
-		tmp = trav;
-		trav = trav->lchild;
-		if(trav->rchild != nullptr)
-			tmp = trav;
+		pre = wanted;
+		trav = wanted->lchild;
 		while(trav->rchild != nullptr)
 		{
-			tmp = trav;
+			pre = trav;
 			trav = trav->rchild;
 		}
-		if(tmp->lchild != trav)
-			tmp->rchild = trav->lchild;
-		else
-			tmp->lchild = trav->lchild;
+		wanted->data = trav->data;
+		wanted = trav;
 	}
-	else if(trav->rchild != nullptr)
-		trav = trav->rchild;
+	if(wanted->rchild != nullptr)
+		trav = wanted->rchild;
 	else
-		trav = trav->lchild;
-	if(wanted == pre)
-		this->root = trav;
-	else
+		trav = wanted->lchild;
+	if(pre != nullptr)
 	{
 		if(pre->lchild == wanted)
 			pre->lchild = trav;
 		else
 			pre->rchild = trav;
 	}
+	else
+		this->root = trav;
 	delete wanted;
-	wanted = nullptr;
 	return true;
 }
 

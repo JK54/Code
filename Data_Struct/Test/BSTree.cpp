@@ -7,10 +7,25 @@ using namespace std;
 int main()
 {
 	BSTree<int> aaa;
-	for(int i = 1 ;i < 1005;i++)
-		aaa.Insert(i);
+	vector<int> a;
+	a.reserve(21);
+	random_device rd;
+	mt19937 mt(rd());
+	for(int i = 0;i < 20;i++)
+	{
+		a[i] = mt();
+		cout<<a[i]<<" ";
+	}
+	cout<<endl;
+	for(int i = 0 ;i < 20;i++)
+		aaa.Insert(a[i]);
 	aaa.TraverseInOrder(aaa.Root());
-	for(int i = 0;i < 1005;i++)
-		aaa.Remove(i);
+	cout<<endl;
+	for(int i = 0;i < 20;i++)
+	{
+		aaa.Remove(a[i]);
+		aaa.TraverseInOrder(aaa.Root());
+		cout<<endl;
+	}
 	cout<<endl;
 }

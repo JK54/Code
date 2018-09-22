@@ -7,6 +7,7 @@ void KMP(char T[],char P[])
 	lengthP = strlen(P);
 	lengthT = strlen(T);
 	next = new int[lengthP];
+	//get next.
 	for(j = 0,k = -1,next[0] = -1;j < lengthP - 1;)
 	{
 		if(k == -1||P[j] == P[k])
@@ -18,6 +19,7 @@ void KMP(char T[],char P[])
 		else
 			k = next[k];
 	}
+	//output1
 	for(j = 0;j < lengthP;j++)
 		cout<<j<<'\t';
 	cout<<endl;
@@ -28,6 +30,7 @@ void KMP(char T[],char P[])
 		cout<<next[j]<<'\t';
 	cout<<endl;
 	j = k = 0;
+	//patch
 	while(j < lengthP && k < lengthT)
 	{
 		if( j == -1 || P[j] == T[k])
@@ -38,6 +41,7 @@ void KMP(char T[],char P[])
 		else
 			j = next[j];
 	}
+	//output2
 	if( j < lengthP)
 		cout<<"failed"<<endl;
 	else

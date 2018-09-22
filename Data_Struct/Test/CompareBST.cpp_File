@@ -13,27 +13,49 @@ AVLtree avl_l;
 RBTree<TYPE> rbtree_h;
 BSTree<TYPE> bstree_h;
 set<TYPE> set0;
-struct timeval s0,s1,s2;
-double t1,t2,t3,t4;
+struct timeval s0,s1;
+double t1,t2,t3;
 double t[CW][3];
 double total = 0,in = 0,s = 0,r = 0;
 vector<TYPE> a;
 
-template<typename T>
-void test_singel(bool ordered,int boundary,T jojo,int &count)
+//generate random sequence
+void spawn(int x)
 {
 	std::ios::sync_with_stdio(false);
+	gettimeofday(&s0,NULL);
 	std::random_device rd;
 	std::mt19937 mt(rd());
+	char *dir = (char*)std::to_string(x).c_str();
+	if(opendir(dir) == NULL)
+	{
+		mkdir(dir,0777);
+		for(int i = 0;i < CW;i++)
+		{
+			std::string name;
+			name = "./" + std::to_string(x) + "/rand" + std::to_string((i/10)) + std::to_string((i % 10)) + ".txt";
+			std::ofstream rd(name);
+			for(int j = 0;j < x;j++)
+			rd<<mt()<<" ";
+			rd.close();
+		}
+	}
+	gettimeofday(&s1,NULL);
+	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
+}
+
+template<typename T>
+void test_singel(bool ordered,int boundary,std::istream &fd,T jojo,int &count)
+{
+	std::ios::sync_with_stdio(false);
 	gettimeofday(&s0,NULL);
 	if(!ordered)
 	{
 		for(int i = 0;i < boundary;i++)
-			a[i] = mt();
-		gettimeofday(&s2,NULL);
-		t4 = (1000.0*static_cast<double>(s2.tv_sec - s0.tv_sec) + static_cast<double>(s2.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-		for(int i = 0;i < boundary;i++)
+		{
+			fd>>a[i];
 			jojo.insert(a[i]);
+		}
 	}
 	else
 		for(int i = 0;i < boundary;i++)
@@ -41,10 +63,7 @@ void test_singel(bool ordered,int boundary,T jojo,int &count)
 	//if the type is not set
 	count += jojo.size();
 	gettimeofday(&s1,NULL);
-	if(ordered)
-		t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
-	else
-		t1 = (1000.0*static_cast<double>(s1.tv_sec - s2.tv_sec) + static_cast<double>(s1.tv_usec - s2.tv_usec)/1000.0) / 1000.0;
+	t1 = (1000.0*static_cast<double>(s1.tv_sec - s0.tv_sec) + static_cast<double>(s1.tv_usec - s0.tv_usec)/1000.0) / 1000.0;
 	if(!ordered)
 		for(int i = boundary - 1;i >= 0;i--)
 			jojo.find(a[i]);
@@ -80,14 +99,14 @@ double add_col(double data[][3],int col,int n)
 }
 
 template<typename K>
-void test(void f(bool,int,K,int &),K jojo,int x,bool ordered)
+void test(void f(bool,int,std::istream &,K,int &),K jojo,int x,bool ordered)
 {
 	int count;
 	std::ios::sync_with_stdio(false);
 	std::string tile,file1,file2;
 	tile = typeid(jojo).name();
-	file1 = "./Statistics/" + tile + "_raw";
-	file2 = "./Statistics/" + tile + "_avg";
+	file1 = "../Statistics/" + tile + "_raw";
+	file2 = "../Statistics/" + tile + "_avg";
 #ifdef DDO3
 	file1 += "_o3.log";
 	file2 += "_o3.log";
@@ -101,22 +120,16 @@ void test(void f(bool,int,K,int &),K jojo,int x,bool ordered)
 #endif
 	std::ios::sync_with_stdio(false);
 	count = 0;
-	for(int i = 0;i < CW;i++)
-	{
-		f(ordered,x,jojo,count);
-		t[i][0] = t1;
-		t[i][1] = t2;
-		t[i][2] = t3;
-	}
-			sta<<"-----------------------------------------------------------------------------------------------------"<<std::endl;
-				stb<<"----------------------------------------------------------------------------------------------------"<<std::endl;
 	if(ordered == false)
-	{
-		sta<<"Generate rand time : "<<t4<<" s";
-		stb<<"Generate rand time : "<<t4<<" s";
-	}
-	sta<<"\n\t\t\t\t\t\t\t\t\t\t"<<tile;
-	stb<<"\n\t\t\t\t\t\t\t\t\t\t"<<tile;
+		spawn(x);
+			sta<<"-----------------------------------------------------------------------------------------------------"<<std::endl;
+	stb<<"----------------------------------------------------------------------------------------------------"<<std::endl;
+	if(ordered == false)
+		sta<<"Generate rand time : "<<t1<<" s"<<std::endl;
+	else
+		sta<<"Generate rand time : "<<"0 s"<<std::endl;
+	sta<<"\t\t\t\t\t\t\t\t\t\t"<<tile;
+	stb<<"\t\t\t\t\t\t\t\t\t\t"<<tile;
 	if(ordered == false)
 	{
 		sta<<"(DisOrdered)"<<std::endl;
@@ -126,6 +139,16 @@ void test(void f(bool,int,K,int &),K jojo,int x,bool ordered)
 	{
 		sta<<"(Ordered)"<<std::endl;
 		stb<<"(Ordered)"<<std::endl;
+	}
+	for(int i = 0;i < CW;i++)
+	{
+		std::string name = "./" + std::to_string(x) + "/rand" + std::to_string((i/10)) + std::to_string((i % 10)) + ".txt";
+		std::ifstream input(name);
+		f(ordered,x,input,jojo,count);
+		t[i][0] = t1;
+		t[i][1] = t2;
+		t[i][2] = t3;
+		input.close();
 	}
 	sta<<" wanted   nodes : "<<x<<std::endl;
 	sta<<" inserted nodes : "<<static_cast<int>(count/CW)<<std::endl;
@@ -150,6 +173,7 @@ int main()
 	int num[] = {1000,10000,50000,100000,500000,1000000,5000000,10000000,20000000,50000000};
 	int size = sizeof(num)/sizeof(num[0]);
 	a.reserve(num[size - 1]);
+	// std::cout<<typeid(set0).name()<<std::endl;
 	for(int i = 0; i < size;i++)
 	{
 #ifdef AVL_H

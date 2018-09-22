@@ -4,8 +4,8 @@
 #include "sys_comm.h"
 #include "Heap_Array.hpp"
 #include "CompleteBinaryTree.hpp"
-#define DEFAULT_SIZE 100//default maxsize of DataList
-#define THRESH_Q_I 5//threshold of quicksort,when the length is less than threshold,use insertsort instand,the value between 5 to 25 is reasonable.
+#define DEFAULT_SIZE 1//default maxsize of DataList
+#define THRESH_Q_I 5//threshold of quicksort,when the length is less than threshold,use insertsort instand,the value between 5 to 25 is suitable.
 template<typename T>
 class Element
 {
@@ -29,10 +29,10 @@ template<typename T>
 class DataList
 {
 	public:
-		DataList(int s = DEFAULT_SIZE):Vector(new Element<T>[s]),maxsize(s),currentsize(0){}
-		DataList(T mv,int s = DEFAULT_SIZE):Vector(new Element<T>[s]),maxvalue(mv),maxsize(s),currentsize(0){}
-		~DataList(){delete [] Vector;}
-		Element<T>& operator[](int i){return Vector[i];}
+		DataList(int s = DEFAULT_SIZE):Data(new Element<T>[s]),maxsize(s),currentsize(0){}
+		DataList(T mv,int s = DEFAULT_SIZE):Data(new Element<T>[s]),maxvalue(mv),maxsize(s),currentsize(0){}
+		~DataList(){delete [] Data;}
+		Element<T>& operator[](int i){return Data[i];}
 		void SetMaxvalue(T x){maxvalue = x;}
 		void Initial(std::istream &is);
 		void Initial(T a[],int n);
@@ -42,28 +42,28 @@ class DataList
 		bool IsEmpty(){if(!currentsize){std::cout<<"empty.."<<std::endl;return true;}else return false;}
 		void Traverse();
 
-		//bubble sort
-		void BubbleSort();
-		void BubbleSort_I();
-		void CocktailSort();
-		
 		//insert sort
 		void InsertSort();
 		void BinaryInsertSort();
-		void ShellSort();
+		void ShellSort();		
 		
-		//quick sort
+		//swap sort
+			//bubble sort
+		void BubbleSort();
+		void BubbleSort_I();
+		void CocktailSort();
+			//quick sort
 		int Partition(const int left,const int right);
 		int Partition(DataList<T> &L,const int left,const int right);//Another method to select base pivot
-		//for huge amount of reapting elements.
+			//for huge amount of reapting elements.
 		void Partition(DataList<T> &,const int left,const int right,int &,int &);
-		//no-recursion
+			//no-recursion
 		void QuickSort();
 		void QuickSort2();
-		//recursion
+			//recursion
 		void QuickSort(DataList<T> &L,const int left,const int right);//basical quick sort.
 		void Quick_Insert_Mixed_Sort(DataList<T> &L,const int left,const int right);//mixed sort.
-		//efficient quick sort mixed with insert sort.
+			//efficient quick sort mixed with insert sort.
 		void HybirdSort(DataList<T> &L,const int left,const int right);	
 		void Quick_Insert_Mixed_Sort_N(DataList<T> &L,const int left,const int right);
 		
@@ -78,8 +78,11 @@ class DataList
 		//here designate mid,because there are the situation:the array is odd,that the last element is very hard to handle,if using mid parameter it could be easy to merge unequal length array.if it's odd,handle the right half elements before the final merge.
 		void Merge(const int &left,const int &mid,const int &right);
 
+		//Search
+		int DivKSearch(const T &x,const int &k);
+
 	private:
-		Element<T> *Vector;
+		Element<T> *Data;
 		T maxvalue;
 		int maxsize;
 		int currentsize;
@@ -100,12 +103,9 @@ void DataList<T>::Initial(std::istream &is)
 template<typename T>		
 void DataList<T>::Initial(T a[],int n)
 {
-	int i = currentsize,j = 0;
+	int j = 0;
 	while(j < n)
-	{
-		Insert(a[j]);
-		++i,++j;
-	}
+		Insert(a[j++]);
 }
 
 template<typename T>
@@ -115,12 +115,13 @@ void DataList<T>::Insert(const T &vle)
 	{
 		maxsize *= 2;
 		Element<T> *tmp = new Element<T>[maxsize];
-		for(int i = 0;i<currentsize;++i)
-			tmp[i] = Vector[i];
-		delete [] Vector;
-		Vector = tmp;
+		// for(int i = 0;i<currentsize;++i)
+			// tmp[i] = Data[i];
+		std::copy(&Data[0],&Data[maxsize - 1],tmp);
+		delete [] Data;
+		Data = tmp;
 	}
-	Vector[currentsize].key = vle;
+	Data[currentsize].key = vle;
 	currentsize++;
 }
 
@@ -146,8 +147,8 @@ void DataList<T>::BubbleSort()
 	int i,j;
 	for(i = 1;i < currentsize; ++i)
 		for(j = currentsize - 1 ;j >= i; --j)
-			if(Vector[j - 1] > Vector[j])
-				Swap(Vector[j - 1] , Vector[j]);
+			if(Data[j - 1] > Data[j])
+				Swap(Data[j - 1] , Data[j]);
 }
 
 template<typename T>
@@ -159,9 +160,9 @@ void DataList<T>::BubbleSort_I()
 	{
 		for(j = currentsize - 1;j >= i ;--j)
 		{
-			if(Vector[j - 1] > Vector[j])
+			if(Data[j - 1] > Data[j])
 			{
-				Swap(Vector[j - 1],Vector[j]);
+				Swap(Data[j - 1],Data[j]);
 				exchange = true;
 			}
 		}
@@ -179,18 +180,18 @@ void DataList<T>::CocktailSort()
 	{
 		for(i = low;i < high;i++)
 		{
-			if(Vector[i] < Vector[i - 1])
+			if(Data[i] < Data[i - 1])
 			{
-				Swap(Vector[i],Vector[i - 1]);
+				Swap(Data[i],Data[i - 1]);
 				j = i;
 			}
 		}
 		high = j;
 		for(i = high;i >= low ;i--)
 		{
-			if(Vector[i - 1] > Vector[i])
+			if(Data[i - 1] > Data[i])
 			{
-				Swap(Vector[i],Vector[i - 1]);
+				Swap(Data[i],Data[i - 1]);
 				j = i;
 			}
 		}
@@ -206,16 +207,16 @@ void DataList<T>::InsertSort()
 	int j;
 	for(int i = 1;i < currentsize;++i)
 	{
-		if(Vector[i - 1]> Vector[i])
+		if(Data[i - 1]> Data[i])
 		{
 			tmp = this->operator[](i);
 			j = i;
-			while(j >= 1 && tmp < Vector[ j - 1])
+			while(j >= 1 && tmp < Data[ j - 1])
 			{
-				Vector[j] = Vector[j - 1];
+				Data[j] = Data[j - 1];
 				--j;
 			}
-			Vector[j] = tmp;
+			Data[j] = tmp;
 		}
 	}
 }
@@ -229,20 +230,20 @@ void DataList<T>::BinaryInsertSort()
 	int low,high,middle;
 	for(int i = 1; i < currentsize; ++i)
 	{
-		tmp = Vector[i];
+		tmp = Data[i];
 		low = 0;
 		high = i - 1;
 		while(low <= high)
 		{
 			middle = (low + high)/2;
-			if(tmp < Vector[middle])
+			if(tmp < Data[middle])
 				high = middle - 1;
 			else
 				low = middle + 1;
 		}
 		for(int j = i - 1 ; j >= low; j--)
-			Vector[j + 1] = Vector[j];
-		Vector[low] = tmp;
+			Data[j + 1] = Data[j];
+		Data[low] = tmp;
 	}
 }
 
@@ -256,14 +257,14 @@ void DataList<T>::ShellSort()
 		gap = gap/3 + 1;
 		for(i = gap;i < currentsize; i++)
 		{
-			if(Vector[i - gap] > Vector[i])
+			if(Data[i - gap] > Data[i])
 			{
-				tmp = Vector[i];
-				for(j = i;j >= gap && tmp < Vector[j - gap];j = j - gap)//initialize j = i or j = i - gap.
+				tmp = Data[i];
+				for(j = i;j >= gap && tmp < Data[j - gap];j = j - gap)//initialize j = i or j = i - gap.
 				{
-					Vector[j] = Vector[j - gap];
+					Data[j] = Data[j - gap];
 				}
-				Vector[j] = tmp;
+				Data[j] = tmp;
 			}
 		}
 	}
@@ -273,17 +274,17 @@ template<typename T>
 int DataList<T>::Partition(const int left,const int right)
 {
 	int pivotpos = left;
-	Element<T> pivot = Vector[left - 1];
+	Element<T> pivot = Data[left - 1];
 	for(int i = left + 1;i <= right; ++i)
 	{
-		if(Vector[i - 1] < pivot)//pivotpos will be blocked in front of the element which is bigger than it,and exchange the smaller element and the bigger element.when the loop ended,exchanged the base value pos and the pivotpos.
+		if(Data[i - 1] < pivot)//pivotpos will be blocked in front of the element which is bigger than it,and exchange the smaller element and the bigger element.when the loop ended,exchanged the base value pos and the pivotpos.
 		{
 			pivotpos++;
 			if(pivotpos != i)
-				Swap(Vector[pivotpos - 1],Vector[i - 1]);
+				Swap(Data[pivotpos - 1],Data[i - 1]);
 		}
 	}
-	Swap(Vector[left - 1],Vector[pivotpos - 1]);
+	Swap(Data[left - 1],Data[pivotpos - 1]);
 	return pivotpos;
 }
 
@@ -321,11 +322,11 @@ template<typename T>
 void DataList<T>::Partition(DataList<T> &L,const int left,const int right,int &i,int &j)
 {
 	int p = left - 1,q = right - 1,r;
-	int k = (L[left - 1] > L[right - 1]) ? left - 1: right - 1;/*{{{*/
+	int k = (L[left - 1] > L[right - 1]) ? left - 1: right - 1;
 	if(L[(p + q)/2] < L[k] && q - p != 1)
 		Swap(L[(p + q)/2],L[k]);
 	if(L[right - 1] < L[left - 1] )
-		Swap(L[left - 1],L[right - 1]);/*}}}*/
+		Swap(L[left - 1],L[right - 1]);
 	Element<T> pivot = L[right - 1];
 	i = left - 1,j = right - 1;
 	q--;
@@ -390,24 +391,24 @@ void DataList<T>::QuickSort()
 	{
 		i = pi = low[k];
 		j = pj = high[k];
-		pivot = Vector[pi];
+		pivot = Data[pi];
 		k--;
 		i++;
 		while(i <= j)
 		{
-			while(i < j && Vector[i] < pivot)
+			while(i < j && Data[i] < pivot)
 				i++;
-			while(i < j && Vector[j] > pivot)
+			while(i < j && Data[j] > pivot)
 				j--;
 			if(i < j)
 			{
-				Swap(Vector[i],Vector[j]);
+				Swap(Data[i],Data[j]);
 				i++,j--;
 			}
 			if(i == j)
 			{
-				if(Vector[i] < pivot)
-					Swap(Vector[i],Vector[pi]);
+				if(Data[i] < pivot)
+					Swap(Data[i],Data[pi]);
 				break;
 			}
 		}
@@ -514,9 +515,9 @@ void DataList<T>::SelectSort()
 	{
 		int k = i;
 		for(int j = i + 1;j < currentsize;j++)
-			if(Vector[j] < Vector[k])
+			if(Data[j] < Data[k])
 				k = j;
-		Swap(Vector[k],Vector[i]);
+		Swap(Data[k],Data[i]);
 	}
 }
 
@@ -526,9 +527,9 @@ void DataList<T>::HeapSort()
 {
 	MinHeap<Element<T>> h;
 	for(int i = 0;i < currentsize;i++)
-		h.Insert(Vector[i]);
+		h.Insert(Data[i]);
 	for(int i = 0;i < currentsize;i++)
-		h.Remove(Vector[i]);
+		h.Remove(Data[i]);
 }
 
 template<typename T>
@@ -538,7 +539,7 @@ void DataList<T>::HeapSort2()
 	int i = currentsize - 1;
 	Element<T> tmp;
 	for(int i = 0;i < currentsize;i++)
-		h.Insert(Vector[i]);
+		h.Insert(Data[i]);
 	while(i > 0)
 	{
 		tmp = h[0];
@@ -548,30 +549,30 @@ void DataList<T>::HeapSort2()
 		h.siftDown(0,i);
 	}
 	for(int i = 0;i < currentsize;i++)
-		Vector[i] = h[i];
+		Data[i] = h[i];
    /*  while(i >= 0) */
-		/* h.Remove(Vector[i--]); */
+		/* h.Remove(Data[i--]); */
 }
 
-//when the two player have the same key value,the left child win to make the sort method stable.
 template<typename T>
 void DataList<T>::TournamentSort()
 {
 	int i,j,n,k = 0;
 	n = currentsize;
-	//the number of interior node is exterior node minus one.
+	//the number of interior node equals to exterior node minus one.
 	CBTree<int> Winner(n - 1);
 	CBTree<Element<T>> Player(n);
 	for(i = 0;i < n - 1;i++)
 		Winner.Insert(0);
 	for(i = 0;i < n;i++)
-		Player.Insert(Vector[i]);
-	//the isodd flag control the way to find brother(competitor) and parent(winner)
+		Player.Insert(Data[i]);
 	//The sort process ends when the root node equals to maxvalue
 	while(1)
 	{
 	//play begin at the last extorior node every time.
-	//the hidden thread is the node number must bigger than 1,otherwise it will be buggy.
+	//the hidden thread is the node number must be bigger than 1,otherwise it will be buggy.
+	//when the two player have the same key value,the left child win to make the sort method stable.
+	//the node num is odd or even control the way to find brother(competitor) and parent(winner)
 		if(n % 2 == 0)
 		{
 			for(i = n - 1;i >= 1;i -= 2)
@@ -587,17 +588,18 @@ void DataList<T>::TournamentSort()
 			{
 				j = (i - 1) / 2;
 				if (i % 2 == 0)
-					Winner[j] = Player[Winner[i - 1]] <= Player[Winner[i]]? Winner[i - 1]: Winner[i];
+					Winner[j] = Player[Winner[i - 1]] <= Player[Winner[i]] ? Winner[i - 1]: Winner[i];
 				else
-					Winner[j] = Player[Winner[i]] <= Player[Winner[i + 1]]? Winner[i] : Winner[i + 1];
+					Winner[j] = Player[Winner[i]] <= Player[Winner[i + 1]] ? Winner[i] : Winner[i + 1];
 			}
 		}
 		else
 		{
 			for(i = n - 1;i >= 0;i -= 2)
 			{
+				j = (i + n)/2 - 1;
 				if(i == 0)
-					Winner[j] = Player[Winner[n - 2]] <= Player[i]? Winner[n - 2] : i;
+					Winner[j] = Player[Winner[n - 2]] <= Player[i] ? Winner[n - 2] : i;
 				else if(i % 2 != 0)
 					Winner[j] = Player[i] <= Player[i + 1] ? i : i + 1;
 				else
@@ -606,6 +608,7 @@ void DataList<T>::TournamentSort()
 			//the last interior was handled in the last round of exterior,so begin from the second last node
 			for (i = n - 3; i >= 1;i -= 2)
 			{
+				j = (i - 1) / 2;
 				if(i % 2 == 0)
 					Winner[j] = Player[Winner[i - 1]] <= Player[Winner[i]]? Winner[i - 1]: Winner[i];
 				else
@@ -616,8 +619,8 @@ void DataList<T>::TournamentSort()
 	if(Player[Winner[0]] == maxvalue)
 		break;
 	//insert the winner
-	Vector[k++] = Player[Winner[0]];
-	//change the winner ndoe to maxvalue.
+	Data[k++] = Player[Winner[0]];
+	//change the winner ndoe to maxvalue to begin the next round.
 	Player[Winner[0]]= maxvalue;
 	}
 }
@@ -629,17 +632,17 @@ void DataList<T>::Merge(const int &left,const int &mid,const int &right)
 	int i = left - 1,j = mid,k = 0;
 	while(i < mid && j < right)
 	{
-		if(Vector[i] <= Vector[j])
-			tmp[k++] = Vector[i++];
+		if(Data[i] <= Data[j])
+			tmp[k++] = Data[i++];
 		else
-			tmp[k++] = Vector[j++];
+			tmp[k++] = Data[j++];
 	}
 	while(i < mid)
-		tmp[k++] = Vector[i++];
+		tmp[k++] = Data[i++];
 	while(j < right)
-		tmp[k++] = Vector[j++];
+		tmp[k++] = Data[j++];
 	for(i = right - 1,k--;i >= left - 1;i--,k--)
-		Vector[i] = tmp[k];
+		Data[i] = tmp[k];
 	delete [] tmp;
 }
 
@@ -670,4 +673,44 @@ void DataList<T>::MergeSort()
 	Merge(1,currentsize/2,currentsize);
 }
 
+template<typename T>
+int DataList<T>::DivKSearch(const T &x,const int &k)
+{
+	int low,high,size,mid,dist;
+	size = currentsize;
+	high = currentsize;
+	low = 0;
+	while(low <= high)
+	{
+		dist = size / k;
+		if(dist > 0)
+		{
+			for(int i = dist - 1;i < size;i += dist)
+			{
+				if(Data[i] == x)
+					return i;
+				else if(Data[i] > x)
+					high = i;
+				else
+					low = i;
+			}
+			size = high - low + 1;
+		}
+		else
+		{
+			while(low <= high)
+			{
+				mid = (low + high) / 2;
+				if(Data[mid] == x)
+					return mid;
+				else if(Data[mid] > k)
+					high = mid -1;
+				else
+					low = mid + 1;
+			}
+		}
+	}
+	std::cout<<"Not Found!"<<std::endl;
+	return -1;
+}
 #endif	
