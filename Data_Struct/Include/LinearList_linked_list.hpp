@@ -91,7 +91,7 @@ bool LinkedList<T>::isempty()
 {
 	if(head->next == nullptr)
 	{
-		std::cout<<"empty list"	<<std::endl;
+		// std::cout<<"empty list"	<<std::endl;
 		return true;
 	}
 	else
@@ -196,11 +196,10 @@ bool LinkedList<T>::pop_forward(T &x)
 		x = head->next->data;
 		LNode<T> *tmp = head->next;
 		head->next = head->next->next;
-		delete tmp;
-		tmp = nullptr;
 		leng--;
 		if(leng == 0)
 			tail = head;
+		delete tmp;
 		return true;
 	}
 	else
@@ -242,6 +241,8 @@ bool LinkedList<T>::pop_back(T &x)
 		tail = tmp;
 		tail->next= nullptr;
 		leng--;
+		if(leng == 0)
+			tail = head;
 		return true;
 	}
 	else

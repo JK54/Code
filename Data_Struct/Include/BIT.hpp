@@ -12,7 +12,7 @@
 //		5 = 101,k = 0,squad[5] = raw[5];
 //		6 = 110,k = 1,squad[6] = raw[5] + raw[6];
 //		7 = 111,k = 0,squad[7] = raw[7];
-//	   8 = 1000,k = 3,squad[8] = raw[1] + ...+ raw[8];
+//		8 = 1000,k = 3,squad[8] = raw[1] + ...+ raw[8];
 //law:the index which is exactly the power of 2 is the sum from 1 to the index.
 //
 //for facility,the index 0 store the size of the array.
