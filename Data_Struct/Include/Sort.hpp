@@ -7,7 +7,7 @@
 #include "LinearList_linked_list.hpp"
 #include "Queue.hpp"
 #define I_MAX 65535
-#define DEFAULT_SIZE 1//default maxsize of DataList
+#define DEFAULT_SIZE 100//default maxsize of DataList
 #define THRESH_Q_I 5//threshold of quicksort,when the length is less than threshold,use insertsort instand,the value between 5 to 25 is suitable.
 template<typename T>
 class Element
@@ -27,7 +27,7 @@ class Element
 		bool operator>(const Element<T> &x) {return key > x.key;}
 		bool operator>(T &x) {return key > x;}
 		bool operator<(T &x) {return key < x;}
-		T operator/(T &x){return key / x;}
+		// T& operator/(T &x){return key / x;}
 	friend std::ostream& operator<<(std::ostream &os,const Element<T> &x){os<<x.key<<" ";return os;}
 };
 
@@ -623,13 +623,13 @@ void DataList<T>::QuickSort(DataList &L,const int &left,const int &right)
 	{
 		// int pivotpos = Partition_Left(left - 1,right - 1);
 		// int pivotpos = Partition_Repeat(L,left - 1,right - 1);		
-		int pivotpos = Partition_Random(left - 1,right - 1);
-		QuickSort(L,left,pivotpos - 1);
-		QuickSort(L,pivotpos + 1,right);
-   /*      int i = 0,j = 0; */
-		// Partition_Repeat(L,left,right,i,j);
-		// QuickSort(L,left,i);
-		/* QuickSort(L,j ,right); */
+		/* int pivotpos = Partition_Random(left - 1,right - 1); */
+		// QuickSort(L,left,pivotpos - 1);
+		/* QuickSort(L,pivotpos + 1,right); */
+		int i = 0,j = 0;
+		Partition_Repeat(L,left,right,i,j);
+		QuickSort(L,left,i);
+		QuickSort(L,j ,right);
 	}
 }
 
@@ -938,7 +938,7 @@ void DataList<T>::LSD(const int &bit,const int &scale)
 		 for(j = 0;j < n;j++)
 		 {
 			 if(Data[j] >= pow(10,i - 1))
-			 	scar = static_cast<int>(Data[j].key) / static_cast<int>(pow(10,i - 1)) % 10;
+			 	scar = Data[j].key / static_cast<int>(pow(10,i - 1)) % 10;
 			else
 				scar = 0;
 			container[scar].push_back(Data[j]);
