@@ -224,16 +224,21 @@ ThreadNode<T>* PreThreadTree<T>::First(ThreadNode<T> *current)
 	//current node is the first node for prethread tree.
 	return current;
 }
+
 template<typename T>
-ThreadNode<T>* PreThreadTree<T>::Last(ThreadNode<T> *current)
+ThreadNode<T>* PreThreadTree<T>::Last(ThreadNode<T> *roo)
 {
-	if(current != nullptr && current->rtag == ISCHILD)
-		return Last(current->rchild);
-	else if((current != nullptr && current->ltag == ISCHILD))
-		return Last(current->lchild);
-	else
-		return current;
+	ThreadNode<T> *tmp = roo;
+	while(tmp->ltag == ISCHILD || tmp->rtag == ISCHILD)
+	{
+		if(tmp->rtag == ISCHILD)
+			tmp = tmp->rchild;
+		else
+			tmp = tmp->lchild;
+	}
+	return tmp;
 }
+
 template<typename T>
 ThreadNode<T>* PreThreadTree<T>::Next(ThreadNode<T> *current)
 {
@@ -242,6 +247,7 @@ ThreadNode<T>* PreThreadTree<T>::Next(ThreadNode<T> *current)
 	else
 		return current->rchild;
 }
+
 template<typename T>
 ThreadNode<T>* PreThreadTree<T>::Prior(ThreadNode<T> *current)
 {
