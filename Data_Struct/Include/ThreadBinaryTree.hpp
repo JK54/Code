@@ -557,6 +557,7 @@ ThreadNode<T>* InThreadTree<T>::nextpreorder(ThreadNode<T> *roo)
 		tmp = roo->lchild;
 	else if(roo->rtag == ISCHILD)
 		tmp = roo->rchild;
+	//leaf
 	else
 	{
 		tmp = roo;
@@ -611,8 +612,10 @@ ThreadNode<T>* InThreadTree<T>::priorpostorder(ThreadNode<T> *roo)
 		tmp = roo->lchild;
 	else
 	{
+		//if roo is the first node postorder(the same node inorder)
 		if(roo->lchild == nullptr)
 			tmp = nullptr;
+		//come to first ancestor which is rchild of its parent.
 		else
 		{
 			ThreadNode<T> *p = Parent(tmp);
@@ -630,6 +633,7 @@ ThreadNode<T>* InThreadTree<T>::priorpostorder(ThreadNode<T> *roo)
 	return tmp;
 }
 
+//if the node is the lchild of its parent,then return parent,else return the first node postorder of the brother-tree.
 template<typename T> 
 ThreadNode<T>* InThreadTree<T>::nextpostorder(ThreadNode<T> *roo)
 {
