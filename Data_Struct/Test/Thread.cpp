@@ -16,9 +16,13 @@ int main()
 	bbb.CreateThread(broot);
 	bbb.TraversePreOrder(bbb.Root());
 	cout<<endl;
+	bbb.TraversePreOrderR(bbb.Root());
+	cout<<endl;
 	bbb.TraverseInOrder(bbb.Root());
 	cout<<endl;
 	bbb.TraversePostOrder(bbb.Root());
+	cout<<endl;
+	bbb.TraversePostOrderR(bbb.Root());
 	cout<<endl;
 	return 0;
 }

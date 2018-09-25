@@ -21,13 +21,13 @@ void KMP(char T[],char P[])
 	}
 	//output1
 	for(j = 0;j < lengthP;j++)
-		cout<<j<<'\t';
+		cout<<j<<" ";
 	cout<<endl;
 	for(j = 0;j < lengthP;j++)
-		std::cout<<P[j]<<'\t';
+		std::cout<<P[j]<<" ";
 	cout<<endl;
 	for(j = 0;j < lengthP; ++j)
-		cout<<next[j]<<'\t';
+		cout<<next[j]<<" ";
 	cout<<endl;
 	j = k = 0;
 	//patch
