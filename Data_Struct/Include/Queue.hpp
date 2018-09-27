@@ -101,20 +101,20 @@ bool Queue<T>::Enqueue(const T &x)
 {
 	if(first == nullptr)
 	{
-		std::cout<<"no Queue"<<std::endl;
+		std::cout<<"No Queue"<<std::endl;
 		return false;
 	}
 	else
 	{
 		last->next = new QueueNode<T>(x);
 		last = last->next;
-		// if(first->next == nullptr)
-			// first->next = last;
 		++size;
 		return true;
 	}
 }
-	template<typename T>
+
+//not the real priority queue.the time complexity is O(n).
+template<typename T>
 bool Queue<T>::Enqueue_Priority(T &x)
 {
 	if(first == nullptr)
@@ -220,7 +220,8 @@ bool Queue<T>::Dequeue(T &p)
 		return false;
 	p = first->next->data;
 	QueueNode<T> *tmp = first->next->next;
-	if(first->next == last)//when the queue have only 1 element,the last pointer must change to first.
+	//when the queue have only 1 element,the last pointer must change to first.
+	if(first->next == last)
 		last = first;
 	delete first->next;
 	first->next = tmp;

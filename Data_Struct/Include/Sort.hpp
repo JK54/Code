@@ -4,7 +4,8 @@
 #include "sys_comm.h"
 #include "Heap_Array.hpp"
 #include "CompleteBinaryTree.hpp"
-#include "LinearList_linked_list.hpp"
+#include "LinearList_linkedlist.hpp"
+#include "LinearList_seqlist.hpp"
 #include "Queue.hpp"
 #define I_MAX 65535
 #define DEFAULT_SIZE 100//default maxsize of DataList
@@ -79,16 +80,19 @@ class DataList
 		void MinHeapSort();
 		void MaxHeapSort();
 		void TournamentSort();
-		void CountingSort();
+		void SCountingSort();
 		//merge sort
 		void MergeSort(const int &left,const int &right);
 		void MergeSort();
 		//here designate mid,because there are the situation:the array is odd,that the last element is very hard to handle,if using mid parameter it could be easy to merge unequal length array.if it's odd,handle the right half elements before the final merge.
 		void Merge(const int &left,const int &mid,const int &right);
 
-		void LSD(const int &bit,const int &scale);
+		void LSD(const int &bit,const int &scale){lsd(bit,scale);}
+		void LSD(const int &scale);
 		void MSD(const int &bit,const int &scale);
-
+		void MSD(const int &scale);
+		void BucketSort();
+		void CountingSort();
 		//Search
 		int DivKSearch(const T &x,const int &k);
 
@@ -105,6 +109,7 @@ class DataList
 		void siftdownmax(const int &,const int &);
 		void siftupmin(const int &,const int &);
 		void siftdownmin(const int &,const int &);
+		void lsd(const int &bit,const int &scale);
 		void msd(Queue<Element<T>> &q,const int &bit,const int &scale);
 };
 
@@ -783,7 +788,7 @@ void DataList<T>::MaxHeapSort()
 }
 
 template<typename T>
-void DataList<T>::CountingSort()
+void DataList<T>::SCountingSort()
 {
 	int count;
 	Element<T> *result = new Element<T>[currentsize];
@@ -927,7 +932,7 @@ void DataList<T>::MergeSort()
 }
 //queue is better
 template<typename T>
-void DataList<T>::LSD(const int &bit,const int &scale)
+void DataList<T>::lsd(const int &bit,const int &scale)
 {
 	LinkedList<Element<T>> *container;
 	int n,i,j,k,scar;
@@ -950,6 +955,25 @@ void DataList<T>::LSD(const int &bit,const int &scale)
 	delete [] container;
 }
 
+template<typename T>
+void DataList<T>::LSD(const int &scale)
+{
+	int pbit = 1,tmpbit;
+	T tmpb;
+	for(int i = 0;i < currentsize;i++)
+	{
+		tmpb = Data[i].key;
+		tmpbit = 0;
+		while(tmpb != 0)
+		{
+			tmpbit++;
+			tmpb /= 10;
+		}
+		if(tmpbit > pbit)
+			pbit = tmpbit;
+	}
+	lsd(pbit,scale);
+}
 template<typename T>
 void DataList<T>::msd(Queue<Element<T>> &Q,const int &bit,const int &scale)
 {
@@ -989,6 +1013,72 @@ void DataList<T>::MSD(const int &bit,const int &scale)
 	msd(container,bit,scale);
 	for(int i = 0;i < currentsize;i++)
 		container.Dequeue(Data[i]);
+}
+
+template<typename T>
+void DataList<T>::MSD(const int &scale)
+{
+	int pbit = 1,tmpbit;
+	T tmpb;
+	for(int i = 0;i < currentsize;i++)
+	{
+		tmpb = Data[i].key;
+		tmpbit = 0;
+		while(tmpb != 0)
+		{
+			tmpbit++;
+			tmpb /= 10;
+		}
+		if(tmpbit > pbit)
+			pbit = tmpbit;
+	}
+	MSD(pbit,scale);
+}
+	
+template<typename T>
+void DataList<T>::BucketSort()
+{
+	if(currentsize < 0)
+		return;
+	SeqList<Element<T>> *bucket;
+	int i,j,k,l,n,div;
+	long long int dist;
+	T max;
+	Element<T> tmp;
+	n = currentsize;
+	div = 10;
+	bucket = new SeqList<Element<T>> [div];
+	for(i = 0,max = Data[0].key;i < n;i++)
+		if(max < Data[i].key)
+			max = Data[i].key;
+	dist = max / div + 1;
+	for(i = 0;i < n;i++)
+		bucket[static_cast<long long int>(Data[i].key) / dist].Insert(Data[i]);
+	for(j = 0;j < div;j++)
+	{
+		if(!bucket[j].IsEmpty())
+		{
+			k = bucket[j].Size();
+			std::cout<<k<<std::endl;
+			bucket[j].Traverse();
+			for(i = 1;i < k;i++)
+			{
+				if(bucket[j][i - 1] > bucket[j][i])
+				{
+					tmp = bucket[j][i];
+					for(l = i;l >= 1 && tmp < bucket[j][l - 1];l--)
+						bucket[j][l] = bucket[j][l - 1];
+					bucket[j][l] = tmp;
+				}
+			}
+			bucket[j].Traverse();
+			std::cout<<std::endl;
+		}
+	}
+	for(j = 0,i = 0;j < div;j++)
+		while(!bucket[j].IsEmpty())
+			Data[i++] = bucket[j].RemovePos(1);
+	delete [] bucket;
 }
 
 template<typename T>

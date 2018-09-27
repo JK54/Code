@@ -8,10 +8,11 @@ template <typename T>
 class SeqList
 {
 	public:
-		SeqList(int x =DEFAULT_SIZE):capacity(x),size(0),List(new T[x]){}
+		SeqList(int x = DEFAULT_SIZE):capacity(x),size(0),List(new T[x]){}
 		~SeqList(){delete [] List;}
 		int length() { return size; }
 		bool IsEmpty(){if(!size)return true;else return false;}
+		int Size(){return size;}
 		void Insert(const T &vle);
 		void Resize();
 		void Resize(int n);
@@ -32,7 +33,7 @@ class SeqList
 		void Merge(SeqList<T> &L);
 		void Min_Max(T &,T&);
 		int  Compare(SeqList<T> &L);
-		T operator[](int i){return List[i - 1];}
+		T& operator[](int i){return List[i];}
 
 	  private:
 		int capacity;
@@ -139,10 +140,7 @@ template<typename T>
 void SeqList<T>::Traverse()
 {
 	if(IsEmpty())
-	{
-		std::cerr<<"empty list to traverse.."<<std::endl;
-		exit(1);
-	}
+		return;
 	for(int i = 0;i < size;++i)
 		std::cout<<List[i]<<" ";
 	std::cout<<std::endl;
