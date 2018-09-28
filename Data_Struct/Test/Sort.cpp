@@ -1,5 +1,8 @@
 #include "../Include/Sort.hpp"
 
+#define N 200
+#define RANGE 100000000
+
 using namespace std;
 int main()
 {
@@ -7,21 +10,22 @@ int main()
 	// int b[] = {98,36,-9,0,47,23,1,8,10,7};
 	// int b[] = {10,9,8,7,6,5,4,3,2,1,11};
 	// int b[] = {1,0,1,2,0,0,0,2,2,2,0,0,1,1,1,2,1,0,1,0,2};//Netherland Flag sequence.
-	unsigned int a[200];
-	int b[200];
+	unsigned int a[N];
+	int b[N];
 	std::random_device rd;
 	std::mt19937 mt(rd());
-	for(int i = 0;i < 200;i++)
+	for(int i = 0;i < N;i++)
 	{
-		a[i] = mt() % int(pow(2,30));
+		a[i] = mt() % RANGE;
 		b[i] = a[i];
 	}
 	DataList<int> aaa;
 	aaa.Initial(b,sizeof(b)/sizeof(b[0]));
  	aaa.Traverse();
  	cout<<endl;
+	aaa.CountingSort();
 	// aaa.LSD(10);
-	aaa.MSD(10);
+	// aaa.MSD(10);
 	// aaa.BucketSort();
 	// aaa.CountingSort();
 	// aaa.MSD(0,10);

@@ -1038,7 +1038,7 @@ void DataList<T>::MSD(const int &scale)
 template<typename T>
 void DataList<T>::BucketSort()
 {
-	if(currentsize < 0)
+	if(currentsize < 2)
 		return;
 	SeqList<Element<T>> *bucket;
 	int i,j,k,l,n,div;
@@ -1052,8 +1052,10 @@ void DataList<T>::BucketSort()
 		if(max < Data[i].key)
 			max = Data[i].key;
 	dist = max / div + 1;
+	//diliver elements into div buckets.
 	for(i = 0;i < n;i++)
 		bucket[static_cast<long long int>(Data[i].key) / dist].Insert(Data[i]);
+	//insert sort to sort all the bucket
 	for(j = 0;j < div;j++)
 	{
 		if(!bucket[j].IsEmpty())
@@ -1075,12 +1077,57 @@ void DataList<T>::BucketSort()
 			std::cout<<std::endl;
 		}
 	}
+	//push back to the origin.
 	for(j = 0,i = 0;j < div;j++)
 		while(!bucket[j].IsEmpty())
 			Data[i++] = bucket[j].RemovePos(1);
 	delete [] bucket;
 }
 
+template<typename T>
+void DataList<T>::CountingSort()
+{
+	if(currentsize <= 1)
+		return;
+	int *index,i,n,size;
+	Element<T> *container,max,min;
+	n = currentsize;
+	Data[0] > Data[1] ? max = Data[0],min = Data[1] : max = Data[1],min = Data[0];
+	for(i = 2;i < n - 1;i++)
+	{
+		if(Data[i] > Data[i + 1])
+		{
+			if(Data[i] > max)
+				max = Data[i];
+			if(Data[i + 1] < min)
+				min = Data[i + 1];
+		}
+		else
+		{
+			if(Data[i + 1] > max)
+				max = Data[i + 1];
+			if(Data[i] < min)
+				min = Data[i];
+		}
+	}
+	size = static_cast<int>(max.key - min.key) + 1;
+	index = new int [size];
+	std::memset(index,0,sizeof(int) * size);
+	container = new Element<T> [n];
+	//count num
+	for(i = 0;i < n;i++)
+		index[Data[i].key - min.key]++;
+	//count final position 
+	for(i = 1;i < size;i++)
+		index[i] += index[i - 1];
+	//sort,from tail to head to make stable,opposite dirtection also works,but not so concise.
+	for(i = n - 1 ;i >= 0;i--)
+		container[(index[Data[i].key - min.key]--) - 1] = Data[i];
+	for(i = 0;i < n;i++)
+		Data[i] = container[i];
+	delete [] index;
+	delete [] container;
+}
 template<typename T>
 int DataList<T>::DivKSearch(const T &x,const int &k)
 {
