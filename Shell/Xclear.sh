@@ -3,7 +3,7 @@
 function disp()
 {
 	find ~/Code -name "*.exe"
-	find ~/Code -name "a.out"
+	find ~/Code -name "*.out"
 	find ~/Code -name "*.o"
 }
 
@@ -12,7 +12,7 @@ function xclear()
 	echo "deleting exe.."
 	find ~/Code  -name "*.exe"|xargs -I {} rm {}
 	echo "deleting a.out.."
-	find ~/Code -name "a.out"|xargs -I {} rm {}
+	find ~/Code -name "*.out"|xargs -I {} rm {}
 	echo "deleting o.."
 	find ~/Code  -name "*.o"|xargs -I {} rm {}
 	echo "deleting tmp.."
