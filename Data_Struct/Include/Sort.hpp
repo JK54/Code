@@ -1043,26 +1043,42 @@ void DataList<T>::BucketSort()
 	SeqList<Element<T>> *bucket;
 	int i,j,k,l,n,div;
 	long long int dist;
-	T max;
+	Element<T> max,min;
 	Element<T> tmp;
 	n = currentsize;
-	div = 10;
+	div = 10;//interval
 	bucket = new SeqList<Element<T>> [div];
-	for(i = 0,max = Data[0].key;i < n;i++)
-		if(max < Data[i].key)
-			max = Data[i].key;
-	dist = max / div + 1;
+	Data[0] > Data[1] ? min = Data[1],max = Data[0] : min = Data[1],max = Data[0];
+	for(i = 2;i < n - 1;i++)
+	{
+		if(Data[i] > Data[i + 1])
+		{
+			if(Data[i] > max)
+				max = Data[i];
+			if(Data[i + 1] < min)
+				min = Data[i + 1];
+		}
+		else
+		{
+			if(Data[i] < min)
+				min = Data[i];
+			if(Data[i + 1] > max)
+				max = Data[i + 1];
+		}
+	}
+	dist = (max.key - min.key) / div + 1;
 	//diliver elements into div buckets.
 	for(i = 0;i < n;i++)
-		bucket[static_cast<long long int>(Data[i].key) / dist].Insert(Data[i]);
+		bucket[static_cast<long long int>(Data[i].key - min.key) / dist].Insert(Data[i]);
 	//insert sort to sort all the bucket
 	for(j = 0;j < div;j++)
 	{
 		if(!bucket[j].IsEmpty())
 		{
 			k = bucket[j].Size();
-			std::cout<<k<<std::endl;
-			bucket[j].Traverse();
+			// std::cout<<k<<std::endl;
+			// bucket[j].Traverse();
+			// insert sort
 			for(i = 1;i < k;i++)
 			{
 				if(bucket[j][i - 1] > bucket[j][i])
@@ -1073,8 +1089,8 @@ void DataList<T>::BucketSort()
 					bucket[j][l] = tmp;
 				}
 			}
-			bucket[j].Traverse();
-			std::cout<<std::endl;
+			// bucket[j].Traverse();
+			// std::cout<<std::endl;
 		}
 	}
 	//push back to the origin.

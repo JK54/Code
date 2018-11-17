@@ -23,10 +23,10 @@ int main()
 	aaa.Initial(b,sizeof(b)/sizeof(b[0]));
  	aaa.Traverse();
  	cout<<endl;
-	aaa.CountingSort();
+	// aaa.CountingSort();
 	// aaa.LSD(10);
 	// aaa.MSD(10);
-	// aaa.BucketSort();
+	aaa.BucketSort();
 	// aaa.CountingSort();
 	// aaa.MSD(0,10);
 	// aaa.LSD(0,10);

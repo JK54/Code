@@ -35,6 +35,7 @@ class SeqList
 		int  Compare(SeqList<T> &L);
 		T& operator[](int i){return List[i];}
 
+
 	  private:
 		int capacity;
 		int size;

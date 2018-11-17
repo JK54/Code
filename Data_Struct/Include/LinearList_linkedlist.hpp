@@ -39,7 +39,7 @@ class LinkedList
 		LNode<T>* Tail(){return tail;}
 		size_t Length();
 		void Traverse();
-		bool isempty();
+		bool IsEmpty();
 		LNode<T> *Next(LNode<T> *p){return p->next;}
 		bool Insert(size_t i,T x);
 		bool push_back(const T &x);
@@ -54,20 +54,21 @@ class LinkedList
 		void RemoveRange(const T &min,const T &max);
 		void RemoveRange_U(const T &min,const T &max);
 		void DepartOD(LinkedList<T> &odd,LinkedList<T> &even);
+		bool LastK(const int &k);
 	private:
 		LNode<T>* head;
 		LNode<T>* tail;
 		size_t leng;
 };
 
-	template<typename T>
+template<typename T>
 LinkedList<T>::LinkedList()
 {
 	head = tail = new LNode<T>;
 	leng = 0;
 }
 
-	template<typename T>
+template<typename T>
 LinkedList<T>::LinkedList(T x)
 {
 	head = new LNode<T>;
@@ -76,7 +77,7 @@ LinkedList<T>::LinkedList(T x)
 	leng = 1;
 }
 
-	template<typename T>
+template<typename T>
 LinkedList<T>::~LinkedList()
 {
 	while(head != nullptr)
@@ -86,8 +87,9 @@ LinkedList<T>::~LinkedList()
 		head = tmp;
 	}
 }
-	template<typename T>
-bool LinkedList<T>::isempty()
+
+template<typename T>
+bool LinkedList<T>::IsEmpty()
 {
 	if(head->next == nullptr)
 	{
@@ -107,7 +109,7 @@ size_t LinkedList<T>::Length()
 	template<typename T>
 void LinkedList<T>::Traverse()
 {
-	if(!isempty())
+	if(!IsEmpty())
 	{
 		for(auto p = head->next; p != nullptr; p = p->next)
 			std::cout<<p->data<<" ";
@@ -120,7 +122,7 @@ void LinkedList<T>::Traverse()
 	template<typename T>
 bool LinkedList<T>::Insert(size_t i, T x)
 {
-	if(!isempty())
+	if(!IsEmpty())
 	{
 		if(i <= leng)
 		{
@@ -191,7 +193,7 @@ bool LinkedList<T>::push_forward(LNode<T> *p)
 	template<typename T>
 bool LinkedList<T>::pop_forward(T &x)
 {
-	if(!isempty())
+	if(!IsEmpty())
 	{
 		x = head->next->data;
 		LNode<T> *tmp = head->next;
@@ -209,7 +211,7 @@ bool LinkedList<T>::pop_forward(T &x)
 	template<typename T>
 bool LinkedList<T>::Delete(T roo,T &re)
 {
-	if(isempty())
+	if(IsEmpty())
 		return false;
 	LNode<T> *p,*pre;
 	p = head;
@@ -231,7 +233,7 @@ bool LinkedList<T>::Delete(T roo,T &re)
 	template<typename T>
 bool LinkedList<T>::pop_back(T &x)
 {
-	if(!isempty())
+	if(!IsEmpty())
 	{
 		x = tail->data;
 		LNode<T> *tmp = head;
@@ -392,5 +394,26 @@ void LinkedList<T>::DepartOD(LinkedList<T> &odd,LinkedList<T> &even)
 			odd.push_back(p->data);
 		p = p->next;
 	}
+}
+
+template<typename T>
+bool LinkedList<T>::LastK(const int &k)
+{
+	LNode<T> *p,*q;
+	p = head->next;
+	q = head->next;
+	for(int i = 0;i < k;i++)
+	{
+		if(p == nullptr)
+			return false;
+		p = p->next;
+	}
+	while(p != nullptr)
+	{
+		p = p->next;
+		q = q->next;
+	}
+	std::cout<<q->data<<std::endl;
+	return true;
 }
 #endif
