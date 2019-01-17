@@ -29,5 +29,6 @@ int main(int argc,char **argv)
 		set = (col + 1) % COLUMN;
 	while(set % COLUMN != col % COLUMN)
 		fputs(line[set++ % COLUMN],stdout);
+	fclose(stream);
 	return 0;
 }

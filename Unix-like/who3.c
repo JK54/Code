@@ -17,7 +17,7 @@ int main()
 {
 	struct utmp utbuf[DEFAULT_SIZE];
 	/* char utbuf[DEFAULT_SIZE*UTMP_SIZE]; */
-	int fd,num_rec,i;
+	int fd,num_rec;
 	if((fd = utmp_open(UTMP_FILE)) == -1)
 	{
 		perror(UTMP_FILE);
@@ -25,7 +25,7 @@ int main()
 	}
 	while((num_rec = utmp_read(fd,utbuf,DEFAULT_SIZE)/UTMP_SIZE) != 0)
 	{
-		i = 0;
+		int i = 0;
 		while(i != num_rec)
 			show_info(&utbuf[i++]);
 			/* show_info((struct utmp*)&utbuf[i++*UTMP_SIZE]); */
