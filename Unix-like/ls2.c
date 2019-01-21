@@ -80,6 +80,7 @@ void show_info(struct stat sta,char *name,int *llen,int *ulen,int *glen,int *sle
 	printf("%-*s ",*ulen,uname);
 	printf("%-*s ",*glen,gname);
 	printf("%*ld ",*slen,sta.st_size);
+	/* printf("%.12s ",timep); */
 	printf("%.12s ",4 + timep);
 	printf("%s\n",name);
 }
