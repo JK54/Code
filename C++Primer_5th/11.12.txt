@@ -1,0 +1,15 @@
+afternoon 1
+asmr 1
+assist 1
+cortana 1
+dota 1
+eve 1
+evening 1
+good 1
+moon 1
+morning 4
+no 1
+noon 7
+shiki 1
+siri 2
+yes 2
