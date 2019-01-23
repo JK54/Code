@@ -1,0 +1,12 @@
+#include <iostream>
+
+int findKth(int *s,int n,int K)
+{
+	if()
+}
+
+
+int main()
+{
+
+}

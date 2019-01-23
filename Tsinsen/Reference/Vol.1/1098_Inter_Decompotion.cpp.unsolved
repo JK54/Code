@@ -1,0 +1,11 @@
+#include <iostream>
+#include <algorithm>
+
+
+int main()
+{
+	int n,m;
+	std::string *result;
+	std::cin>>n>>m;
+	return 0;
+}
