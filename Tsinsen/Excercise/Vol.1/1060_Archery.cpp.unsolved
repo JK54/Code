@@ -1,0 +1,21 @@
+#include <iostream>
+#define N 8 
+int main()
+{
+	int i;
+	int Q[3];
+	double ratio[N];
+	double zx,zy;
+	for(i = 0;i < N;i++)
+		std::cin>>ratio[i];
+	for(i = 0;i < 3;i++)
+		std::cin>>Q[i];
+	for(i = 0;i < 4;i++)
+	{
+		zx += (7 + i) * ratio[i];
+		zy += (7 + i) * ratio[4 + i];
+	}
+	zx *= 12;
+	zy *= 12;
+	std::cout<<zx<<" "<<zy<<std::endl;
+}

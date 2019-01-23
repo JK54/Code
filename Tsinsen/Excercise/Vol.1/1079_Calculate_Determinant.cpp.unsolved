@@ -1,0 +1,71 @@
+#include <iostream>
+#include <math.h>
+
+int factorial(int n)
+{
+	if(n == 0)
+		return 1;
+	return n * factorial(n - 1);
+}
+
+void permute(int **permutation,int n,const int &tik,int &tok)
+{
+	if(tok == tik)
+		return;
+}
+
+int reverse_pair(int *permutation,int n)
+{
+	int i,j,count;
+	count = 0;
+	for(i = 0;i < n;i++)
+	{
+		for(j = i + 1;j < n;j++)
+			if(permutation[i] > permutation[j])
+				count++;
+	}
+	return count;
+}
+int calculate_determinant(int **data,int n)
+{
+	int tmp,sum,tik,tok,**permutation;
+	int i,j;
+	tok = 0;
+	tik = factorial(n);
+	permutation = new int * [tik];
+	for(i = 0;i < tik;i++)
+		permutation[i] = new int [n];
+	permute(permutation,n,tik,tok);
+	sum = 0;
+	for(i = 0;i < tik;i++)
+	{
+		tmp = 1;
+		for(j = 0;j < n;j++)
+		{
+			tmp *= data[j][permutation[i][j]];
+		}
+		sum += pow(-1,reverse_pair(permutation[i],n)) * tmp;
+	}
+	return sum;
+	for(i = 0;i < tik;i++)
+		delete [] permutation[i];
+	delete [] permutation;
+}
+
+int main()
+{
+	int n,**data;
+	int i,j;
+	std::cin>>n;
+	data = new int *[n];
+	for(i = 0;i < n;i++)
+		data[i] = new int [n];
+	for(i = 0;i < n;i++)
+		for(j = 0;j < n;j++)
+			std::cin>>data[i][j];
+	std::cout<<calculate_determinant(data,n)<<std::endl;
+	for(i = 0;i < n;i++)
+		delete [] data[i];
+	delete [] data;
+	return 0;
+}

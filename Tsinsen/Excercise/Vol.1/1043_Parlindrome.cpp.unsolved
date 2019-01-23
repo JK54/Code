@@ -1,0 +1,14 @@
+#include <iostream>
+
+int exchange(std::string str)
+{
+
+}
+int main()
+{
+	int n;
+	std::string str;
+	std::cin>>n>>str;
+	std::cout<<exchange(str)<<std::endl;
+	return 0;
+}

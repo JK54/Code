@@ -1,0 +1,162 @@
+----------------------------------------------------------------------------------------------------
+Generate rand time : 4e-06 s
+										7AVLtree(DisOrdered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000176			0.000000			0.000137			0.000313			
+
+
+----------------------------------------------------------------------------------------------------
+
+										7AVLtree(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000153			0.000000			0.000033			0.000186			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 3.7e-05 s
+										7AVLtree(DisOrdered)
+ wanted   nodes : 10000
+ inserted nodes : 9999
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.002233			0.000000			0.001859			0.004092			
+
+
+----------------------------------------------------------------------------------------------------
+
+										7AVLtree(Ordered)
+ wanted   nodes : 10000
+ inserted nodes : 10000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.001821			0.000000			0.000452			0.002273			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 0.000465 s
+										7AVLtree(DisOrdered)
+ wanted   nodes : 50000
+ inserted nodes : 49999
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.018485			0.000000			0.015896			0.034382			
+
+
+----------------------------------------------------------------------------------------------------
+
+										7AVLtree(Ordered)
+ wanted   nodes : 50000
+ inserted nodes : 50000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.013910			0.000000			0.003851			0.017761			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 0.000395 s
+										7AVLtree(DisOrdered)
+ wanted   nodes : 100000
+ inserted nodes : 99998
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.049332			0.000000			0.041396			0.090729			
+
+
+----------------------------------------------------------------------------------------------------
+
+										7AVLtree(Ordered)
+ wanted   nodes : 100000
+ inserted nodes : 100000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.028771			0.000000			0.008233			0.037004			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 0.005719 s
+										7AVLtree(DisOrdered)
+ wanted   nodes : 500000
+ inserted nodes : 499970
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.601757			0.000000			0.509887			1.111644			
+
+
+----------------------------------------------------------------------------------------------------
+
+										7AVLtree(Ordered)
+ wanted   nodes : 500000
+ inserted nodes : 500000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.173821			0.000000			0.053122			0.226943			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 0.009226 s
+										7AVLtree(DisOrdered)
+ wanted   nodes : 1000000
+ inserted nodes : 999882
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	1.496841			0.000000			1.294170			2.791011			
+
+
+----------------------------------------------------------------------------------------------------
+
+										7AVLtree(Ordered)
+ wanted   nodes : 1000000
+ inserted nodes : 1000000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.322194			0.000000			0.099174			0.421369			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 0.024993 s
+										7AVLtree(DisOrdered)
+ wanted   nodes : 5000000
+ inserted nodes : 4997096
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	9.788274			0.000000			8.711459			18.499733			
+
+
+----------------------------------------------------------------------------------------------------
+
+										7AVLtree(Ordered)
+ wanted   nodes : 5000000
+ inserted nodes : 5000000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	2.256276			0.000000			0.784468			3.040744			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 0.05362 s
+										7AVLtree(DisOrdered)
+ wanted   nodes : 10000000
+ inserted nodes : 9988368
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	21.276739			0.000000			18.919005			40.195744			
+
+
+----------------------------------------------------------------------------------------------------
+
+										7AVLtree(Ordered)
+ wanted   nodes : 10000000
+ inserted nodes : 10000000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	5.215425			0.000000			1.850088			7.065513			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 0.133179 s
+										7AVLtree(DisOrdered)
+ wanted   nodes : 20000000
+ inserted nodes : 19953496
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	45.792709			0.000000			40.847762			86.640471			
+
+
+----------------------------------------------------------------------------------------------------
+
+										7AVLtree(Ordered)
+ wanted   nodes : 20000000
+ inserted nodes : 20000000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	11.690138			0.000000			4.234061			15.924198			
+
+
