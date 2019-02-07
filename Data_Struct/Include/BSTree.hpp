@@ -9,7 +9,7 @@ class BSTree:public BinTree<T>
 {
 	public:
 		BSTree():count(0),BinTree<T>(){}
-		BSTree(T x):count(1),BinTree<T>(x){}
+		explicit BSTree(T x):count(1),BinTree<T>(x){}
 		~BSTree(){this->destroy(this->root);}
 		
 		void CreateTree(std::istream &is);
