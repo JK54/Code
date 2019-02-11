@@ -117,3 +117,4 @@ iptables -A INPUT -p tcp --tcp-flags ACK,PSH PSH     -j STEALTH_SCAN
 iptables -A INPUT -p tcp --tcp-flags ACK,URG URG     -j STEALTH_SCAN
 
 iptables-save
+service iptables save

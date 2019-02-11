@@ -41,8 +41,8 @@ int main()
 
 void on_input(int signum)
 {
-	/* signal(SIGIO,on_input); */
-	int c = getch();
+	signal(SIGIO,on_input);
+	int c = getchar();
 	if(c == EOF || c == 'q')
 	/* if(c == 'q') */
 		done = 1;
