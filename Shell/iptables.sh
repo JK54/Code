@@ -24,8 +24,8 @@
 ##############
 # 对公网开放的服务端口
 ##############
-SERVICE_TCP_PORTS="22,21,20,25,80,443,27733,1080"
-SERVICE_UDP_PORTS="53,1080"
+SERVICE_TCP_PORTS="27733,5000"
+SERVICE_UDP_PORTS=""
 
 ##############
 # 清空原来的iptables设置
