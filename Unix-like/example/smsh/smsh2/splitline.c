@@ -37,15 +37,23 @@ char* next_cmd(char* prompt, FILE* fp)
 
 char** splitline(char *line, int *cmdapartpos,int *argnum)
 {
-	if (line == NULL)
-		return NULL;
     char* newstr();
-    char **args = emalloc(BUFSIZ);
-    int spots = BUFSIZ / sizeof(char*);
-    int bufspace = BUFSIZ;
-    int start,pos = *cmdapartpos;
-	int row = 0;
-	char *cp = line;
+    char** args;
+    int spots;
+    int bufspace;
+    int row;
+    char* cp;
+    int start,pos;
+
+    if (line == NULL)
+		return NULL;
+
+    args = emalloc(BUFSIZ);
+    spots = BUFSIZ / sizeof(char*);
+    bufspace = BUFSIZ;
+    pos = *cmdapartpos;
+	row = 0;
+	cp = line;
 	while(is_reg(cp[pos]))
 	{
 		while(is_delim(cp[pos]))
