@@ -13,7 +13,7 @@ int syn_err(char *msg)
 {
 	if_state = NEUTRAL;
 	fprintf(stderr,"syntax error : %s\n",msg);
-	return -1;
+	return SYNTAX_ERRNO;
 }
 
 int ok_to_execute()
@@ -44,7 +44,10 @@ int do_control_command(char **args,int argnum)
 			rv = syn_err("if unexpected");
 		else
 		{
-			last_stat = process(args + 1,argnum - 1);
+			if(argnum > 1)
+				last_stat = process(args + 1,argnum - 1);
+			else
+				last_stat = main_process();
 			if_result = (last_stat == 0 ? SUCCESS : FAIL);
 			if_state  = WANT_THEN;
 			rv = 0;

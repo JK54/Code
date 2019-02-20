@@ -26,7 +26,7 @@ char* next_cmd(char* prompt, FILE* fp)
 		    break;
 		buf[pos++] = c;
     }
-    if (c == EOF && pos == 0)
+	if(c == EOF && pos == 0)
 		return NULL;
     buf[pos] = '\0';
     return buf;

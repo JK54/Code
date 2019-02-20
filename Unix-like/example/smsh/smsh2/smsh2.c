@@ -5,30 +5,15 @@
 #include <string.h>
 #include "smsh.h"
 
-#define DEFAULT_PROMPT "> "
+void setup();
 
 int main()
 {
-	char *cmdline,*prompt,**arglist;
-	int result,process(char**,int);
-	int cmdlen,cmdapartpos,argnum;
-
-	void setup();
-	prompt = DEFAULT_PROMPT;
+	int res = 0;
 	setup();
-	while((cmdline = next_cmd(prompt,stdin)) != NULL)
-	{
-		cmdlen = strlen(cmdline);
-		cmdapartpos = 0;
-		do
-		{
-			arglist = splitline(cmdline,&cmdapartpos,&argnum);
-			result = process(arglist,argnum);
-			freelist(arglist);
-		}while(cmdapartpos < cmdlen);
-		free(cmdline);
-	}
-	return 0;
+	while(res != END)
+		res = main_process();
+	return res;
 }
 
 void setup()
@@ -41,4 +26,26 @@ void fatal(char *s1,char *s2,int n)
 {
 	fprintf(stderr,"Error:%s,%s\n",s1,s2);
 	exit(n);
+}
+
+int main_process()
+{
+	char *cmdline;
+	char *prompt = DEFAULT_PROMPT;
+	int cmdlen,cmdapartpos,argnum;
+	int result = END;
+	char **arglist;
+	if((cmdline = next_cmd(prompt,stdin)) != NULL)
+	{
+		cmdlen = strlen(cmdline);
+		cmdapartpos = 0;
+		do
+		{
+			arglist = splitline(cmdline,&cmdapartpos,&argnum);
+			result = process(arglist,argnum);
+			freelist(arglist);
+		}while(cmdapartpos < cmdlen);
+		free(cmdline);
+	}
+	return result;
 }
