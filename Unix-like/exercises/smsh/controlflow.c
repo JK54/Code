@@ -6,17 +6,21 @@
 
 #define MAXRECDEEP 20
 
-enum states {NEUTRAL,IF_SUCCEEDED,IF_FAILED,SKIPPING_THEN,DOING_THEN,SKIPPING_ELSE,DOING_ELSE};
+enum if_states {NEUTRAL,IF_SUCCEEDED,IF_FAILED,SKIPPING_THEN,DOING_THEN,SKIPPING_ELSE,DOING_ELSE};
+/* enum for_states {}; */
 static int if_state = NEUTRAL;
+static int for_state = NEUTRAL;
 
 struct stack
 {
-	int if_state;
+	int state;
 };
 
 static struct stack if_stack[MAXRECDEEP];
-static int recdeep = 0;
+static int ifrecdeep = 0;
 
+static struct stack for_stack[MAXRECDEEP];
+static int forrecdeep = 0;
 char *states2str(int state)
 {
 	switch(state)
@@ -78,7 +82,7 @@ int do_control_command(char **args,int argnum,int keyno)
 				else
 				{
 					if(if_state != NEUTRAL)
-						if_stack[recdeep++].if_state = if_state;
+						if_stack[ifrecdeep++].state = if_state;
 					if(argnum > 1)
 						rv = process(args + 1,argnum - 1);
 					else
@@ -127,7 +131,7 @@ int do_control_command(char **args,int argnum,int keyno)
 				{
 					if(if_state == NEUTRAL || if_state == IF_FAILED || if_state == IF_SUCCEEDED)
 						rv = syn_err("fi unexpected");
-					else if(recdeep == 0)
+					else if(ifrecdeep == 0)
 					{
 						printf("if-statement succeed\n");
 						if_state = NEUTRAL;
@@ -135,7 +139,7 @@ int do_control_command(char **args,int argnum,int keyno)
 					}
 					else
 					{
-						if_state = if_stack[--recdeep].if_state;
+						if_state = if_stack[--ifrecdeep].state;
 						rv = SUCCESS;
 					}
 				}
@@ -143,11 +147,19 @@ int do_control_command(char **args,int argnum,int keyno)
 			default:
 				fatal("internal error processing:",cmd,2);
 		}
-		if_stack[recdeep].if_state = if_state;
+		if_stack[ifrecdeep].state = if_state;
 	}
 	else if(keyno >= FOR && keyno <= DONE)
 	{
-		
+		switch(keyno)
+		{
+			case FOR:
+				{
+				}
+				break;
+			default:
+				fatal("internal error processing:",cmd,2);
+		}
 	}
 	return rv;
 }
