@@ -7,6 +7,8 @@
 #include "macro.h"
 #include "varlib.h"
 
+#define DEFAULT_PROMPT "> "
+
 void setup();
 char ** environ;
 

@@ -24,7 +24,7 @@
 ##############
 # 对公网开放的服务端口
 ##############
-SERVICE_TCP_PORTS="27733,5000"
+SERVICE_TCP_PORTS=""
 SERVICE_UDP_PORTS=""
 
 ##############

@@ -4,6 +4,8 @@
 #include "varlib.h"
 #include "macro.h"
 
+#define MAXVARS 200
+
 struct var
 {
 	char *str;
