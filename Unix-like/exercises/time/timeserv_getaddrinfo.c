@@ -47,8 +47,11 @@ int main(int argc,char **argv)
 
 	while(1)
 	{
-		sock_fd = accept(sock_id,NULL,NULL);
-		printf("get a call\n");
+		struct sockaddr_in client;
+		socklen_t len = sizeof(client);
+		char str[INET_ADDRSTRLEN];
+		sock_fd = accept(sock_id,(struct sockaddr *)&client,&len);
+		printf("get a call form %s\n",inet_ntop(AF_INET,&client.sin_addr,str,sizeof(str)));
 		if(sock_fd == -1)
 			oops("accpet");
 		sock_fp = fdopen(sock_fd,"w");
