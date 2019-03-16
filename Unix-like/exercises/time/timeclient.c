@@ -17,7 +17,6 @@ int main(int argc,char **argv)
 	int addr_no;
 	int messlen;
 	char message[BUFSIZ];
-	/* char *hostname = "jk54.tpddns.cn"; */
 	char *hostname = "192.168.1.2";
 	char *serv = "13";
 
