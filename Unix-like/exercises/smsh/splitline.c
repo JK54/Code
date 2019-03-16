@@ -95,7 +95,7 @@ char* newstr(char* s, int start, int len)
 
 void freelist(char** list)
 {
-    char** cp = list;
+    char **cp = list;
     while (*cp != NULL)
 		free(*cp++);
     free(list);

@@ -37,11 +37,13 @@ int main(int argc,char **argv)
 		oops("connect");
 	if(write(sock_id,argv[2],strlen(argv[2])) == -1)
 		oops("write");
-	if(write(sock_id,"\n",1) == -1)
-		oops("write");
+	/* if(write(sock_id,"\n",1) == -1) */
+		/* oops("write"); */
 	while((n_read = read(sock_id,buffer,BUFSIZ)) != 0)
-		if(write(fileno(stdout),buffer,n_read) == -1)
-		/* if(write(1,buffer,n_read) == -1) */
-			oops("write");
+	{
+		printf("%s",buffer);
+		memset(buffer,'\0',strlen(buffer));
+	}
 	close(sock_id);
+	freeaddrinfo(res);
 }

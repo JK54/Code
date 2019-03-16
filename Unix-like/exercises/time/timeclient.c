@@ -17,24 +17,24 @@ int main(int argc,char **argv)
 	int addr_no;
 	int messlen;
 	char message[BUFSIZ];
+	/* char *hostname = "jk54.tpddns.cn"; */
+	char *hostname = "192.168.1.2";
+	char *serv = "13";
 
-	if(argc != 3)
-	{
-		printf("usage:timeclient hostname portnum\n");
-		exit(1);
-	}
 	if((sock_id = socket(AF_INET,SOCK_STREAM,0)) == -1)
 		oops("socket");
 	memset(&hint,0,sizeof(hint));
 	hint.ai_family = AF_UNSPEC;
 	hint.ai_socktype = SOCK_STREAM;
-	getaddrinfo(argv[1],argv[2],&hint,&res);
+
+	getaddrinfo(hostname,serv,&hint,&res);
 	if(connect(sock_id,res->ai_addr,sizeof(struct sockaddr)) != 0)
 		oops("connect");
-	messlen = read(sock_id,message,BUFSIZ);
-	if(messlen == -1)
-		oops("read");
-	if(write(1,message,messlen) != messlen)
-		oops("write");
+	while(read(sock_id,message,BUFSIZ) > 0)
+	{
+		printf("%s",message);
+		memset(message,'\0',strlen(message));
+	}
 	close(sock_id);
+	freeaddrinfo(res);
 }
