@@ -3,5 +3,6 @@
 
 int main()
 {
-	execlp("ls","ls","--color=auto","/home/jk54",NULL);
+	char a[][2] = {"-l","."};
+	execvp(a[0],a);
 }
