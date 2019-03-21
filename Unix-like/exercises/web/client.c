@@ -7,7 +7,7 @@ int main(int argc,char **argv)
 {
 	int sock_id;
 	sock_id = connect_to_server(SERVER,PORT);
-	char cmd[] = "GET hello.cgi HTTP/1.0";
+	char cmd[] = "POST test HTTP/1.0";
 	size_t size = strlen(cmd);
 	write(sock_id,cmd,size);
 	char buf[BUFSIZ];

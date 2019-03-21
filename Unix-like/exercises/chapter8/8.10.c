@@ -15,22 +15,20 @@ int count = 0;
 
 int main()
 {
-	char tmp[10];
 	int num_input,num_real,newpid;
 	struct sigaction ssr;
 	sigset_t blocked;
-	printf("input child nums\n");
-	fgets(tmp,strlen(tmp),stdin);
-	num_input = atoi(tmp);
+
 	ssr.sa_sigaction = child_handler;
-	/* ssr.sa_flags = SA_SIGINFO; */
-	ssr.sa_flags = SA_NODEFER;
+	ssr.sa_flags = SA_SIGINFO;
+	/* ssr.sa_flags = SA_NODEFER; */
 	sigemptyset(&blocked);
 	sigaddset(&blocked,SIGCHLD);
 	ssr.sa_mask = blocked;
 	sigaction(SIGCHLD,&ssr,NULL);
-	/* fp = fopen("vvv","w"); */
+	scanf("%9d",&num_input);
 	num_real = 0;
+	printf("%d\n",num_input);
 	for(int i = 0;i < num_input;i++)
 	{
 		if((newpid = fork()) == -1)
@@ -44,7 +42,6 @@ int main()
 	printf("%d\n",num_real);
 	while(count != num_real)
 		parent_execute();
-	/* fclose(fp); */
 	printf("all done.\n");
 }
 
@@ -57,10 +54,7 @@ void child_execute()
 
 void child_handler()
 {
-	int pid = wait(NULL);
-	/* char tmp[54] = {"0"}; */
-	/* snprintf(tmp,sizeof(tmp)/sizeof(tmp[0]),"handler : the child %d is dead,SIGCHLD captured.\n",pid); */
-	/* fwrite(tmp,sizeof(char),strlen(tmp),fp); */
+	waitpid(-1,NULL,WNOHANG);
 	count += 1;
 }
 

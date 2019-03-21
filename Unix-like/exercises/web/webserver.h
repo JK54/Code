@@ -1,6 +1,7 @@
 #include "socklib.h"
 #include <stdio.h>
 #include <string.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdbool.h>
@@ -11,6 +12,7 @@ char* newstr(char *source,int spos,int epos);
 char** split_args(char *buf);
 void freelist(char **buf);
 void do_cat(int fd,char *filename);
+void header(int fd,char *content_type);
 bool is_exist(char *name);
 void error_404(int fd,char *item);
 bool is_dir(char *name);

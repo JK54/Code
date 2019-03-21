@@ -12,7 +12,6 @@ int connect_to_server(char *hostname,char *servname);
 int talk_with_server(FILE *fp);
 int make_server_socket(char *servname,int backlog);
 void process_request_fork(int fd,char *cmd,char **args);
-void child_waiter(int signum);
-int server_accept_socket(int sock_fd);
+int server_accept_socket(int sock_fd,int record);
 
 #define oops(m){perror(m);exit(EXIT_FAILURE);}

@@ -66,19 +66,22 @@ int make_server_socket(char *servname,int backlog)
 	}
 	freeaddrinfo(res);
 	if(listen(sock_id,backlog) == -1)
-		oops("listen");
+		oops("listening");
 	return sock_id;
 }
 
-int server_accept_socket(int sock_fd)
+int server_accept_socket(int sock_fd,int record)
 {
 	int fd;
 	struct sockaddr client;
+	char buf[BUFSIZ];
 	socklen_t size = sizeof(client);
 	fd = accept(sock_fd,&client,&size);
 	if(fd == -1)
 		oops("listen");
-	printf("get a call from %s\n",inet_ntoa(((struct sockaddr_in *)&client)->sin_addr));
+	memset(buf,'\0',BUFSIZ);
+	snprintf(buf,BUFSIZ,"get a call from %s\n",inet_ntoa(((struct sockaddr_in *)&client)->sin_addr));
+	write(record,buf,strlen(buf));
 	return fd;
 }
 
@@ -95,10 +98,5 @@ void process_request_fork(int fd,char *cmd,char **args)
 		execvp(cmd,args);
 		oops("execute");
 	}
-}
-
-void child_waiter(int signum)
-{
-	while(waitpid(-1,NULL,WNOHANG) > 0);
 }
 
