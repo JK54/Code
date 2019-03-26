@@ -10,15 +10,15 @@ int connect_to_server(char *hostname,char *servname)
 	memset(&hint,0,sizeof(hint));
 	hint.ai_family = AF_UNSPEC;
 	hint.ai_socktype = SOCK_STREAM;
-	if((addr_no = getaddrinfo(hostname,servname,&hint,&res)) == -1)
+	if((addr_no = getaddrinfo(hostname,servname,&hint,&res)) != 0)
 	{
 		printf("%s : %s error mesg : %s\n",hostname,servname,gai_strerror(addr_no));
 		freeaddrinfo(res);
 		exit(EXIT_FAILURE);
 	}
-	freeaddrinfo(res);
 	if(connect(sock_id,res->ai_addr,sizeof(struct sockaddr)) == -1)
 		oops("connect");
+	freeaddrinfo(res);
 	return sock_id;
 }
 

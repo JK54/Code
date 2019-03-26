@@ -2,9 +2,12 @@
 
 void read_request(int fd,char *buffer,int size)
 {
-	memset(buffer,'\0',size);
-	if(read(fd,buffer,BUFSIZ) == -1)
-		oops("read quest");
+	if(fd != -1)
+	{
+		memset(buffer,'\0',size);
+		if(read(fd,buffer,BUFSIZ) == -1)
+			oops("read quest");
+	}
 }
 
 char* newstr(char *source,int pos,int len)
@@ -49,6 +52,8 @@ void freelist(char **buf)
 
 void header(int fd,char *content_type)
 {
+	if(fd == -1)
+		return;
 	char buf[BUFSIZ] = "HTTP/1.0 200 OK\r\n";
 	if(content_type != NULL)
 	{
@@ -61,6 +66,8 @@ void header(int fd,char *content_type)
 
 void error_404(int fd,char *item)
 {
+	if(fd == -1)
+		return;
 	char buf[BUFSIZ] = "HTTP/1.0 404 Not Found\r\nContent-type : text/plain\r\n\r\nThe item you requested : ";
 	strncat(buf,item,strlen(item));
 	strncat(buf," is not found\r\n",strlen(" is not found\r\n"));
@@ -69,6 +76,8 @@ void error_404(int fd,char *item)
 
 void error_501(int fd)
 {
+	if(fd == -1)
+		return;
 	char buf[] = "HTTP/1.0 501 Not Implement\r\nContent-type : text/plain\r\n\r\nThat command is not yet implement\r\n";
 	write(fd,buf,strlen(buf));
 }
@@ -101,6 +110,8 @@ bool is_cgi(char *name)
 
 void do_ls(int fd,char *dirname)
 {
+	if(fd == -1)
+		return;
 	if(dup2(fd,STDOUT_FILENO) == -1 || dup2(fd,STDERR_FILENO) == -1)
 		oops("do_ls : dup2");
 	close(fd);
@@ -112,6 +123,8 @@ void do_ls(int fd,char *dirname)
 
 void do_cat(int fd,char *filename)
 {
+	if(fd == -1)
+		return;
 	char *exten = file_type(filename);
 	int extlen = strlen(exten);
 	char *content = "text/plain";
@@ -146,6 +159,8 @@ void do_cat(int fd,char *filename)
 
 void do_exec(int fd,char *prog)
 {
+	if(fd == -1)
+		return;
 	int len = strlen(prog) + 3;
 	int pid;
 	char pathname[len];
