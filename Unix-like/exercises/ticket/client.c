@@ -4,10 +4,15 @@
 #include <netdb.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
 #define oops(m){perror(m);exit(EXIT_FAILURE);}
-
 #define SERVER "192.168.1.2"
 #define SERVER_PORT "13194"
+#define KEYLEN 24
+
+char key[] = "VHIBO-CMDBY-EPJBW-Q5EMA";
+int pid;
 
 int make_client_socket_dgram();
 void make_server_address(struct sockaddr_in *saddr,char *seraddress,char *servname);
@@ -37,29 +42,44 @@ void make_server_address(struct sockaddr_in *saddr,char *seraddress,char *servna
 	freeaddrinfo(res);
 }
 
-void chat_with_server(int sock_id,struct sockaddr_in saddr,char *cmd,char *mesg,size_t *mesglen)
+void apply_permit_to_run(int sock_id,struct sockaddr_in saddr,char *mesg,size_t *mesglen)
 {
-	struct sockaddr retaddr;
-	socklen_t addrlen;
+	char cmd[KEYLEN + 6] = "GRANT ";
+	strncat(cmd,key,KEYLEN);
 	if(sendto(sock_id,cmd,strlen(cmd),0,(struct sockaddr *)&saddr,sizeof(saddr)) == -1)
-		oops("sendto");
-	memset(mesg,'\0',*mesglen);
-	if(recvfrom(sock_id,mesg,*mesglen,0,&retaddr,&addrlen) == -1)
-		oops("receive");
-	*mesglen = strlen(mesg);
+		oops("GRANT");
+	socklen_t tmp;
+	if((*mesglen = recvfrom(sock_id,mesg,*mesglen,0,(struct sockaddr *)&saddr,&tmp)) == -1)
+		oops("recv");
 }
 
-void generate_cmd(char *cmd,char *key)
+void receive_from_server(int sock_id,struct sockaddr_in *saddr,char cmd[],size_t *cmdlen)
 {
-	strncat(cmd," ",strlen(cmd) + 1);
-	strncat(cmd,key,strlen(cmd) + strlen(key));
+	socklen_t saddrlen = sizeof(struct sockaddr);
+	memset(cmd,'\0',*cmdlen);
+	if((*cmdlen = recvfrom(sock_id,cmd,*cmdlen,0,(struct sockaddr *)saddr,&saddrlen)) == -1)
+		oops("client : rec");
+}
+void alive(int sock_id,struct sockaddr_in *saddr,char *cmd)
+{
+	memset(cmd,'\0',strlen(cmd));
+	if(kill(pid,0) == -1)
+		snprintf(cmd,strlen(key) + 7,"DEAD\n %s",key);
+	else
+		snprintf(cmd,strlen(key) + 8,"ALIVE\n %s",key);
+	sendto(sock_id,cmd,strlen(cmd),0,(struct sockaddr *)saddr,sizeof(struct sockaddr));
 }
 
-void super_sleep()
+int super_sleep()
 {
-	printf("SuperSleep version 1.0 Running\tLicensed Software\n");
-	sleep(5);
-	printf("The super sleep program ran as expect.\n");
+	if((pid = fork()) == -1)
+		oops("fork");
+	if(pid == 0)
+	{
+		execlp("./super_sleep","super_sleep",NULL);
+		oops("super_sleep");
+	}
+	return pid;
 }
 
 void invalid_key()
@@ -92,10 +112,11 @@ void wrong_cmd()
 {
 	printf("the last cmd sento server is unknown.\n");
 }
-void client_handler(char *mesg)
+
+void client_handler(int sock_id,struct sockaddr_in *saddr,char *mesg,char *cmd)
 {
-	if(strncmp(mesg,"VALID",5) == 0)
-		;
+	if(strncmp(mesg,"CHECK",5) == 0)
+		alive(sock_id,saddr,cmd);
 	else if(strncmp(mesg,"NOTGRANTED",10) == 0)
 		not_granted_key();
 	else if(strncmp(mesg,"TICK",4) == 0)
@@ -116,17 +137,19 @@ int main()
 {
 	int sock_id;
 	struct sockaddr_in saddr;
-	/* char cmd[BUFSIZ] = "VALID"; */
-	/* char cmd[BUFSIZ] = "GBYE"; */
-	char cmd[BUFSIZ] = "GRANT";
-	char key[] = "OS5HG-K90NH-SXOGT-7JYEZ";
 	char mesg[BUFSIZ];
-	size_t mesglen = BUFSIZ;
+	char cmd[BUFSIZ];
+	size_t mesglen,cmdlen;
 
+	mesglen = cmdlen = BUFSIZ;
 	sock_id = make_client_socket_dgram();
 	make_server_address(&saddr,SERVER,SERVER_PORT);
-	generate_cmd(cmd,key);
-	chat_with_server(sock_id,saddr,cmd,mesg,&mesglen);
-	client_handler(mesg);
+	apply_permit_to_run(sock_id,saddr,mesg,&mesglen);
+	client_handler(sock_id,&saddr,mesg,cmd);
+	while(1)
+	{
+		receive_from_server(sock_id,&saddr,cmd,&cmdlen);
+		client_handler(sock_id,&saddr,cmd,mesg);
+	}
 	close(sock_id);
 }
