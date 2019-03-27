@@ -7,7 +7,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #define oops(m){perror(m);exit(EXIT_FAILURE);}
-#define SERVER "192.168.1.2"
+#define SERVER "127.0.0.1"
 #define SERVER_PORT "13194"
 #define KEYLEN 24
 

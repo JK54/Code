@@ -34,4 +34,6 @@ int main(int argc,char **argv)
 		fwrite(tmp,sizeof(char),KEYLEN,wd);
 		fputc('\n',wd);
 	}
+	fclose(rd);
+	fclose(wd);
 }
