@@ -10,6 +10,7 @@
 #define I_MAX 65535
 #define DEFAULT_SIZE 100//default maxsize of DataList
 #define THRESH_Q_I 5//threshold of quicksort,when the length is less than threshold,use insertsort instand,the value between 5 to 25 is suitable.
+
 template<typename T>
 class Element
 {
@@ -141,8 +142,6 @@ void DataList<T>::Insert(const T &vle)
 	{
 		maxsize *= 2;
 		Element<T> *tmp = new Element<T>[maxsize];
-		// for(int i = 0;i<currentsize;++i)
-			// tmp[i] = Data[i];
 		std::copy(&Data[0],&Data[maxsize - 1],tmp);
 		delete [] Data;
 		Data = tmp;
@@ -179,6 +178,7 @@ bool DataList<T>::IsEmpty()
 		return false;
 }
 
+//a is a origin source array of Data.
 template<typename T>
 bool DataList<T>::IsSorted(T a[],int n)
 {
@@ -190,6 +190,7 @@ bool DataList<T>::IsSorted(T a[],int n)
 	for(diff = 1;diff < currentsize;diff++)
 		if(Data[diff] != Data[diff - 1])
 			break;
+	//copy elements to tmp array and check if sorted(ascend or descend))
 	if(Data[0] < Data[diff])
 	{
 		for(int i = 1;i < n;i++)
@@ -215,6 +216,7 @@ bool DataList<T>::IsSorted(T a[],int n)
 		}	
 	}
 	tmp[n - 1] = Data[n - 1].key;
+	//check if elements losr after sort(for unstable sort)
 	for(int i = 0;i < n;i++)
 	{
 		for(int j = 0;j < n - count;j++)
@@ -275,6 +277,7 @@ void DataList<T>::Traverse()
 //best			n			   1
 //avg		  n^2/4			 n^2/4
 //worst		Σ(n,i=2)i		Σ(n,i=2)(i+1)
+//
 template<typename T>
 void DataList<T>::InsertSort()
 {
@@ -288,7 +291,7 @@ void DataList<T>::InsertSort()
 		{
 			tmp = Data[i];
 			j = i;
-			while(j >= 1 && tmp < Data[ j - 1])
+			while(j >= 1 && tmp < Data[j - 1])
 			{
 				Data[j] = Data[j - 1];
 				--j;
@@ -297,7 +300,6 @@ void DataList<T>::InsertSort()
 		}
 	}
 }
-
 
 //main idea:
 //Similarly to InsertSort,the differece is that BinaryInsertSort find the inserted position by bisearch.

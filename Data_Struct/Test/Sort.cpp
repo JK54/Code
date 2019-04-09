@@ -1,7 +1,7 @@
 #include "../Include/Sort.hpp"
 
-#define N 200
-#define RANGE 100000000
+#define N 50
+#define RANGE 1000
 
 using namespace std;
 int main()
@@ -26,7 +26,7 @@ int main()
 	// aaa.CountingSort();
 	// aaa.LSD(10);
 	// aaa.MSD(10);
-	aaa.BucketSort();
+	// aaa.BucketSort();
 	// aaa.CountingSort();
 	// aaa.MSD(0,10);
 	// aaa.LSD(0,10);
@@ -43,7 +43,7 @@ int main()
 	// aaa.MergeSort(1,aaa.Length());
 	// aaa.MergeSort();
 	// aaa.TournamentSort();
-	// aaa.InsertSort();
+	aaa.InsertSort();
 	// aaa.BinaryInsertSort();
 	aaa.Traverse();
  	cout<<endl;
