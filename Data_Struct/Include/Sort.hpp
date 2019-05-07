@@ -53,7 +53,8 @@ class DataList
 
 		//insert sort
 		//best for basic ordered sequence.
-		void InsertSort();
+		void InsertSort_Ascend();
+		void InsertSort_Descend();
 		void BinaryInsertSort();
 		void ShellSort();		
 		
@@ -279,7 +280,7 @@ void DataList<T>::Traverse()
 //worst		Σ(n,i=2)i		Σ(n,i=2)(i+1)
 //
 template<typename T>
-void DataList<T>::InsertSort()
+void DataList<T>::InsertSort_Ascend()
 {
 	if(IsEmpty())
 		return;
@@ -301,6 +302,23 @@ void DataList<T>::InsertSort()
 	}
 }
 
+template<typename T>
+void DataList<T>::InsertSort_Descend()
+{
+	if(IsEmpty())
+		return;
+	Element<T> tmp;
+	for(int i = 1,j;i < currentsize;i++)
+	{
+		if(Data[i - 1] < Data[i])
+		{
+			tmp = Data[i];
+			for(j = i;j >= 1 && Data[j - 1] < tmp;j--)
+				Data[j] = Data[j - 1];
+			Data[j] = tmp;
+		}
+	}
+}
 //main idea:
 //Similarly to InsertSort,the differece is that BinaryInsertSort find the inserted position by bisearch.
 //
@@ -644,7 +662,7 @@ template <typename T>
 void DataList<T>::Quick_Insert_Mixed_Sort(DataList &L,const int &left,const int &right)
 {
 	if(right - left <= THRESH_Q_I)
-		InsertSort();
+		InsertSort_Ascend();
 	else
 	{
 		int pivotpos = Partition(L,left - 1,right - 1);
@@ -670,7 +688,7 @@ template<typename T>
 void DataList<T>::HybirdSort(DataList<T> &L,const int &left,const int &right)
 {
 	Quick_Sort_Part(L,left,right);
-	InsertSort();
+	InsertSort_Ascend();
 }
 
 

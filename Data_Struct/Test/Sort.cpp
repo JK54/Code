@@ -21,7 +21,9 @@ int main()
 	}
 	DataList<int> aaa;
 	aaa.Initial(b,sizeof(b)/sizeof(b[0]));
- 	aaa.Traverse();
+ 	cout<<"Array : ";
+	aaa.Traverse();
+ 	aaa.IsSorted(b,sizeof(b)/sizeof(b[0]));
  	cout<<endl;
 	// aaa.CountingSort();
 	// aaa.LSD(10);
@@ -43,10 +45,14 @@ int main()
 	// aaa.MergeSort(1,aaa.Length());
 	// aaa.MergeSort();
 	// aaa.TournamentSort();
-	aaa.InsertSort();
 	// aaa.BinaryInsertSort();
+	aaa.InsertSort_Ascend();
 	aaa.Traverse();
+ 	aaa.IsSorted(b,sizeof(b)/sizeof(b[0]));
  	cout<<endl;
+	
+	aaa.InsertSort_Descend();
+	aaa.Traverse();
  	aaa.IsSorted(b,sizeof(b)/sizeof(b[0]));
 	// std::cout<<aaa.DivKSearch(34,8)<<endl;
 	return 0;
