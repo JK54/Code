@@ -1,7 +1,7 @@
 #include "../Include/Sort.hpp"
 
-#define N 50
-#define RANGE 1000
+#define N 10
+#define RANGE 100
 
 using namespace std;
 int main()
@@ -10,15 +10,16 @@ int main()
 	// int b[] = {98,36,-9,0,47,23,1,8,10,7};
 	// int b[] = {10,9,8,7,6,5,4,3,2,1,11};
 	// int b[] = {1,0,1,2,0,0,0,2,2,2,0,0,1,1,1,2,1,0,1,0,2};//Netherland Flag sequence.
-	unsigned int a[N];
-	int b[N];
-	std::random_device rd;
-	std::mt19937 mt(rd());
-	for(int i = 0;i < N;i++)
-	{
-		a[i] = mt() % RANGE;
-		b[i] = a[i];
-	}
+	int b[] = {67,25,25,59,45,79,36,3,59,63};
+   /*  unsigned int a[N]; */
+	// int b[N];
+	// std::random_device rd;
+	// std::mt19937 mt(rd());
+	// for(int i = 0;i < N;i++)
+	// {
+		// a[i] = mt() % RANGE;
+		// b[i] = a[i];
+	/* } */
 	DataList<int> aaa;
 	aaa.Initial(b,sizeof(b)/sizeof(b[0]));
  	cout<<"Array : ";
@@ -38,7 +39,7 @@ int main()
 	// aaa.MergeSort();
 	// aaa.Quick_Insert_Mixed_Sort(aaa,1,aaa.Length());
 	// aaa.HybirdSort(aaa,1,aaa.Length());
-	// aaa.QuickSort(aaa,1,sizeof(b)/sizeof(b[0]));
+	aaa.QuickSort(aaa,1,sizeof(b)/sizeof(b[0]));
 	// aaa.BubbleSort_I();
 	// aaa.CocktailSort();
 	// aaa.ShellSort();
@@ -46,14 +47,14 @@ int main()
 	// aaa.MergeSort();
 	// aaa.TournamentSort();
 	// aaa.BinaryInsertSort();
-	aaa.InsertSort_Ascend();
+	// aaa.InsertSort_Ascend();
 	aaa.Traverse();
- 	aaa.IsSorted(b,sizeof(b)/sizeof(b[0]));
- 	cout<<endl;
+	 aaa.IsSorted(b,sizeof(b)/sizeof(b[0]));
+	 cout<<endl;
 	
-	aaa.InsertSort_Descend();
-	aaa.Traverse();
- 	aaa.IsSorted(b,sizeof(b)/sizeof(b[0]));
+	// aaa.InsertSort_Descend();
+	// aaa.Traverse();
+     // aaa.IsSorted(b,sizeof(b)/sizeof(b[0]));
 	// std::cout<<aaa.DivKSearch(34,8)<<endl;
 	return 0;
 }

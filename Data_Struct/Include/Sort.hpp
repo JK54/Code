@@ -64,6 +64,7 @@ class DataList
 		void BubbleSort_I();
 		void CocktailSort();
 			//quick sort
+		int Partition(const int &left,const int &right);
 		int Partition_Left(const int &left,const int &right);
 		int Partition_Random(const int &left,const int &right);
 		int Partition_Medium3(DataList<T> &L,const int &left,const int &right);
@@ -481,10 +482,24 @@ int DataList<T>::Partition_Left(const int &left,const int &right)
 		{
 			//avoid in-place exchange 
 			if(++pivotpos != i)
-				// Data[pivotpos] = Data[i];//only swap works,if using assignment,the value bigger than pivot will lost.
 				swap(Data[pivotpos],Data[i]);
 		}
 	swap(Data[left],Data[pivotpos]);
+	// Traverse();
+	// std::cout<<std::endl;
+	return pivotpos + 1;
+}
+
+template<typename T>
+int DataList<T>::Partition(const int &left,const int &right)
+{
+	int pivotpos = left;
+	Element<T> pivot = Data[left];
+	Element<T> tmp = pivot;
+	for(int i = left + 1;i < right;i++)
+		if(tmp > Data[i])
+			Data[pivotpos++] = Data[i];
+	Data[pivotpos] = tmp;
 	Traverse();
 	std::cout<<std::endl;
 	return pivotpos + 1;
@@ -647,14 +662,17 @@ void DataList<T>::QuickSort(DataList &L,const int &left,const int &right)
 	if(left < right)
 	{
 		// int pivotpos = Partition_Left(left - 1,right - 1);
+		int pivotpos = Partition(left - 1,right - 1);
 		// int pivotpos = Partition_Repeat(L,left - 1,right - 1);		
 		/* int pivotpos = Partition_Random(left - 1,right - 1); */
-		// QuickSort(L,left,pivotpos - 1);
-		/* QuickSort(L,pivotpos + 1,right); */
-		int i = 0,j = 0;
-		Partition_Repeat(L,left,right,i,j);
-		QuickSort(L,left,i);
-		QuickSort(L,j ,right);
+		QuickSort(L,left,pivotpos - 1);
+		QuickSort(L,pivotpos + 1,right);
+		/*
+		 * int i = 0,j = 0;
+		 * Partition_Repeat(L,left,right,i,j);
+		 * QuickSort(L,left,i);
+		 * QuickSort(L,j ,right);
+		 */
 	}
 }
 
