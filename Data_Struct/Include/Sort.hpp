@@ -7,7 +7,8 @@
 #include "LinearList_linkedlist.hpp"
 #include "LinearList_seqlist.hpp"
 #include "Queue.hpp"
-#define I_MAX 65535
+#include <limits.h>
+#define I_MAX INT_MAX
 #define DEFAULT_SIZE 100//default maxsize of DataList
 #define THRESH_Q_I 5//threshold of quicksort,when the length is less than threshold,use insertsort instand,the value between 5 to 25 is suitable.
 
@@ -21,6 +22,7 @@ class Element
 		T key;
 		Element<T>& operator=(const Element<T> &x){key = x.key;return *this;}
 		bool operator==(const Element<T> &x){return key == x.key;}
+		bool operator==(const T &x){return key == x;}
 		bool operator!=(const Element<T> &x){return key != x.key;}
 		bool operator!=(const T &x){return key !=x;}
 		bool operator<=(const Element<T> &x){return key <= x.key;}
@@ -37,8 +39,19 @@ template<typename T>
 class DataList
 {
 	public:
-		DataList(int s = DEFAULT_SIZE):Data(new Element<T>[s]),maxsize(s),currentsize(0){}
+		DataList():Data(new Element<T>[DEFAULT_SIZE]),maxvalue(I_MAX),maxsize(DEFAULT_SIZE),currentsize(0){}
 		DataList(T mv,int s = DEFAULT_SIZE):Data(new Element<T>[s]),maxvalue(mv),maxsize(s),currentsize(0){}
+		DataList(const DataList<T> &p)
+		{
+			Data = new Element<T>[p.currentsize];
+			for(int i = 0;i < p.currentsize;i++)
+			{
+				Data[i] = p.Data[i];
+			}
+			currentsize = p.currentsize;
+			maxsize = p.maxsize;
+			maxvalue = p.maxvalue;
+		}
 		~DataList(){delete [] Data;}
 		Element<T>& operator[](int i){return Data[i];}
 		void SetMaxvalue(T x){maxvalue = x;}
@@ -49,7 +62,9 @@ class DataList
 		int Length(){return currentsize;}
 		bool IsEmpty();
 		bool IsSorted(T *,int );
+		bool IfLosted(T *,int );
 		void Traverse();
+		void Disp(const int &left,const int &right);
 
 		//insert sort
 		//best for basic ordered sequence.
@@ -64,8 +79,9 @@ class DataList
 		void BubbleSort_I();
 		void CocktailSort();
 			//quick sort
-		int Partition(const int &left,const int &right);
+		// int Partition(const int &left,const int &right);
 		int Partition_Left(const int &left,const int &right);
+		int Partition_Right(const int &left,const int &right);
 		int Partition_Random(const int &left,const int &right);
 		int Partition_Medium3(DataList<T> &L,const int &left,const int &right);
 		void Partition_Repeat(DataList<T> &,const int &left,const int &right,int &lborder,int &rborder);
@@ -89,6 +105,7 @@ class DataList
 		void MergeSort();
 		//here designate mid,because there are the situation:the array is odd,that the last element is very hard to handle,if using mid parameter it could be easy to merge unequal length array.if it's odd,handle the right half elements before the final merge.
 		void Merge(const int &left,const int &mid,const int &right);
+		void Merge(const int &left,const int &right);
 
 		void LSD(const int &bit,const int &scale){lsd(bit,scale);}
 		void LSD(const int &scale);
@@ -260,9 +277,49 @@ bool DataList<T>::IsSorted(T a[],int n)
 }
 
 template<typename T>
+bool DataList<T>::IfLosted(T a[],int n)
+{
+	std::cout<<"check if losted"<<std::endl;
+	if(currentsize != n)
+		return false;
+	Element<T> *tmp = new Element<T>[currentsize];
+	int size = currentsize;
+	for(int i = 0;i < currentsize;i++)
+		tmp[i] = Data[i];
+	for(int i = 0;i < n;i++)
+	{
+		for(int j = 0;j < size;j++)
+		{
+			if(tmp[j].operator==(a[i]))
+			{
+				for(int k = j;k < size - 1;k++)
+					tmp[k] = tmp[k + 1];
+				size--;
+			}
+		}
+	}
+	if(size != 0)
+	{
+		delete [] tmp;
+		return false;
+	}
+	delete [] tmp;
+	std::cout<<"didididi"<<std::endl;
+	return true;
+}
+
+template<typename T>
 void DataList<T>::Traverse()
 {
-	for(int i = 0;i<currentsize;++i)
+	for(int i = 0;i < currentsize;++i)
+		std::cout<<Data[i]<<" ";
+	std::cout<<std::endl;
+}
+
+template<typename T>
+void DataList<T>::Disp(const int &left,const int &right)
+{
+	for(int i = left - 1;i < right;++i)
 		std::cout<<Data[i]<<" ";
 	std::cout<<std::endl;
 }
@@ -491,18 +548,29 @@ int DataList<T>::Partition_Left(const int &left,const int &right)
 }
 
 template<typename T>
-int DataList<T>::Partition(const int &left,const int &right)
+int DataList<T>::Partition_Right(const int &left,const int &right)
 {
-	int pivotpos = left;
-	Element<T> pivot = Data[left];
-	Element<T> tmp = pivot;
-	for(int i = left + 1;i < right;i++)
-		if(tmp > Data[i])
-			Data[pivotpos++] = Data[i];
-	Data[pivotpos] = tmp;
-	Traverse();
-	std::cout<<std::endl;
-	return pivotpos + 1;
+	//version 1 
+   /*  Element<T> dstone = Data[right]; */
+	// int divpos = left;
+	// for(int agent = left;agent < right;agent++)
+	// {
+		// if(Data[agent] <= dstone)
+			// swap(Data[agent],Data[divpos++]);
+	// }
+	// swap(Data[divpos],Data[right]);
+	/* return divpos + 1; */
+
+	Element<T> dstone = Data[right];
+	int divpos = right;
+	for(int agent = right - 1;agent >= left;agent--)
+	{
+		//optimum:avoid in-place swap,seen in Patition_Left.
+		if(Data[agent] > dstone)
+			swap(Data[agent],Data[--divpos]);
+	}
+	swap(Data[divpos],Data[right]);
+	return divpos + 1;
 }
 
 template<typename T>
@@ -662,9 +730,8 @@ void DataList<T>::QuickSort(DataList &L,const int &left,const int &right)
 	if(left < right)
 	{
 		// int pivotpos = Partition_Left(left - 1,right - 1);
-		int pivotpos = Partition(left - 1,right - 1);
-		// int pivotpos = Partition_Repeat(L,left - 1,right - 1);		
-		/* int pivotpos = Partition_Random(left - 1,right - 1); */
+		int pivotpos = Partition_Right(left - 1,right - 1);
+		// int pivotpos = Partition_Random(left - 1,right - 1);
 		QuickSort(L,left,pivotpos - 1);
 		QuickSort(L,pivotpos + 1,right);
 		/*
@@ -921,10 +988,36 @@ void DataList<T>::TournamentSort()
 	}
 }
 
+//pass the array index
+//pass the series num is hard to handle remained short part.
 template<typename T>
 void DataList<T>::Merge(const int &left,const int &mid,const int &right)
 {
-	Element<T> *tmp = new Element<T>[right - left];
+	if(left == right)
+		return;
+	Element<T> *tmp = new Element<T>[right - left + 1];
+	int l = left,r = mid + 1,k = 0;
+	while(l <= mid && r <= right)
+	{
+		if(Data[l] <= Data[r])
+			tmp[k++] = Data[l++];
+		else
+			tmp[k++] = Data[r++];
+	}
+	while(l <= mid)
+		tmp[k++] = Data[l++];
+	while(r <= right)
+		tmp[k++] = Data[r++];
+	for(int i =  left,j = 0;i <= right;i++,j++)
+		Data[i] = tmp[j];
+	delete [] tmp;
+}
+
+template<typename T>
+void DataList<T>::Merge(const int &left,const int &right)
+{
+	Element<T> *tmp = new Element<T>[right - left + 1];
+	int mid = (right + left) / 2;
 	int i = left - 1,j = mid,k = 0;
 	while(i < mid && j < right)
 	{
@@ -950,23 +1043,30 @@ void DataList<T>::MergeSort(const int &left,const int &right)
 	int i = (left + right)/2;
 	MergeSort(left,i);
 	MergeSort(i + 1,right);
-	Merge(left,i,right);
+	// Merge(left,i,right);
+	Merge(left,right);
 }
 
 template<typename T>
 void DataList<T>::MergeSort()
 {
-	int i;
-	int len = 2;
-	while(len <= currentsize/2)
+	int n,size,left,mid,right;
+	n = currentsize;
+	size = 1;
+	while(size < n)
 	{
-		for(i = 1;i <= currentsize - len + 1;i = i + len)
-			Merge(i,(i + i + len - 1) / 2,i + len - 1);
-		len *= 2;
+		left = 0;
+		while(left + size < n)
+		{
+			mid = left + size - 1;
+			right = mid + size;
+			if(right >= n)
+				right = n - 1;
+			Merge(left,mid,right);
+			left = right + 1;
+		}
+		size *= 2;
 	}
-	if(currentsize % 2 != 0)
-		Merge(currentsize/2 + 1,currentsize - 1,currentsize);
-	Merge(1,currentsize/2,currentsize);
 }
 //queue is better
 template<typename T>
