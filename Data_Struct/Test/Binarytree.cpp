@@ -4,23 +4,23 @@ using namespace std;
 
 int main()
 {
-	BinTree<char> aaa;
-	char preo1[] = {'*','+','a','b','*','c','-','d'};
-	char ino1[] = {'a','+','b','*','c','*','-','d'};
-	char preo2[] = {'+','*','a','b','-','-','c','d'};
-	char ino2[] = {'a','*','b','+','-','c','-','d'};
-	BinTreeNode<char> *p = CreateTreeByPreInOrder(preo2,ino2,sizeof(preo2)/sizeof(preo2[0]));
-	aaa.Copy(p);
-	aaa.TraverseInOrder(aaa.Root());
-	cout<<endl;
-	aaa.PrintExpression(aaa.Root());
-	cout<<endl;
+   /*  BinTree<char> aaa; */
+	// char preo1[] = {'*','+','a','b','*','c','-','d'};
+	// char ino1[] = {'a','+','b','*','c','*','-','d'};
+	// char preo2[] = {'+','*','a','b','-','-','c','d'};
+	// char ino2[] = {'a','*','b','+','-','c','-','d'};
+	// BinTreeNode<char> *p = CreateTreeByPreInOrder(preo2,ino2,sizeof(preo2)/sizeof(preo2[0]));
+	// aaa.Copy(p);
+	// aaa.TraverseInOrder(aaa.Root());
+	// cout<<endl;
+	// aaa.PrintExpression(aaa.Root());
+	/* cout<<endl; */
 	/* BinTree<int> bbb; */
 	// bbb.SetMark(0);
 	// BinTreeNode<int> *b = bbb.Root();
 	// ifstream is("binarytree.txt");
 	// bbb.CreateTreePreOrder(b,is);
-	// BinTree<int> aaa;
+	BinTree<int> aaa;
 	// // aaa.TraversePreOrder(b,1);
 	// // std::cout<<endl;
 	// // aaa.TraverseInOrder(b);
@@ -31,14 +31,15 @@ int main()
 	// [> std::cout<<endl; <]
 	// int posto[7];
 	// int preo[] = {1,2,4,5,6,3,7};
-	// int pro[] = {1,2,4,8,9,5,10,11,3,6,12,7};
-	// int io[] = {8,4,9,2,10,5,11,1,12,6,3,7};
-	// BinTreeNode<int> *p = CreateTreeByPreInOrder(pro,io,sizeof(pro)/sizeof(pro[0]));
-	// aaa.Copy(p);
-	// BinTreeNode<int> *q = aaa.Root();
-	// std::cout<<aaa.Height()<<std::endl;
-	// aaa.TraverseLevelOrder(q);
-	// cout<<endl;
+	int pro[] = {1,2,4,8,9,5,10,11,3,6,12,7};
+	int io[] = {8,4,9,2,10,5,11,1,12,6,3,7};
+	BinTreeNode<int> *p = CreateTreeByPreInOrder(pro,io,sizeof(pro)/sizeof(pro[0]));
+	aaa.Copy(p);
+	BinTreeNode<int> *q = aaa.Root();
+	std::cout<<aaa.Height()<<std::endl;
+	std::cout<<aaa.Height(q)<<std::endl;
+	aaa.TraverseLevelOrder(q);
+	cout<<endl;
 	// aaa.TraversePreOrder_NR1(q);
 	// cout<<endl;
 	// aaa.TraverseInOrder(q);
