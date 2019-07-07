@@ -18,14 +18,23 @@ void draw(int n)
 	while(count <= n * n)
 	{
 		//another way of judge:axis less than boundary and the front element is unmodified.
-		// while(count <= n * n && j < n - i - 1)
-		while(j + 1 < n && data[i][j + 1] == 0)
+   /*      while(count <= n * n && j < n - i - 1) */
+		// // while(j + 1 < n && data[i][j + 1] == 0)
+			// data[i][++j] = count++;
+		// while(count <= n * n && i < j)
+			// data[++i][j] = count++;
+		// while(count <= n * n && j > n - i - 1)
+			// data[i][--j] = count++;
+		/* while(count <= n * n && i > j + 1) */
+			// data[--i][j] = count++;
+		while(j < n - i - 1)
+		// while(j + 1 < n && data[i][j + 1] == 0)
 			data[i][++j] = count++;
-		while(count <= n * n && i < j)
+		while(i < j)
 			data[++i][j] = count++;
-		while(count <= n * n && j > n - i - 1)
+		while(j > n - i - 1)
 			data[i][--j] = count++;
-		while(count <= n * n && i > j + 1)
+		while(i > j + 1)
 			data[--i][j] = count++;
 	}
 	for(i = 0;i < n;i++)

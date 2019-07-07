@@ -1,12 +1,12 @@
 #include <iostream>
-
-int ff(int *a)
-{
-	return sizeof(a) / sizeof(a[0]);
-}
+#include <vector>
+using namespace std;
 
 int main()
 {
-	int a[] = {1,2,3,4,5};
-	std::cout<<ff(a)<<std::endl;
+	vector<int>aaa;
+	for(int i = 0;i < 10;i++)
+		aaa.push_back(i);
+	for(int i = 0;i<10;i++,aaa.pop_back())
+		cout<<aaa.back()<<std::endl;
 }

@@ -5,60 +5,44 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-void refresh(int **board,int scale)
-{
-	memset(board,0,sizeof(int) * pow(scale,2));
-}
+static int grid;
+static int *board;
 
-void display(int **board,int scale)
+void disp(int i)
 {
-	for(int i = 0;i < scale;i++)
+	cout<<"第"<<i<<"个解法:"<<endl;
+	for(int i = 0;i < grid;i++)
 	{
-		for(int j = 0;j <scale;j++)
+		for(int j = 0;j < grid;j++)
 		{
-			if(board[i][j] == 1)
-				cout<<"o"<<" ";
+			if(j == board[i])
+				cout<<"o ";
 			else
-				cout<<"*"<<" ";
+				cout<<"* ";
 		}
 		cout<<endl;
 	}
 }
 
-bool check(int **board,int scale,int row,int col)
+bool check(int row)
 {
+	for(int i = 0;i < row;i++)
+		if(board[row] == board[i] || row - i == abs(board[row] - board[i]))
+			return false;
+	return true;
 }
 
-int queen(int **board,int scale,int &arrow)
+int solution1()
 {
-	if(arrow == scale)
-	{
-		display(board,scale);
-		return 1;
-	}
-	for(int i = 0;i < scale;i++)
-	
-}
-
-int solution(int scale)
-{
-	int count,arrow;
-	arrow = 0;
-	int **board = new int *[scale];
-	for(int i = 0;i < scale;i++)
-		board[i] = new int [scale];
-	count = queen(board,scale,arrow);
-	for(int i = 0;i < scale;i++)
-		delete [] board[i];
-	delete [] board;
-	return count;
 }
 
 int main()
 {
-	int scale;
-	cout<<"input the scale of the cheese board"<<endl;
-	cin>>scale;
-	solution(scale);
+	cout<<"input nums of queens"<<endl;
+	cin>>grid;
+	board = new int [grid];
+	memset(board,0,sizeof(int) * grid);
+	solution1();
+	delete [] board;
 	return 0;
 }

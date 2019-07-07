@@ -100,7 +100,7 @@ bool LinkedList<T>::IsEmpty()
 		return false;
 }
 
-	template<typename T>
+template<typename T>
 size_t LinkedList<T>::Length()
 {
 	return leng;
