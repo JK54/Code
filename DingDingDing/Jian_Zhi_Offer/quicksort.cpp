@@ -1,15 +1,25 @@
 #include <iostream>
 
-void swap(int &a,int &b)
+template<typename T>
+void swap(T &a,T &b)
 {
-	int c = a;
+	T c = a;
 	a = b;
 	b = c;
 }
 
-int partition(int data[],int left,int right)
+template<typename T>
+void disp(T a[],int n)
 {
-	int dstone = data[left];
+	for(int i = 0;i <= n;i++)
+		std::cout<<a[i]<<" ";
+	std::cout<<std::endl;
+}
+
+template<typename T>
+int partition(T data[],int left,int right)
+{
+	T dstone = data[left];
 	int pos = left;
 	for(int i = left + 1;i <= right;i++)
 	{
@@ -21,7 +31,8 @@ int partition(int data[],int left,int right)
 	return pos;
 }
 
-void quicksort(int data[],int left,int right)
+template<typename T>
+void quicksort(T data[],int left,int right)
 {
 	if(left < right)
 	{
@@ -31,12 +42,12 @@ void quicksort(int data[],int left,int right)
 	}
 }
 
-int main()
-{
-	int a[] = {13,8,9,10,103,3,0,5,1,2,7,12,0,11};
-	int size = sizeof(a)/sizeof(a[0]) - 1;
-	quicksort(a,0,size);
-	for(int i = 0;i <= size;i++)
-		std::cout<<a[i]<<" ";
-	std::cout<<std::endl;
-}
+/* int main() */
+// {
+	// int a[] = {13,8,9,10,103,3,0,5,1,2,7,12,0,11};
+	// int size = sizeof(a)/sizeof(a[0]) - 1;
+	// quicksort<int>(a,0,size);
+	// for(int i = 0;i <= size;i++)
+		// std::cout<<a[i]<<" ";
+	// std::cout<<std::endl;
+/* } */
