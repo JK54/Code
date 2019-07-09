@@ -235,6 +235,11 @@ int queens5_recursive(int row,int col,int pie2,int na2)
 		{
 			int pos = available & -available;
 			available ^= pos;
+			//因为不是全局参数，而且pie，na的定义进行了修改，不需要回撤位运算。
+			//递归的col，pie2，na2操作意义
+			//col本次占用的col置位
+			//pie2与na2的移位从图形上来观察更为容易理解。
+			//对于同一个撇来说，随着行号的递增，列号是递减的，捺则相反，随着行号的递增，列号也递增。
 			queens5_recursive(row + 1,col ^ pos,(pie2 ^ pos) >> 1,(na2 ^ pos) << 1);
 		}
 	}
