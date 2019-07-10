@@ -204,7 +204,7 @@ bool MaxHeap<T>::IsHeap()
 			std::cout<<"Not Heap1!"<<std::endl;
 			return false;	
 		}
-		for(int i = 0;i < n / 2;i++)
+		for(int i = 0;i < n / 2 - 1;i++)
 		{
 			if(this->Data[i] < this->Data[2 * i + 1] || this->Data[i] < this->Data[2 * i + 2])
 			{

@@ -1,3 +1,4 @@
+#include <random>
 #include <iostream>
 
 template<typename T>
@@ -11,7 +12,7 @@ void swap(T &a,T &b)
 template<typename T>
 void disp(T a[],int n)
 {
-	for(int i = 0;i <= n;i++)
+	for(int i = 0;i < n;i++)
 		std::cout<<a[i]<<" ";
 	std::cout<<std::endl;
 }
@@ -37,17 +38,22 @@ void quicksort(T data[],int left,int right)
 	if(left < right)
 	{
 		int pos = partition(data,left,right);
-		quicksort(data,0,pos);
+		quicksort(data,left,pos - 1);
 		quicksort(data,pos + 1,right);
 	}
 }
 
 /* int main() */
 // {
-	// int a[] = {13,8,9,10,103,3,0,5,1,2,7,12,0,11};
-	// int size = sizeof(a)/sizeof(a[0]) - 1;
-	// quicksort<int>(a,0,size);
-	// for(int i = 0;i <= size;i++)
-		// std::cout<<a[i]<<" ";
-	// std::cout<<std::endl;
+	// int n;
+	// std::cin>>n;
+	// int *a = new int[n];
+	// std::random_device rd;
+	// std::mt19937 mt(rd());
+	
+	// for(int i = 0;i < n;i++)
+		// a[i] = mt();
+	// quicksort<int>(a,0,n - 1);
+	// disp<int>(a,n);
+	// delete [] a;
 /* } */
