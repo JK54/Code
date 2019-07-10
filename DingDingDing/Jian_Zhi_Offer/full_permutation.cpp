@@ -42,25 +42,18 @@ void permutation2(T a[],int endindex)
 	disp(a,endindex);
 	while(1)
 	{
-		int firstraisepair,minbigger = -1;
+		int firstraisepair;
 		for(firstraisepair = endindex - 1;firstraisepair >= 0;firstraisepair--)
 			if(a[firstraisepair] < a[firstraisepair + 1])
 				break;
 		if(firstraisepair < 0)
 			break;
-   /*      for(int i = endindex;i > firstraisepair;i--) */
-			// if(a[i] > a[firstraisepair])
-			// {
-				// if(minbigger == -1 || (a[minbigger] > a[i]))
-					// minbigger = i;
-			/* } */
 		for(int i = endindex;i > firstraisepair;i--)
 			if(a[i] > a[firstraisepair])
 			{
 				swap(a[i],a[firstraisepair]);
 				break;
 			}
-		// swap(a[firstraisepair],a[minbigger]);
 		reverse(a,firstraisepair + 1,endindex);
 		std::cout<<++count<<":";
 		disp(a,endindex);
@@ -72,11 +65,8 @@ int main()
 	char a[] = "abcdfe";
 	int b[] = {1,2,5,4,3,6};
 	int s1,s2;
-	int count1;
-	count1 = 0;
 	s1 = sizeof(a) / sizeof(a[0]) - 2;
 	s2 = sizeof(b) / sizeof(b[0]) - 1;
-	// permutation1<char>(a,0,s1,count1);
 	permutation2<int>(b,s2);
 	permutation2<char>(a,s1);
 }
