@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <cstring>
 
 using std::cin;
@@ -34,9 +35,74 @@ int firstuniquechar(char str[])
 	return pos;
 }
 
+int firstuniquechar(std::stringstream &is)
+{
+	int count[128];
+	char ban;
+	char fu;
+	int index = -1;
+	for(int i = 0;i < 128;i++)
+		count[i] = -1;
+	while(is>>ban)
+	{
+		index++;
+		int pos = gethash(ban);
+		if(count[pos] == -1)
+			count[pos] = index;
+		else if(count[pos] >= 0)
+			count[pos] = -2;
+	}
+	index = -1;
+	for(int i = 0;i < 128;i++)
+	{
+		if(count[i] > 0 && (index == -1 || index > count[i]))
+		{
+			index = count[i];
+			fu = i;
+		}
+	}
+	cout<<index<<":"<<fu<<endl;
+	return index;
+}
+
+int gethash2(char a)
+{
+	return a - 'a';
+}
+
+int delpattern(char *str,char *pattern)
+{
+	if(str == nullptr || pattern == nullptr)
+		return 0;
+	cout<<str<<endl;
+	int cc[26];
+	int start,end;
+	memset(cc,0,sizeof(int) * 26);
+	while(*pattern != '\0')
+		cc[gethash2(*(pattern++))]++;
+	start = end = 0;
+	while(str[end] != '\0')
+	{
+		while(str[end] != '\0' && cc[gethash2(str[end])] != 0)
+			end++;
+		if(start != end)
+			str[start] = str[end];
+		start++,end++;
+	}
+	memset(str + start,'\0',sizeof(char) * (end - start));
+	cout<<str<<endl;
+	cout<<end-start<<endl;
+	return end - start;
+}
+
 int main()
 {
-	char str[] = "abcdeff";
-	firstuniquechar(str);
-	
+	char str[] = "abc1deffb";
+	// char pattern[] = "afbcde";
+	// delpattern(str,pattern);
+	// firstuniquechar(str);
+	std::stringstream is;
+	is<<str;
+	firstuniquechar(is);
+	return 0;	
 }

@@ -62,7 +62,7 @@ int maxsumofsub2(int data[],int n)
 
 int main()
 {
-	int n = 40;
+	int n = 400;
 	int *a = new int[n];
 	// int a[] = {1,-2,3,10,-4,7,2,-5};
 	// int n = sizeof(a) / sizeof(a[0]);

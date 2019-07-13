@@ -1,4 +1,3 @@
-
 struct ListNode
 {
 	int m_nValue;
