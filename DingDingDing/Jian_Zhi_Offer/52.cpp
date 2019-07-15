@@ -1,6 +1,5 @@
 #include <iostream>
 #include "linkedlist.h"
-#include "stack.h"
 
 void mklist(ListNode **pa,ListNode **pb,int a[],int na,int b[],int nb,int c[],int nc)
 {

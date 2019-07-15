@@ -1,8 +1,10 @@
-#include <set>
+#include <stack>
 #include <iostream>
+using namespace std;
 
 int main()
 {
-	if(-1)
-		std::cout<<"dodoidfodf"<<std::endl;
+	stack<int> aaa;
+	int a = aaa.top();
+	cout<<a<<endl;
 }

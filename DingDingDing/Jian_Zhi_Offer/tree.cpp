@@ -246,3 +246,8 @@ void Tree::traverselevelzigzag()
 		}
 	}
 }
+
+void Tree::TraversePostOrder()
+{
+	TreeNode *pre,*trav;
+}

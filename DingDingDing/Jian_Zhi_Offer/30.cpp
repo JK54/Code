@@ -1,11 +1,11 @@
 #include <iostream>
-#include "stack.h"
+#include "stack.hpp"
 
 int main()
 {
 	int a[] = {9,8,7,6,1,2,3,4};
 	int size = sizeof(a) / sizeof(a[0]);
-	Stack aaa;
+	Stack<int> aaa;
 	for(int i = 0;i < size;i++)
 	{
 		aaa.push(a[i]);
