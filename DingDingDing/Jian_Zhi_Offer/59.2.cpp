@@ -5,13 +5,12 @@ int main()
 {
 	Queue<int> aaa;
 	std::mt19937 mt(std::random_device {}());
-	int n = 10;
-	// int a[n];
+	int n = 100;
+	int a[n];
 	std::cout<<"push_back max : ";
-	int a[] ={5,10,9 ,11 ,4 ,10 ,15 ,14 ,11 ,12};
 	for(int i = 0;i < n;i++)
 	{
-		// a[i] = mt() % n + i;
+		a[i] = mt() % n;
 		// a[i] = n - i;
 		aaa.push_back(a[i]);
 		std::cout<<aaa.max()<<" ";
