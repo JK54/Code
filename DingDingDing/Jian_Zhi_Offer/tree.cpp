@@ -44,15 +44,6 @@ struct TreeNode* Tree::CreateTreePreInOrder(int preo[],int ino[],int len)
 	return roo;
 }
 
-void Tree::TraverseInOrder(struct TreeNode *p)
-{
-	if(p != nullptr)
-	{
-		TraverseInOrder(p->lchild);
-		std::cout<<p->key<<" ";
-		TraverseInOrder(p->rchild);
-	}
-}
 
 void Tree::destroy(struct TreeNode *p)
 {
@@ -247,7 +238,107 @@ void Tree::traverselevelzigzag()
 	}
 }
 
+void Tree::TraversePreOrder(struct TreeNode *p)
+{
+	if(p != nullptr)
+	{
+		std::cout<<p->key<<" ";
+		TraversePreOrder(p->lchild);
+		TraversePreOrder(p->rchild);
+	}
+}
+
+void Tree::TraversePreOrder()
+{
+	TreeNode *trav = root;
+	std::stack<TreeNode*> st;
+	while(trav != nullptr || !st.empty())
+	{
+		while(trav != nullptr)
+		{
+			std::cout<<trav->key<<" ";
+			st.push(trav);
+			trav = trav->lchild;
+		}
+		if(!st.empty())
+		{
+			trav = st.top();
+			st.pop();
+			trav = trav->rchild;
+		}
+	}
+}
+	
+void Tree::TraverseInOrder(struct TreeNode *p)
+{
+	if(p != nullptr)
+	{
+		TraverseInOrder(p->lchild);
+		std::cout<<p->key<<" ";
+		TraverseInOrder(p->rchild);
+	}
+}
+
+void Tree::TraverseInOrder()
+{
+	TreeNode *trav = root;
+	std::stack<TreeNode*> st;
+	while(trav != nullptr || !st.empty())
+	{
+		while(trav != nullptr)
+		{
+			st.push(trav);
+			trav = trav->lchild;
+		}
+		if(!st.empty())
+		{
+			trav = st.top();
+			st.pop();
+			std::cout<<trav->key<<" ";
+			trav = trav->rchild;
+		}
+	}
+}
+
+void Tree::TraversePostOrder(struct TreeNode *p)
+{
+	if(p != nullptr)
+	{
+		TraversePostOrder(p->lchild);
+		TraversePostOrder(p->rchild);
+		std::cout<<p->key<<" ";
+	}
+}
+
 void Tree::TraversePostOrder()
 {
-	TreeNode *pre,*trav;
+	TreeNode *trav,*pre;
+	std::stack<TreeNode*> st;
+	trav = root;
+	pre = nullptr;
+	while(trav != nullptr)
+	{
+		st.push(trav);
+		trav = trav->lchild;
+	}
+	while(!st.empty())
+	{
+		trav = st.top();
+		st.pop();
+		if(trav->rchild == nullptr || trav->rchild == pre)
+		{
+			std::cout<<trav->key<<" ";
+			pre = trav;
+		}
+		else
+		{
+			st.push(trav);
+			trav = trav->rchild;
+			while(trav != nullptr)
+			{
+				st.push(trav);
+				trav = trav->lchild;
+			}
+		}
+	}
 }

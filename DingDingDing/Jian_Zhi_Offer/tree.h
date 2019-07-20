@@ -19,7 +19,11 @@ struct Tree
 	bool issub(struct Tree &b);
 	void reverse(TreeNode *p);
 	bool ismirror(struct Tree &b);
+	void TraversePreOrder(struct TreeNode *p);
+	void TraversePreOrder();
 	void TraverseInOrder(struct TreeNode *p);
+	void TraverseInOrder();
+	void TraversePostOrder(struct TreeNode *p);
 	void TraversePostOrder();
 
 	private:
