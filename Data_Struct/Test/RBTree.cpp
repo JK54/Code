@@ -21,7 +21,6 @@ void test()
 		while(aaa.Search(a[i]))
 			read(fd,&a[i],sizeof(int));
 		aaa.Insert(a[i]);
-		std::cout<<aaa.IsRBT();
 	}
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0)/1000.0;
@@ -32,7 +31,6 @@ void test()
 	for(int i = 0;i < N;i++)
 	{
 		aaa.Remove(a[i]);
-		std::cout<<aaa.IsRBT();
 	}
 	gettimeofday(&s1,NULL);
 	t3 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0)/1000.0;

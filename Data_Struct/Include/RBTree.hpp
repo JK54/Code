@@ -140,7 +140,7 @@ class RBTree
 		RBTreeNode<T>* grandparent(RBTreeNode<T> *roo);
 		RBTreeNode<T>* uncle(RBTreeNode<T> *roo);
 		inline RBTreeNode<T>* brother(RBTreeNode<T> *roo,RBTreeNode<T> *parent);
-		size_t blacklength(RBTreeNode<T> *roo);
+		size_t blackheight(RBTreeNode<T> *roo);
 		inline bool redparent(RBTreeNode<T> *roo);
 		//replace() relink all the relation from pre to trav,replace2() just copy the data from trav to pre.
 		void replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre);
@@ -181,7 +181,7 @@ bool RBTree<T>::IsRBT()
 	RBTreeNode<T> *trav = root;
 	Stack<int> len;
 	Stack<RBTreeNode<T>*> path;
-	int *blacklength = new int [count];
+	int *blackheight = new int [count];
 	int num = 0,length = 0;
 	bool endmark = false,result = true;
 	if(trav == nullptr)
@@ -206,9 +206,9 @@ bool RBTree<T>::IsRBT()
 			//property 3 : all leave are black.
 			if(trav->lchild == nullptr || trav->rchild == nullptr)
 			{
-				blacklength[num++] = length + 1;
+				blackheight[num++] = length + 1;
 				//property 5 : every simple path has the same number of black nodes.
-				if(blacklength[num - 1] != blacklength[0])
+				if(blackheight[num - 1] != blackheight[0])
 					endmark = true,result = false;
 			}
 			//property 4:both children of red nodes are blacks.
@@ -219,7 +219,7 @@ bool RBTree<T>::IsRBT()
 			trav = trav->rchild;
 		}
 	}
-	delete [] blacklength;
+	delete [] blackheight;
 	return result;
 }
 template<typename T>
@@ -257,14 +257,21 @@ inline RBTreeNode<T>* RBTree<T>::brother(RBTreeNode<T> *roo,RBTreeNode<T> *paren
 }
 
 template<typename T>
-size_t RBTree<T>::blacklength(RBTreeNode<T> *roo)
+size_t RBTree<T>::blackheight(RBTreeNode<T> *roo)
 {
-	size_t height = 1;
-	while(roo != nullptr)
+	size_t height = 0;
+	if(roo == nullptr)
+		height = 1;
+	else
 	{
-		if(roo->color == RB_BLACK)
-			height++;
-		roo = roo->Parent;
+		do
+		{
+			if(roo->color == RB_BLACK)
+				height++;
+			roo = roo->lchild;
+		}
+		while(roo != nullptr && roo->lchild != nullptr && roo->rchild != nullptr);
+		height++;
 	}
 	return height;
 }
