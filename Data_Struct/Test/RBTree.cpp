@@ -3,7 +3,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#define N 100000
+#define N 10000
+#define times 1
 RBTree<int> aaa;
 std::ofstream sta("rbtree.log");
 double t1,t2,t3;
@@ -20,6 +21,7 @@ void test()
 		while(aaa.Search(a[i]))
 			read(fd,&a[i],sizeof(int));
 		aaa.Insert(a[i]);
+		std::cout<<aaa.IsRBT();
 	}
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0)/1000.0;
@@ -28,16 +30,19 @@ void test()
 	gettimeofday(&s0,NULL);
 	t2 = (1000.0*(s0.tv_sec - s1.tv_sec) + (s0.tv_usec - s1.tv_usec)/1000.0)/1000.0;
 	for(int i = 0;i < N;i++)
+	{
 		aaa.Remove(a[i]);
+		std::cout<<aaa.IsRBT();
+	}
 	gettimeofday(&s1,NULL);
 	t3 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0)/1000.0;
 }
 
 int main()
 {
-	double t[10];
+	double t[times + 1];
 	double s = 0;
-	for(int i = 1;i <= 10;i++)
+	for(int i = 1;i <= times;i++)
 	{
 		test();
 		t[i] = t1 + t2 + t3;

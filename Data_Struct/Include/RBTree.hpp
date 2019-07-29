@@ -214,7 +214,7 @@ bool RBTree<T>::IsRBT()
 			//property 4:both children of red nodes are blacks.
 			if(trav->lchild != nullptr && trav->lchild->color == RB_RED && trav->color == RB_RED)
 				endmark = true,result = false;
-			if(trav->lchild != nullptr && trav->lchild->color == RB_RED && trav->color == RB_RED)
+			if(trav->rchild != nullptr && trav->rchild->color == RB_RED && trav->color == RB_RED)
 				endmark = true,result = false;
 			trav = trav->rchild;
 		}
@@ -259,12 +259,13 @@ inline RBTreeNode<T>* RBTree<T>::brother(RBTreeNode<T> *roo,RBTreeNode<T> *paren
 template<typename T>
 size_t RBTree<T>::blacklength(RBTreeNode<T> *roo)
 {
-	size_t height = 0;
-	if(roo->lchild == nullptr || roo->rchild == nullptr)
-		height++;
-	while(roo->parent != nullptr)
+	size_t height = 1;
+	while(roo != nullptr)
+	{
 		if(roo->color == RB_BLACK)
 			height++;
+		roo = roo->Parent;
+	}
 	return height;
 }
 template<typename T>
