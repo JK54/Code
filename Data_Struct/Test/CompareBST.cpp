@@ -143,6 +143,8 @@ void test(void f(bool,int,K,int &),K jojo,int x,bool ordered)
 	sta<<std::fixed<<std::setprecision(6)<<" Total "<<"\t"<<in<<"\t\t\t"<<s<<"\t\t\t"<<r<<"\t\t\t"<<total<<std::endl;
 	sta<<std::fixed<<std::setprecision(6)<<" Avg "<<"\t"<<static_cast<double>(in/CW)<<"\t\t\t"<<static_cast<double>(s/CW)<<"\t\t\t"<<static_cast<double>(r/CW)<<"\t\t\t"<<static_cast<double>(total/CW)<<"\t\t\t"<<"\n\n"<<std::endl;
 	stb<<std::fixed<<std::setprecision(6)<<" Avg "<<"\t"<<static_cast<double>(in/CW)<<"\t\t\t"<<static_cast<double>(s/CW)<<"\t\t\t"<<static_cast<double>(r/CW)<<"\t\t\t"<<static_cast<double>(total/CW)<<"\t\t\t"<<"\n\n"<<std::endl;
+	sta.close();
+	stb.close();
 }
 
 int main()

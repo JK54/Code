@@ -576,10 +576,8 @@ bool RBTree<T>::Remove(const T &vle)
 	else
 		trav = trav->rchild;
 	pcolor = p->color;
-	if(trav == nullptr && p != root)
-		tmp = p->parent;
-	else
-		tmp = trav;
+	// tmp save the parent of p in case of a null trav.
+	tmp = p->parent;
 	replace(trav,p);
 	//simple situation:
 	//1.the wanted is red
@@ -594,10 +592,7 @@ bool RBTree<T>::Remove(const T &vle)
 	//both the wanted and child is black,disscussed in 6 cases.
 	else
 	{	
-		if(trav == nullptr)
-			p = tmp;
-		else
-			p = trav->parent;
+		p = tmp;
 		//case 1:trav become root.
 		if(trav == root)
 			return true;
