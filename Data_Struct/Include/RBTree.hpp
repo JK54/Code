@@ -339,18 +339,7 @@ template<typename T>
 void RBTree<T>::replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre)
 {
 	if(trav != nullptr)
-	{
-	   /*  if(trav != pre->lchild) */
-			// trav->lchild = pre->lchild;
-		// if(trav != pre->rchild)
-			/* trav->rchild = pre->rchild; */
 		trav->parent = pre->parent;
-		//trav->color = pre->color;
-	   /*  if(trav->lchild != nullptr) */
-			// trav->lchild->parent = trav;
-		// if(trav->rchild != nullptr)
-			/* trav->rchild->parent = trav; */
-	}
 	if(pre->parent != nullptr)
 	{
 		if(pre->parent->lchild == pre)
@@ -360,8 +349,6 @@ void RBTree<T>::replace(RBTreeNode<T> *trav,RBTreeNode<T> *pre)
 	}
 	else
 		root = trav;
-	delete pre;
-	pre = nullptr;
 }
 
 template<typename T>
@@ -579,6 +566,8 @@ bool RBTree<T>::Remove(const T &vle)
 	// tmp save the parent of p in case of a null trav.
 	tmp = p->parent;
 	replace(trav,p);
+	delete p;
+	p = nullptr;
 	//simple situation:
 	//1.the wanted is red
 	//2.the wanted is black,the child is red 
@@ -594,6 +583,7 @@ bool RBTree<T>::Remove(const T &vle)
 	{	
 		p = tmp;
 		//case 1:trav become root.
+		//这里单独写个判断语句是为了显式地处理下case1，删掉没有影响。
 		if(trav == root)
 			return true;
 		while(trav != root)

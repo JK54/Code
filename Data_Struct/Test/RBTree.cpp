@@ -3,8 +3,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#define N 1000
-#define times 200
+#define N 2000
+#define times 10
 RBTree<int> aaa;
 std::ofstream sta("rbtree.log");
 std::ofstream bits("rbttree_bits.log");
