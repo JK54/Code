@@ -591,7 +591,8 @@ bool RBTree<T>::Remove(const T &vle)
 			b = brother(trav,p);
 			pcolor = getcolor(p),bcolor = getcolor(b),lbcolor = getcolor(b->lchild),rbcolor = getcolor(b->rchild);
 			//case 3,b and lchild,rchild of b all are black.
-			// use getcolor in case of null node of child of b,considering the balance defition,b can not be empty.	
+			// use getcolor in case of null node of child of b,considering the balance defition,b can not be empty.
+			// 把case3写在前面是因为case3需要重新循环，进入case2意味着本次循环内可以结束平衡，这样可以减少比较的时间
 			if(pcolor == RB_BLACK && bcolor == RB_BLACK && lbcolor == RB_BLACK && rbcolor == RB_BLACK)
 			{
 				b->color = RB_RED;
@@ -603,6 +604,7 @@ bool RBTree<T>::Remove(const T &vle)
 				continue;
 			}
 			//case 2.the lchild,rchild of s must exist.because red node must have a black parent and black children.
+			//兄弟节点的孩子在case2，3都一定会是黑色，那么不满足case3的一定是兄弟节点是红色，也就是case2.所以不需要写那么长的判断条件
 			if(bcolor == RB_RED)
 			{
 				if(trav == p->lchild)

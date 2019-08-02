@@ -86,8 +86,8 @@ void test(void f(bool,int,K,int &),K jojo,int x,bool ordered)
 	std::ios::sync_with_stdio(false);
 	std::string tile,file1,file2;
 	tile = typeid(jojo).name();
-	file1 = "./Statistics/" + tile + "_raw";
-	file2 = "./Statistics/" + tile + "_avg";
+	file1 = "/home/jk54/Code/Data_Struct/Test/Statistics/" + tile + "_raw";
+	file2 = "/home/jk54/Code/Data_Struct/Test/Statistics/" + tile + "_avg";
 #ifdef DDO3
 	file1 += "_o3.log";
 	file2 += "_o3.log";
@@ -149,7 +149,7 @@ void test(void f(bool,int,K,int &),K jojo,int x,bool ordered)
 
 int main()
 {
-	int num[] = {1000,10000,50000,100000,500000,1000000,5000000,10000000};
+	int num[] = {1000,10000,50000,100000,500000,1000000,10000000};
 	int size = sizeof(num)/sizeof(num[0]);
 	a.reserve(num[size - 1]);
 	for(int i = 0; i < size;i++)

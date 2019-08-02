@@ -4,7 +4,7 @@ Generate rand time : 1e-05 s
  wanted   nodes : 1000
  inserted nodes : 1000
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	0.000210			0.000069			0.000138			0.000417			
+ Avg 	0.000210			0.000070			0.000139			0.000419			
 
 
 ----------------------------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ Generate rand time : 1e-05 s
  wanted   nodes : 1000
  inserted nodes : 1000
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	0.000158			0.000041			0.000121			0.000320			
+ Avg 	0.000167			0.000042			0.000118			0.000327			
 
 
 ----------------------------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ Generate rand time : 8.9e-05 s
  wanted   nodes : 10000
  inserted nodes : 9999
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	0.002604			0.001211			0.001923			0.005739			
+ Avg 	0.002610			0.001211			0.001928			0.005748			
 
 
 ----------------------------------------------------------------------------------------------------
@@ -31,16 +31,52 @@ Generate rand time : 8.9e-05 s
  wanted   nodes : 10000
  inserted nodes : 10000
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	0.001675			0.000519			0.001324			0.003518			
+ Avg 	0.001742			0.000527			0.001284			0.003552			
 
 
 ----------------------------------------------------------------------------------------------------
-Generate rand time : 0.000446 s
+Generate rand time : 9e-06 s
+										7AVLTreeIjE(DisOrdered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000210			0.000069			0.000139			0.000418			
+
+
+----------------------------------------------------------------------------------------------------
+
+										7AVLTreeIjE(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000165			0.000042			0.000120			0.000326			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 9e-05 s
+										7AVLTreeIjE(DisOrdered)
+ wanted   nodes : 10000
+ inserted nodes : 9999
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.002618			0.001209			0.001933			0.005760			
+
+
+----------------------------------------------------------------------------------------------------
+
+										7AVLTreeIjE(Ordered)
+ wanted   nodes : 10000
+ inserted nodes : 10000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.001778			0.000527			0.001329			0.003633			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 0.000441 s
 										7AVLTreeIjE(DisOrdered)
  wanted   nodes : 50000
  inserted nodes : 49999
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	0.015816			0.008657			0.012473			0.036946			
+ Avg 	0.016140			0.008772			0.012689			0.037601			
 
 
 ----------------------------------------------------------------------------------------------------
@@ -49,16 +85,16 @@ Generate rand time : 0.000446 s
  wanted   nodes : 50000
  inserted nodes : 50000
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	0.008779			0.003262			0.007124			0.019165			
+ Avg 	0.008989			0.003292			0.007174			0.019455			
 
 
 ----------------------------------------------------------------------------------------------------
-Generate rand time : 0.000892 s
+Generate rand time : 0.000902 s
 										7AVLTreeIjE(DisOrdered)
  wanted   nodes : 100000
  inserted nodes : 99998
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	0.035798			0.020719			0.029131			0.085648			
+ Avg 	0.037315			0.021617			0.030316			0.089248			
 
 
 ----------------------------------------------------------------------------------------------------
@@ -67,16 +103,16 @@ Generate rand time : 0.000892 s
  wanted   nodes : 100000
  inserted nodes : 100000
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	0.018493			0.008267			0.014848			0.041609			
+ Avg 	0.018604			0.008014			0.015287			0.041906			
 
 
 ----------------------------------------------------------------------------------------------------
-Generate rand time : 0.004463 s
+Generate rand time : 0.004448 s
 										7AVLTreeIjE(DisOrdered)
  wanted   nodes : 500000
- inserted nodes : 499970
+ inserted nodes : 499971
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	0.556755			0.362037			0.526604			1.445396			
+ Avg 	0.476816			0.314322			0.446908			1.238046			
 
 
 ----------------------------------------------------------------------------------------------------
@@ -85,16 +121,16 @@ Generate rand time : 0.004463 s
  wanted   nodes : 500000
  inserted nodes : 500000
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	0.110350			0.074972			0.094930			0.280251			
+ Avg 	0.113970			0.070692			0.099170			0.283832			
 
 
 ----------------------------------------------------------------------------------------------------
-Generate rand time : 0.00891 s
+Generate rand time : 0.008893 s
 										7AVLTreeIjE(DisOrdered)
  wanted   nodes : 1000000
- inserted nodes : 999881
+ inserted nodes : 999883
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	1.374890			0.946500			1.312881			3.634272			
+ Avg 	1.107389			0.747785			1.050367			2.905541			
 
 
 ----------------------------------------------------------------------------------------------------
@@ -103,24 +139,24 @@ Generate rand time : 0.00891 s
  wanted   nodes : 1000000
  inserted nodes : 1000000
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	0.232029			0.158438			0.203273			0.593740			
+ Avg 	0.251329			0.162937			0.234210			0.648475			
 
 
 ----------------------------------------------------------------------------------------------------
-Generate rand time : 0.044697 s
+Generate rand time : 0.088652 s
 										7AVLTreeIjE(DisOrdered)
- wanted   nodes : 5000000
- inserted nodes : 4997083
+ wanted   nodes : 10000000
+ inserted nodes : 9988351
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	9.302168			6.956728			9.153656			25.412551			
+ Avg 	16.762437			12.686286			16.591750			46.040473			
 
 
 ----------------------------------------------------------------------------------------------------
 
 										7AVLTreeIjE(Ordered)
- wanted   nodes : 5000000
- inserted nodes : 5000000
+ wanted   nodes : 10000000
+ inserted nodes : 10000000
 		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
- Avg 	1.265605			0.900325			1.160227			3.326157			
+ Avg 	2.720796			1.839321			2.882987			7.443104			
 
 

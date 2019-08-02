@@ -1,0 +1,81 @@
+----------------------------------------------------------------------------------------------------
+Generate rand time : 1e-05 s
+										6BSTreeIjE(DisOrdered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.000113			0.000056			0.000078			0.000247			
+
+
+----------------------------------------------------------------------------------------------------
+
+										6BSTreeIjE(Ordered)
+ wanted   nodes : 1000
+ inserted nodes : 1000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.001217			0.001821			0.001694			0.004731			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 8.9e-05 s
+										6BSTreeIjE(DisOrdered)
+ wanted   nodes : 10000
+ inserted nodes : 9999
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.001745			0.001131			0.001244			0.004120			
+
+
+----------------------------------------------------------------------------------------------------
+
+										6BSTreeIjE(Ordered)
+ wanted   nodes : 10000
+ inserted nodes : 10000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.163686			0.209599			0.197995			0.571281			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 0.000446 s
+										6BSTreeIjE(DisOrdered)
+ wanted   nodes : 50000
+ inserted nodes : 49999
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.011731			0.008328			0.008739			0.028799			
+
+
+----------------------------------------------------------------------------------------------------
+
+										6BSTreeIjE(Ordered)
+ wanted   nodes : 50000
+ inserted nodes : 50000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	4.104037			5.264355			4.983029			14.351421			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 0.000889 s
+										6BSTreeIjE(DisOrdered)
+ wanted   nodes : 100000
+ inserted nodes : 99998
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.027295			0.020380			0.020939			0.068614			
+
+
+----------------------------------------------------------------------------------------------------
+
+										6BSTreeIjE(Ordered)
+ wanted   nodes : 100000
+ inserted nodes : 100000
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	16.342790			20.959714			19.805405			57.107908			
+
+
+----------------------------------------------------------------------------------------------------
+Generate rand time : 0.004459 s
+										6BSTreeIjE(DisOrdered)
+ wanted   nodes : 500000
+ inserted nodes : 499971
+		Insert time(s)		Search time(s)		Remove time(s)		Total  time(s)
+ Avg 	0.344263			0.284123			0.269889			0.898275			
+
+
