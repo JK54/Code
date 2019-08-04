@@ -8,4 +8,6 @@ int main()
 	Product *p2 = aaa.produce(Factory::product_type::concreteproductB);
 	std::cout<<p1->name()<<std::endl;
 	std::cout<<p2->name()<<std::endl;
+	delete p1;
+	delete p2;
 }

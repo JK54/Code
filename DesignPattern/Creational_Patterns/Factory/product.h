@@ -1,5 +1,5 @@
-#ifndef _SPRODUCT_H
-#define _SPRODUCT_H
+#ifndef _FPRODUCT_H
+#define _FPRODUCT_H
 
 #include <string>
 
