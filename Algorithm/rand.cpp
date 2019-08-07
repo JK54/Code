@@ -5,6 +5,8 @@
  * 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
  *
  */
+//C++的梅森素数生成器足够使用。std::mt19937 mt(std::random_device{}());
+//但是代码值得参考
 #include <iostream>
 #include <fcntl.h>
 #include <unistd.h>
@@ -37,7 +39,6 @@ unsigned int GetRandom(int range)
 	return rnum % range;
 }
 
-//p17
 int main()
 {
 	std::ios::sync_with_stdio(false);
