@@ -1,29 +1,27 @@
 #include <iostream>
 #include <string>
-
 using std::string;
 using std::cout;
 using std::cin;
 
-string palindrome(string str)
+void pa_sub(const string &str,int start,int end,int len,int &pastart,int &maxlen)
+{
+	for(int i = start,j = end,k;i >= 0 && j < len && str[i] == str[j];i--,j++)
+		if((k = j - i + 1) > maxlen)
+			maxlen = k,pastart = i;
+}
+
+string palindrome(const string &str)
 {
 	int len = str.length();
 	int start = 0,maxlen = 0;
-	bool odd = len % 2;
 	for(int i = 0;i < len;i++)
 	{
-		for(int substart = odd ? i - 1 : i,subend = i + 1;substart >= 0 && subend < len && str[substart] == str[subend];substart--,subend++)
-		{
-			int tmplen = subend - substart + 1;
-			if(tmplen > maxlen)
-			{
-				maxlen = tmplen;
-				start = substart;
-			}
-		}
+		pa_sub(str,i,i,len,start,maxlen);
+		pa_sub(str,i,i + 1,len,start,maxlen);
 	}
 	if(maxlen > 0)
-		return str.substr(start,start + maxlen);
+		return str.substr(start,maxlen);
 	return "";
 }
 
