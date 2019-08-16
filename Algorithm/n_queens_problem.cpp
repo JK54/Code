@@ -1,5 +1,6 @@
 //解法1是DFS解法，分为递归与迭代的版本 ,时间复杂度为O(n^3)来源https://blog.csdn.net/wtyvhreal/article/details/42556199
 //解法2，优化了查找冲突的过程，用S(n)的代价，预先存放一个棋盘所有的竖、撇、捺，将查找冲突时间复杂度由O(n)降低到O(1),参见https://zhuanlan.zhihu.com/p/22846106
+//竖撇捺都从0开始计数，撇从左上角开始，捺从左下角开始
 //解法3，用位运算，将int代替16位以下的皇后问题使用的布尔数组（2*n - 1 <= 32),long处理可以处理31位皇后,采用位图的话应该可以处理更高位数的问题。
 //解法4，优化了位运算，不用枚举每一列，只需要枚举每一行中还能放置的列，缩小了枚举的范围。
 //解法5，更进一步优化,不使用全局参数，撇和捺的位定义修改为当前行有哪些列对应的撇或者捺已被占用
@@ -16,7 +17,7 @@ using std::endl;
 
 static int grid;
 static int *board;
-static int sum = 0;
+static long long sum = 0;
 
 static bool *shu,*pie,*na;
 long long shu1,pie1,na1;
@@ -61,7 +62,6 @@ int queens1_iterative()
 {
 	sum = 0;
 	int row = 0;
-	// board[row] = 0;
 	board[row] = -1;
 	while(row >= 0)
 	{
@@ -112,7 +112,6 @@ int queens2_recursive(int row)
 			if(shu[shu_index] || pie[pie_index] || na[na_index])
 				continue;
 			shu[shu_index] = pie[pie_index] = na[na_index] = true;
-			// board[row] = col;
 			queens2_recursive(row + 1);
 			shu[shu_index] = pie[pie_index] = na[na_index] = false;
 		}
@@ -180,7 +179,6 @@ int queens3_recursive(int row)
 			shu1 ^= 1 << shu_index;
 			pie1 ^= 1 << pie_index;
 			na1  ^= 1 << na_index;
-			// board[row] = col;
 			queens3_recursive(row + 1);
 			shu1 ^= 1 << shu_index;
 			pie1 ^= 1 << pie_index;
@@ -188,7 +186,6 @@ int queens3_recursive(int row)
 		}
 	}
 	return sum;
-	
 }
 
 int queens4_recursive(int row)
@@ -222,7 +219,7 @@ int queens4_recursive(int row)
 }
 
 
-int queens5_recursive(int row,int col,int pie2,int na2)
+long long queens5_recursive(long long row,long long col,long long pie2,long long na2)
 {
 	if(row == grid)
 	{
@@ -230,10 +227,10 @@ int queens5_recursive(int row,int col,int pie2,int na2)
 	}
 	else
 	{
-		long available = ((1 << grid) - 1) & ~(col | pie2 | na2);
+		long long available = ((1 << grid) - 1) & ~(col | pie2 | na2);
 		while(available)
 		{
-			int pos = available & -available;
+			long long pos = available & -available;
 			available ^= pos;
 			//因为不是全局参数，而且pie，na的定义进行了修改，不需要回撤位运算。
 			//递归的col，pie2，na2操作意义
@@ -261,19 +258,19 @@ double timecount4recur(int times,int f(int ),const char *name)
 	return t;
 }
 
-double timecount4recur(int times,int f(int,int,int,int),const char *name)
+double timecount4recur(long long times,long long f(long long,long long,long long,long long),const char *name)
 {
 	struct timeval s1,s2;
 	double t;
 	gettimeofday(&s1,NULL);
-	for(int i = 0;i < times;i++)
+	for(long long i = 0;i < times;i++)
 	{
 		sum = 0;
-		std::cout<<f(0,0,0,0)<<std::endl;
+		std::cout<<grid<<":"<<f(0,0,0,0)<<std::endl;
 	}
 	gettimeofday(&s2,NULL);
 	t = (1000.0*static_cast<double>(s2.tv_sec - s1.tv_sec) + static_cast<double>(s2.tv_usec - s1.tv_usec)/1000.0) / 1000.0;
-	std::cout<<name<<":"<<t<<" s"<<std::endl;
+	std::cout<<name<<":"<<t<<" s"<<std::endl<<std::endl;
 	return t;
 }
 
@@ -296,21 +293,20 @@ int main()
 {
 	// cout<<"input nums of queens"<<endl;
 	// cin>>grid;
-	grid = 15;
-	board = new int [grid];
-	shu = new bool [grid];
-	pie = new bool [2 * grid - 1];
-	na = new bool [2 * grid - 1];
-	memset(board,0,sizeof(int) * grid);
-	memset(shu,false,sizeof(char) * grid);
-	memset(pie,false,sizeof(char) * (2 * grid - 1));
-	memset(na,false,sizeof(char) * (2 * grid - 1));
+   /*  board = new int [grid]; */
+	// shu = new bool [grid];
+	// pie = new bool [2 * grid - 1];
+	// na = new bool [2 * grid - 1];
+	// memset(board,0,sizeof(int) * grid);
+	// memset(shu,false,sizeof(char) * grid);
+	// memset(pie,false,sizeof(char) * (2 * grid - 1));
+	// memset(na,false,sizeof(char) * (2 * grid - 1));
 
-	timecount4recur(1,queens4_recursive,"recursive");
-	timecount4recur(1,queens5_recursive,"recursive");
+	// timecount4recur(1,queens4_recursive,"recursive");
+	for(grid = 8;grid <= 26;grid++)
+		timecount4recur(1,queens5_recursive,"recursive");
 	// timecount4recur(1,queens1_recursive,"recursive");
 	// timecount4itera(1,queens1_iterative,"iterative");
-
 	delete [] board;
 	delete [] shu;
 	delete [] pie;
