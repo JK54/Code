@@ -18,7 +18,6 @@ bool duplicate(std::vector<int> nums,std::vector<int> &result)
 	{
 		if(nums[i] < 0 || nums[i] > size)
 			return false;
-	}
 	//clear vector result
 	std::vector<int>().swap(result);
 	for(int i = 0;i < size;i++)
