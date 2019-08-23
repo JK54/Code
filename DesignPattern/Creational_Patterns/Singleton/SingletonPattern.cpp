@@ -3,6 +3,9 @@
 #include "SingletonPattern.h"
 
 Singleton::Singleton(){}
+Singleton *Singleton::Instance = nullptr; 
+Singleton::GC Singleton::GC::gc;
+std::mutex Singleton::mmtex;
 
 Singleton* Singleton::GetInstance()
 {
