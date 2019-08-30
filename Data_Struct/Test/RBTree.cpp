@@ -3,11 +3,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#define N 2000
-#define times 10
+#define N 10000000
+#define times 1
 RBTree<int> aaa;
 std::ofstream sta("rbtree.log");
-std::ofstream bits("rbttree_bits.log");
+// std::ofstream bits("rbttree_bits.log");
 double t1,t2,t3;
 struct timeval s0,s1;
 int *a = new int [N];
@@ -26,14 +26,14 @@ void test()
 
 	gettimeofday(&s1,NULL);
 	t1 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0)/1000.0;
-	for(int i = N -1;i >= 0;i--)
-		aaa.Search(a[i]);
+	// for(int i = N -1;i >= 0;i--)
+		// aaa.Search(a[i]);
 	gettimeofday(&s0,NULL);
 	t2 = (1000.0*(s0.tv_sec - s1.tv_sec) + (s0.tv_usec - s1.tv_usec)/1000.0)/1000.0;
 	for(int i = 0;i < N;i++)
 	{
-		aaa.Remove(a[i]);
-		bits<<aaa.IsRBT();
+		aaa.Remove(aaa.Root()->data);
+		// bits<<aaa.IsRBT();
 	}
 	gettimeofday(&s1,NULL);
 	t3 = (1000.0*(s1.tv_sec - s0.tv_sec) + (s1.tv_usec - s0.tv_usec)/1000.0)/1000.0;
@@ -53,7 +53,7 @@ int main()
 	sta<<"All cost : "<<(static_cast<int>(s / 60)) <<"m"<<(static_cast<int>(s) % 60)<<"s"<<std::endl;
 	close(fd);
 	sta.close();
-	bits.close();
+	// bits.close();
 	delete [] a;
 	return 0;
 }

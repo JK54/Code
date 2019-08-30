@@ -596,10 +596,7 @@ bool RBTree<T>::Remove(const T &vle)
 			if(pcolor == RB_BLACK && bcolor == RB_BLACK && lbcolor == RB_BLACK && rbcolor == RB_BLACK)
 			{
 				b->color = RB_RED;
-				if(trav != nullptr)
-					trav = trav->parent;
-				else
-					trav = p;
+				trav = p;
 				p = trav->parent;
 				continue;
 			}
@@ -614,6 +611,7 @@ bool RBTree<T>::Remove(const T &vle)
 				p->color = RB_RED;
 				b->color = RB_BLACK;
 				b = brother(trav,p);
+				pcolor = getcolor(p);
 				bcolor = getcolor(b),lbcolor = getcolor(b->lchild),rbcolor = getcolor(b->rchild);
 			}
 			//case 4:

@@ -13,5 +13,8 @@ int main()
 		perror("write into pipe[0] failed");
 	else
 		printf("worked\n");
+	char buf[BUFSIZ];
+	read(p[1],buf,BUFSIZ);
+	printf("%s\n",buf);
 	return 0;
 }
