@@ -1,10 +1,11 @@
 #include "chapter10.h"
 // #include <sys/time.h>
 #include <time.h>
-
+#include <fstream>
 int main()
 {
     long long n = 0;
+    std::ofstream ofs("sleep.rec");
     while(true)
     {
         sleep(60);
@@ -15,7 +16,7 @@ int main()
             time(&raw_time);
             struct tm *t = localtime(&raw_time);
             mktime(t);
-            printf("%d\n", t->tm_sec);
+            ofs << t->tm_sec << std::endl;
         }
     }
 }
